@@ -1,9 +1,9 @@
 """Tools module for SOW generator."""
 
-from .read_presentation_content import read_presentation_content
 from .generate_sow_document import generate_sow_document
+from .extract_sow_from_presentation import extract_sow_from_presentation
 
 __all__ = [
-    "read_presentation_content",
     "generate_sow_document",
+    "extract_sow_from_presentation",
 ]

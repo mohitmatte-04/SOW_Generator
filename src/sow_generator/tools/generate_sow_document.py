@@ -60,15 +60,13 @@ async def generate_sow_document(
             "name": document_title,
             "mimeType": "application/vnd.google-apps.document"
         }
-        media = MediaFileUpload(
-            blob_name, # Not really used but needed for API
-            mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        
+        from googleapiclient.http import MediaIoBaseUpload
+        media = MediaIoBaseUpload(
+            file_stream, 
+            mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
             resumable=True
         )
-        
-        # We use MediaIoBaseUpload for the stream
-        from googleapiclient.http import MediaIoBaseUpload
-        media = MediaIoBaseUpload(file_stream, mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document", resumable=True)
 
         uploaded_file = drive_service.files().create(
             body=file_metadata,

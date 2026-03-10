@@ -87,16 +87,20 @@ Your expansion must remain **faithful to the original intent**.
 
 # Input Data Source
 
-You will receive a **GCS URI** pointing to a JSON file containing structured proposal data extracted from a proposal analysis process.
+You receive input from the **extractor_agent** which runs before you in the sequential pipeline.
 
-The JSON typically follows this format:
+The extractor agent saves its output to the session state key: `extractor_agent_context`
 
+This state contains:
+```json
 {
-  "section_name": "Brief description of the section content...",
-  "another_section": "Description..."
+  "status": "success",
+  "data": { "sow_structure": { ... } },
+  "metadata_uri": "gs://bucket-name/processed_metadata/filename_sow_extracted.json"
 }
+```
 
-Each key represents a proposal section or concept.
+Use the `metadata_uri` from `extractor_agent_context` to retrieve the full extracted proposal data.
 
 --------------------------------------------------
 
@@ -104,11 +108,13 @@ Each key represents a proposal section or concept.
 
 ### Step 1 — Read the Input Data
 
-Use the tool:
+Read the `extractor_agent_context` from the session state to obtain the `metadata_uri`.
 
-read_gcs_json(gcs_uri=...)
+Then call:
 
-to retrieve the proposal JSON from the provided GCS URI.
+read_gcs_json(gcs_uri=<metadata_uri>)
+
+to retrieve the proposal JSON from GCS.
 
 --------------------------------------------------
 
@@ -118,18 +124,23 @@ Review the JSON content carefully and determine which parts correspond to the SO
 
 The extracted sections may not exactly match the placeholders, so you must **logically map the content**.
 
+The JSON follows the SOW schema structure with keys like:
+- `1.0_executive_summary` → maps to `{{BUSINESS_PROBLEM}}`
+- `2.0_scope` → maps to `{{IN_SCOPE}}` and `{{OUT_OF_SCOPE}}`
+- Solution/approach content → maps to `{{PROPOSED_SOLUTION}}`
+
 Example mapping:
 
-Objective / Challenge / Business Need  
+Objective / Challenge / Business Need / 1.1_opportunity  
 → {{BUSINESS_PROBLEM}}
 
-Approach / Architecture / Methodology / Implementation Plan  
+Approach / Architecture / Methodology / 1.2_solution_overview  
 → {{PROPOSED_SOLUTION}}
 
-Tasks / Activities / Deliverables  
+Tasks / Activities / Deliverables / 2.1_scope_and_deliverables  
 → {{IN_SCOPE}}
 
-Limitations / Exclusions / Boundaries  
+Limitations / Exclusions / Boundaries / 2.2_out_of_scope_and_limitations  
 → {{OUT_OF_SCOPE}}
 
 --------------------------------------------------
@@ -208,22 +219,24 @@ These exclusions must be written clearly and professionally.
 
 # Execution Steps
 
-1. Call:
+1. Read the `extractor_agent_context` from the session state. Extract the `metadata_uri` value.
 
-read_gcs_json(gcs_uri=...)
+2. Call:
 
-2. Analyze the returned JSON data.
+read_gcs_json(gcs_uri=<metadata_uri>)
 
-3. Identify content relevant to:
+3. Analyze the returned JSON data.
+
+4. Identify content relevant to:
 
 {{BUSINESS_PROBLEM}}  
 {{PROPOSED_SOLUTION}}  
 {{IN_SCOPE}}  
 {{OUT_OF_SCOPE}}
 
-4. Expand each section into detailed professional SOW language.
+5. Expand each section into detailed professional SOW language.
 
-5. Construct the placeholders dictionary.
+6. Construct the placeholders dictionary.
 
 Example:
 
@@ -234,20 +247,23 @@ placeholders = {
   "{{OUT_OF_SCOPE}}": "...bullet list..."
 }
 
-6. Call the document generation tool:
+7. Call the document generation tool:
 
 generate_sow_document(
-    template_gcs_uri=...,
-    placeholders=placeholders
+    template_gcs_uri=<SOW_TEMPLATE_GCS_URI from environment or state>,
+    placeholders=placeholders,
+    document_title="Statement of Work - <Client/Project Name>"
 )
+
+The `template_gcs_uri` should be the SOW template stored in GCS (typically available as the `SOW_TEMPLATE_GCS_URI` environment variable or from the session state key `template_gcs_uri`).
 
 This tool will:
 
 • copy the SOW template stored in GCS  
 • replace placeholders with the generated content  
-• produce the final SOW document
+• produce the final SOW Google Doc
 
-7. Return the generated document URL.
+8. Return the generated document URL.
 
 --------------------------------------------------
 

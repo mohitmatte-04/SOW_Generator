@@ -1,56 +1,57 @@
 """Tool to generate a SOW document in Google Docs format."""
 
+import io
 import logging
-import os
-from typing import Any, Dict, List
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
-from google.cloud import storage
+from typing import Any
+
 import google.auth
 from google.auth.transport.requests import Request
-import io
+from google.cloud import storage
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaIoBaseUpload
 
 logger = logging.getLogger(__name__)
 
 async def generate_sow_document(
     template_gcs_uri: str,
-    placeholders: Dict[str, str],
-    document_title: str,
-) -> Dict[str, Any]:
+    placeholders: dict[str, str],
+    document_title: str = "Generated Statement of Work",
+) -> dict[str, Any]:
     """
     Generates a Statement of Work (SOW) by duplicating a template from GCS,
     converting it to Google Docs, and replacing placeholders.
 
     Args:
         template_gcs_uri: GCS URI to the .docx template (e.g., gs://bucket/template.docx).
-        placeholders: Dictionary of placeholders to replace (e.g., {"{{SCOPE}}": "..."}).
+        placeholders: Dictionary of placeholders to replace
+            (e.g., {"{{SCOPE}}": "..."}).
         document_title: The title for the generated Google Doc.
 
     Returns:
-        A dictionary containing status, the URL of the generated document, and any error message.
+        A dictionary containing status, the URL of the generated
+        document, and any error message.
     """
     try:
         # 1. Download from GCS
         bucket_name = template_gcs_uri.split("/")[2]
         blob_name = "/".join(template_gcs_uri.split("/")[3:])
-        
+
         storage_client = storage.Client()
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(blob_name)
-        
+
         file_stream = io.BytesIO()
         blob.download_to_file(file_stream)
         file_stream.seek(0)
 
         # 2. Authenticate Google Drive and Docs
-        credentials, project = google.auth.default(
+        credentials, _ = google.auth.default(
             scopes=[
                 "https://www.googleapis.com/auth/drive",
-                "https://www.googleapis.com/auth/documents"
+                "https://www.googleapis.com/auth/documents",
             ]
         )
-        if credentials.expired and credentials.refresh_token:
-            credentials.refresh(Request())
+        credentials.refresh(Request())
 
         drive_service = build("drive", "v3", credentials=credentials)
         docs_service = build("docs", "v1", credentials=credentials)
@@ -58,14 +59,12 @@ async def generate_sow_document(
         # 3. Upload to Drive and convert to Google Doc
         file_metadata = {
             "name": document_title,
-            "mimeType": "application/vnd.google-apps.document"
+            "mimeType": "application/vnd.google-apps.document",
         }
-        
-        from googleapiclient.http import MediaIoBaseUpload
         media = MediaIoBaseUpload(
-            file_stream, 
-            mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document", 
-            resumable=True
+            file_stream,
+            mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            resumable=True,
         )
 
         uploaded_file = drive_service.files().create(
@@ -73,7 +72,7 @@ async def generate_sow_document(
             media_body=media,
             fields="id"
         ).execute()
-        
+
         doc_id = uploaded_file.get("id")
 
         # 4. Batch update placeholders in Google Doc
@@ -105,6 +104,6 @@ async def generate_sow_document(
             }
         }
 
-    except Exception as e:
-        logger.error(f"Failed to generate SOW document: {e}", exc_info=True)
-        return {"status": "error", "error": str(e)}
+    except Exception as exc:
+        logger.exception("Failed to generate SOW document")
+        return {"status": "error", "error": str(exc)}

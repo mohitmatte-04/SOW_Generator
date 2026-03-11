@@ -1,22 +1,22 @@
 """Tool to generate a SOW document in Google Docs format."""
 
+import io
 import logging
-import os
-from typing import Any, Dict, List
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
-from google.cloud import storage
+from typing import Any
+
 import google.auth
 from google.auth.transport.requests import Request
-import io
+from google.cloud import storage
+from googleapiclient.discovery import build
+from googleapiclient.http import MediaFileUpload
 
 logger = logging.getLogger(__name__)
 
 async def generate_sow_document(
     template_gcs_uri: str,
-    placeholders: Dict[str, str],
+    placeholders: dict[str, str],
     document_title: str,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Generates a Statement of Work (SOW) by duplicating a template from GCS,
     converting it to Google Docs, and replacing placeholders.
@@ -33,11 +33,11 @@ async def generate_sow_document(
         # 1. Download from GCS
         bucket_name = template_gcs_uri.split("/")[2]
         blob_name = "/".join(template_gcs_uri.split("/")[3:])
-        
+
         storage_client = storage.Client()
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(blob_name)
-        
+
         file_stream = io.BytesIO()
         blob.download_to_file(file_stream)
         file_stream.seek(0)
@@ -65,7 +65,7 @@ async def generate_sow_document(
             mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             resumable=True
         )
-        
+
         # We use MediaIoBaseUpload for the stream
         from googleapiclient.http import MediaIoBaseUpload
         media = MediaIoBaseUpload(file_stream, mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document", resumable=True)
@@ -75,7 +75,7 @@ async def generate_sow_document(
             media_body=media,
             fields="id"
         ).execute()
-        
+
         doc_id = uploaded_file.get("id")
 
         # 4. Batch update placeholders in Google Doc

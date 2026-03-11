@@ -1,8 +1,10 @@
 """Proposal Extraction Agent."""
 
 from pathlib import Path
+
 from google.adk.agents import LlmAgent
-from .config import REASONING_MODEL, PRODUCTION_CONFIG
+
+from .config import PRODUCTION_CONFIG, REASONING_MODEL
 from .tools import read_presentation_content
 
 # Load prompt

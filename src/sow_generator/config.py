@@ -1,8 +1,9 @@
 """Model and agent configuration."""
 
 import os
-from google.genai import types as genai_types
+
 from dotenv import load_dotenv
+from google.genai import types as genai_types
 
 load_dotenv()
 

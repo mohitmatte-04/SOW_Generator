@@ -8,8 +8,8 @@ import pytest
 
 from sow_generator.tools.extract_sow_from_presentation import (
     _build_extraction_prompt,
-    _merge_into_schema,
     _parse_llm_json,
+    _validate_extracted_output,
     extract_sow_from_presentation,
 )
 
@@ -17,15 +17,15 @@ from sow_generator.tools.extract_sow_from_presentation import (
 class TestBuildExtractionPrompt:
     """Tests for _build_extraction_prompt."""
 
-    def test_contains_schema(self) -> None:
+    def test_contains_template(self) -> None:
         prompt = _build_extraction_prompt()
-        assert "sow_structure" in prompt
-        assert "1.0_executive_summary" in prompt
-        assert "10.0_fees_and_expenses" in prompt
+        assert "statement_of_work_template" in prompt
+        assert "Executive Summary" in prompt
+        assert "Scope of Work" in prompt
 
     def test_contains_instructions(self) -> None:
         prompt = _build_extraction_prompt()
-        assert "Extract ONLY information present" in prompt
+        assert "Extract ONLY information explicitly present" in prompt
 
 
 class TestParseLLMJson:
@@ -56,34 +56,33 @@ class TestParseLLMJson:
             _parse_llm_json("this is not json")
 
 
-class TestMergeIntoSchema:
-    """Tests for _merge_into_schema."""
+class TestValidateExtractedOutput:
+    """Tests for _validate_extracted_output."""
 
-    def test_merges_matching_keys(self) -> None:
-        template = {"a": "NA", "b": "NA"}
-        extracted = {"a": "extracted_a"}
-        result = _merge_into_schema(extracted, template)
-        assert result["a"] == "extracted_a"
-        assert result["b"] == "NA"
+    def test_passes_through_correct_structure(self) -> None:
+        data = {"statement_of_work_template": {"sections": []}}
+        result = _validate_extracted_output(data)
+        assert result is data
 
-    def test_merges_nested_dicts(self) -> None:
-        template = {"section": {"sub1": "NA", "sub2": "NA"}}
-        extracted = {"section": {"sub1": "found"}}
-        result = _merge_into_schema(extracted, template)
-        assert result["section"]["sub1"] == "found"
-        assert result["section"]["sub2"] == "NA"
+    def test_wraps_missing_top_level_key(self) -> None:
+        data = {"sections": [{"section_number": 1}]}
+        result = _validate_extracted_output(data)
+        assert "statement_of_work_template" in result
+        assert result["statement_of_work_template"] == data
 
-    def test_ignores_extra_keys_in_extracted(self) -> None:
-        template = {"a": "NA"}
-        extracted = {"a": "val", "extra": "should be ignored"}
-        result = _merge_into_schema(extracted, template)
-        assert result == {"a": "val"}
-
-    def test_preserves_template_structure(self) -> None:
-        template = {"a": {"nested": "NA"}, "b": "NA"}
-        extracted = {}
-        result = _merge_into_schema(extracted, template)
-        assert result == {"a": {"nested": "NA"}, "b": "NA"}
+    def test_preserves_all_content(self) -> None:
+        data = {
+            "statement_of_work_template": {
+                "introductory_provisions": "Some provisions",
+                "sections": [
+                    {"section_number": 1, "title": "Summary", "details": "info"},
+                ],
+            }
+        }
+        result = _validate_extracted_output(data)
+        template = result["statement_of_work_template"]
+        assert template["introductory_provisions"] == "Some provisions"
+        assert len(template["sections"]) == 1
 
 
 class TestExtractSOWFromPresentation:
@@ -92,12 +91,15 @@ class TestExtractSOWFromPresentation:
     @pytest.fixture
     def mock_sow_response(self) -> dict:
         return {
-            "sow_structure": {
-                "1.0_executive_summary": {
-                    "1.1_opportunity": "Migrate to GCP",
-                    "1.2_solution_overview": "Lift and shift approach",
-                },
-                "3.0_success_criteria": "95% uptime SLA",
+            "statement_of_work_template": {
+                "introductory_provisions": "Agreement provisions",
+                "sections": [
+                    {
+                        "section_number": 2,
+                        "title": "Executive Summary",
+                        "details": "Migrate to GCP",
+                    },
+                ],
             }
         }
 
@@ -137,7 +139,9 @@ class TestExtractSOWFromPresentation:
         pdf_file.write_text("fake pdf")
         mock_convert.return_value = pdf_file
 
-        mock_upload_file.return_value = "gs://bucket/_tmp_extraction/test.pdf"
+        mock_upload_file.return_value = (
+            "gs://bucket/_tmp_extraction/test.pdf"
+        )
         mock_upload_json.return_value = (
             "gs://bucket/processed_metadata/test_sow_extracted.json"
         )
@@ -153,7 +157,6 @@ class TestExtractSOWFromPresentation:
         )
 
         assert result["status"] == "success"
-        assert result["data"]["sow_structure"]["3.0_success_criteria"] == "95% uptime SLA"
         assert "metadata_uri" in result
         mock_upload_json.assert_called_once()
         mock_delete.assert_called_once()

@@ -15,7 +15,7 @@ from typing import Any
 from google import genai
 from google.genai import types as genai_types
 
-from ..sow_schema import SOW_JSON_SCHEMA, get_empty_sow_structure
+from ..sow_schema import SOW_JSON_SCHEMA
 from ..utils.gcs_utils import (
     delete_gcs_blob,
     download_blob_to_tempfile,
@@ -32,19 +32,26 @@ from ..utils.pptx_converter import (
 logger = logging.getLogger(__name__)
 
 _EXTRACTION_SYSTEM_PROMPT = """\
-You are a document analysis expert. You receive presentation content and must \
-extract information relevant to a Statement of Work (SOW).
+You are a document analysis expert. You receive a proposal presentation and \
+must extract information into a structured SOW (Statement of Work) template.
 
-RULES:
-1. Extract ONLY information present in the source material.
-2. Maintain the hierarchical structure of the SOW schema exactly.
-3. If a section's information is NOT found, keep its value as "NA".
-4. Filter out irrelevant content (logos, decorative text, page numbers, etc.).
-5. Preserve the logical ordering and hierarchy of the slides.
-6. For sections that contain lists or multiple items, use bullet-point format.
-7. Return ONLY valid JSON matching the schema — no markdown fences, no commentary.
+CRITICAL RULES:
+1. Extract ONLY information explicitly present in the proposal document.
+2. DO NOT add, infer, fabricate, or embellish ANY information.
+3. Copy relevant text as-is from the source — do not rephrase or expand.
+4. Each key in the template has a DESCRIPTION of what to look for. \
+Replace the description with the ACTUAL content found in the proposal.
+5. If a section has no matching content in the proposal, set its value to "NA".
+6. Match proposal headings/titles to the closest SOW template section by \
+semantic meaning. Map content under each proposal heading into the \
+corresponding template key.
+7. If a proposal heading covers multiple template sections, split the content.
+8. If multiple proposal headings map to one template section, combine them.
+9. Filter out irrelevant content (logos, decorative text, page numbers).
+10. Return ONLY valid JSON matching the template structure — no markdown \
+fences, no commentary.
 
-SOW JSON SCHEMA (populate each field):
+SOW TEMPLATE (replace descriptions with extracted content):
 """
 
 
@@ -81,22 +88,17 @@ def _parse_llm_json(raw_text: str) -> dict[str, Any]:
         raise ValueError(msg) from exc
 
 
-def _merge_into_schema(
+def _validate_extracted_output(
     extracted: dict[str, Any],
-    template: dict[str, Any],
 ) -> dict[str, Any]:
-    """Recursively merge extracted data into the SOW template.
+    """Validate and normalize LLM output.
 
-    Any keys in the template not present in ``extracted`` remain "NA".
+    Ensures the output has the expected ``statement_of_work_template``
+    top-level key. If the LLM returned inner content directly, wraps it.
     """
-    for key, default_val in template.items():
-        if key in extracted:
-            if isinstance(default_val, dict) and isinstance(extracted[key], dict):
-                _merge_into_schema(extracted[key], default_val)
-                template[key] = default_val
-            else:
-                template[key] = extracted[key]
-    return template
+    if "statement_of_work_template" in extracted:
+        return extracted
+    return {"statement_of_work_template": extracted}
 
 
 async def extract_sow_from_presentation(gcs_uri: str) -> dict[str, Any]:
@@ -142,7 +144,7 @@ async def extract_sow_from_presentation(gcs_uri: str) -> dict[str, Any]:
             use_pdf = False
 
         # ── Step 3: Prepare content for Gemini ───────────────────────────
-        model_name = os.getenv("REASONING_MODEL", "gemini-2.5-pro-preview-05-06")
+        model_name = os.getenv("REASONING_MODEL", "gemini-3-pro-preview")
         client = genai.Client(
             vertexai=bool(os.getenv("GOOGLE_GENAI_USE_VERTEXAI")),
             project=os.getenv("GOOGLE_CLOUD_PROJECT"),
@@ -205,18 +207,10 @@ async def extract_sow_from_presentation(gcs_uri: str) -> dict[str, Any]:
                 ),
             )
 
-        # ── Step 4: Parse and merge into SOW schema ──────────────────────
+        # ── Step 4: Parse and validate extracted data ────────────────────
         raw_text = response.text or ""
         extracted_data = _parse_llm_json(raw_text)
-
-        sow_structure = get_empty_sow_structure()
-        if "sow_structure" in extracted_data:
-            _merge_into_schema(
-                extracted_data["sow_structure"],
-                sow_structure["sow_structure"],
-            )
-        else:
-            _merge_into_schema(extracted_data, sow_structure["sow_structure"])
+        sow_output = _validate_extracted_output(extracted_data)
 
         # ── Step 5: Save result JSON to GCS ──────────────────────────────
         bucket_name, blob_path = parse_gcs_uri(gcs_uri)
@@ -224,12 +218,11 @@ async def extract_sow_from_presentation(gcs_uri: str) -> dict[str, Any]:
         metadata_blob = f"processed_metadata/{source_stem}_sow_extracted.json"
         metadata_uri = f"gs://{bucket_name}/{metadata_blob}"
 
-        upload_json_to_gcs(sow_structure, metadata_uri)
+        upload_json_to_gcs(sow_output, metadata_uri)
         logger.info("Extraction results saved to: %s", metadata_uri)
 
         return {
             "status": "success",
-            "data": sow_structure,
             "metadata_uri": metadata_uri,
         }
 

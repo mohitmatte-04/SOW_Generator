@@ -1,112 +1,126 @@
-"""Tool to generate a SOW document in Google Docs format."""
+"""Tool to generate a SOW document and store it in GCS."""
 
 import io
 import logging
+import re
+from datetime import datetime, timezone
 from typing import Any
 
-import google.auth
-from google.auth.transport.requests import Request
+from docx import Document
 from google.cloud import storage
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaFileUpload
 
 logger = logging.getLogger(__name__)
+
+
+def _sanitize_filename(title: str) -> str:
+    """Convert a document title to a safe filename."""
+    safe = re.sub(r"[^\w\s-]", "", title)
+    safe = re.sub(r"[\s]+", "_", safe.strip())
+    return safe
+
 
 async def generate_sow_document(
     template_gcs_uri: str,
     placeholders: dict[str, str],
-    document_title: str,
+    document_title: str = "Generated Statement of Work",
+    output_gcs_bucket: str = "sow-generator-testing-phase",
+    output_gcs_folder: str = "sow",
 ) -> dict[str, Any]:
-    """
-    Generates a Statement of Work (SOW) by duplicating a template from GCS,
-    converting it to Google Docs, and replacing placeholders.
+    """Generate a SOW by replacing placeholders in a DOCX template and uploading to GCS.
+
+    Downloads a .docx template from GCS, replaces placeholder tags with
+    generated content, and uploads the final document back to GCS.
 
     Args:
-        template_gcs_uri: GCS URI to the .docx template (e.g., gs://bucket/template.docx).
-        placeholders: Dictionary of placeholders to replace (e.g., {"{{SCOPE}}": "..."}).
-        document_title: The title for the generated Google Doc.
+        template_gcs_uri: GCS URI to the .docx template
+            (e.g., ``gs://bucket/template.docx``).
+        placeholders: Dictionary of placeholders to replace
+            (e.g., ``{"<<SCOPE>>": "..."}``).
+        document_title: The title for the generated document.
+        output_gcs_bucket: The GCS bucket to store the generated SOW.
+        output_gcs_folder: The folder within the bucket to store the SOW.
 
     Returns:
-        A dictionary containing status, the URL of the generated document, and any error message.
+        A dictionary containing status, the GCS URI of the generated
+        document, and any error message.
     """
     try:
-        # 1. Download from GCS
-        bucket_name = template_gcs_uri.split("/")[2]
-        blob_name = "/".join(template_gcs_uri.split("/")[3:])
+        # 1. Download template from GCS
+        if not template_gcs_uri.startswith("gs://"):
+            return {"status": "error", "error": "Invalid template GCS URI."}
+
+        parts = template_gcs_uri.replace("gs://", "").split("/", 1)
+        if len(parts) != 2:  # noqa: PLR2004
+            return {"status": "error", "error": "Invalid template GCS URI format."}
+
+        bucket_name, blob_name = parts
 
         storage_client = storage.Client()
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(blob_name)
 
-        file_stream = io.BytesIO()
-        blob.download_to_file(file_stream)
-        file_stream.seek(0)
+        if not blob.exists():
+            return {
+                "status": "error",
+                "error": f"Template not found: {template_gcs_uri}",
+            }
 
-        # 2. Authenticate Google Drive and Docs
-        credentials, project = google.auth.default(
-            scopes=[
-                "https://www.googleapis.com/auth/drive",
-                "https://www.googleapis.com/auth/documents"
-            ]
+        template_bytes = blob.download_as_bytes()
+
+        # 2. Open the .docx template and replace placeholders
+        doc = Document(io.BytesIO(template_bytes))
+
+        # A robust way to replace text in python-docx is to clear the paragraph
+        # and re-insert the text if we don't want to deal with complex run splitting.
+        # But a simpler way when preserving some formatting is to just replace paragraph text
+        # (which removes run-level formatting but works reliably for full-paragraph placeholders).
+        for paragraph in doc.paragraphs:
+            for key, value in placeholders.items():
+                if key in paragraph.text:
+                    # Simple paragraph-level replacement
+                    paragraph.text = paragraph.text.replace(key, value)
+
+        # Also check tables for placeholders
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for paragraph in cell.paragraphs:
+                        for key, value in placeholders.items():
+                            if key in paragraph.text:
+                                paragraph.text = paragraph.text.replace(key, value)
+
+        # 3. Save modified document to bytes
+        output_stream = io.BytesIO()
+        doc.save(output_stream)
+        output_stream.seek(0)
+
+        # 4. Upload to GCS
+        timestamp = datetime.now(tz=timezone.utc).strftime("%Y%m%d_%H%M%S")
+        safe_title = _sanitize_filename(document_title)
+        output_blob_name = f"{output_gcs_folder}/{safe_title}_{timestamp}.docx"
+
+        output_bucket = storage_client.bucket(output_gcs_bucket)
+        output_blob = output_bucket.blob(output_blob_name)
+        output_blob.upload_from_file(
+            output_stream,
+            content_type=(
+                "application/vnd.openxmlformats-officedocument"
+                ".wordprocessingml.document"
+            ),
         )
-        if credentials.expired and credentials.refresh_token:
-            credentials.refresh(Request())
 
-        drive_service = build("drive", "v3", credentials=credentials)
-        docs_service = build("docs", "v1", credentials=credentials)
-
-        # 3. Upload to Drive and convert to Google Doc
-        file_metadata = {
-            "name": document_title,
-            "mimeType": "application/vnd.google-apps.document"
-        }
-        media = MediaFileUpload(
-            blob_name, # Not really used but needed for API
-            mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            resumable=True
-        )
-
-        # We use MediaIoBaseUpload for the stream
-        from googleapiclient.http import MediaIoBaseUpload
-        media = MediaIoBaseUpload(file_stream, mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document", resumable=True)
-
-        uploaded_file = drive_service.files().create(
-            body=file_metadata,
-            media_body=media,
-            fields="id"
-        ).execute()
-
-        doc_id = uploaded_file.get("id")
-
-        # 4. Batch update placeholders in Google Doc
-        requests = []
-        for key, value in placeholders.items():
-            requests.append({
-                "replaceAllText": {
-                    "containsText": {
-                        "text": key,
-                        "matchCase": False
-                    },
-                    "replaceText": value,
-                }
-            })
-
-        if requests:
-            docs_service.documents().batchUpdate(
-                documentId=doc_id,
-                body={"requests": requests}
-            ).execute()
-
-        doc_url = f"https://docs.google.com/document/d/{doc_id}/edit"
+        output_gcs_uri = f"gs://{output_gcs_bucket}/{output_blob_name}"
+        logger.info("SOW document uploaded to %s", output_gcs_uri)
 
         return {
             "status": "success",
             "data": {
-                "document_id": doc_id,
-                "document_url": doc_url
-            }
+                "gcs_uri": output_gcs_uri,
+                "bucket": output_gcs_bucket,
+                "blob_name": output_blob_name,
+            },
         }
 
-    except Exception as e:
-        logger.error(f"Failed to generate SOW document: {e}", exc_info=True)
-        return {"status": "error", "error": str(e)}
+    except Exception:
+        logger.exception("Failed to generate SOW document")
+        return {"status": "error", "error": "Failed to generate SOW document."}

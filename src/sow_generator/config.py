@@ -3,6 +3,8 @@
 import os
 
 from dotenv import load_dotenv
+
+from dotenv import load_dotenv
 from google.genai import types as genai_types
 
 load_dotenv()
@@ -26,5 +28,13 @@ CREATIVE_CONFIG = genai_types.GenerateContentConfig(
     top_p=0.95,
     top_k=50,
     # max_output_tokens=4096,
+    seed=42,
+)
+
+# SOW generation configuration: warm enough for professional writing expansion
+SOW_GENERATION_CONFIG = genai_types.GenerateContentConfig(
+    temperature=0.4,
+    top_p=0.9,
+    top_k=40,
     seed=42,
 )

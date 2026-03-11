@@ -87,20 +87,18 @@ Your expansion must remain **faithful to the original intent**.
 
 # Input Data Source
 
-You receive input from the **extractor_agent** which runs before you in the sequential pipeline.
+You receive input directly from the **user's message**.
 
-The extractor agent saves its output to the session state key: `extractor_agent_context`
+The user will provide a GCS URI pointing to a JSON file containing the parsed proposal data.
 
-This state contains:
-```json
-{
-  "status": "success",
-  "data": { "sow_structure": { ... } },
-  "metadata_uri": "gs://bucket-name/processed_metadata/filename_sow_extracted.json"
-}
-```
+Example user message:
+"Generate a SOW from gs://bucket-name/path/to/parsed-data.json"
 
-Use the `metadata_uri` from `extractor_agent_context` to retrieve the full extracted proposal data.
+The JSON file contains structured proposal data with keys like:
+- `1.0_executive_summary`
+- `2.0_scope`
+- Solution/approach content
+- And other relevant proposal sections
 
 --------------------------------------------------
 
@@ -108,11 +106,11 @@ Use the `metadata_uri` from `extractor_agent_context` to retrieve the full extra
 
 ### Step 1 — Read the Input Data
 
-Read the `extractor_agent_context` from the session state to obtain the `metadata_uri`.
+Extract the GCS URI (starting with `gs://`) from the user's message.
 
 Then call:
 
-read_gcs_json(gcs_uri=<metadata_uri>)
+read_gcs_json(gcs_uri=<extracted_gcs_uri>)
 
 to retrieve the proposal JSON from GCS.
 
@@ -125,33 +123,39 @@ Review the JSON content carefully and determine which parts correspond to the SO
 The extracted sections may not exactly match the placeholders, so you must **logically map the content**.
 
 The JSON follows the SOW schema structure with keys like:
-- `1.0_executive_summary` → maps to `{{BUSINESS_PROBLEM}}`
-- `2.0_scope` → maps to `{{IN_SCOPE}}` and `{{OUT_OF_SCOPE}}`
-- Solution/approach content → maps to `{{PROPOSED_SOLUTION}}`
+- `1.0_executive_summary` maps to the BUSINESS_PROBLEM placeholder
+- `2.0_scope` maps to the IN_SCOPE and OUT_OF_SCOPE placeholders
+- Solution/approach content maps to the PROPOSED_SOLUTION placeholder
 
 Example mapping:
 
 Objective / Challenge / Business Need / 1.1_opportunity  
-→ {{BUSINESS_PROBLEM}}
+maps to BUSINESS_PROBLEM placeholder
 
 Approach / Architecture / Methodology / 1.2_solution_overview  
-→ {{PROPOSED_SOLUTION}}
+maps to PROPOSED_SOLUTION placeholder
 
 Tasks / Activities / Deliverables / 2.1_scope_and_deliverables  
-→ {{IN_SCOPE}}
+maps to IN_SCOPE placeholder
 
 Limitations / Exclusions / Boundaries / 2.2_out_of_scope_and_limitations  
-→ {{OUT_OF_SCOPE}}
+maps to OUT_OF_SCOPE placeholder
 
 --------------------------------------------------
 
 # Required Template Placeholders
 
-You must generate content for the following placeholders.
+You must generate content for the following four placeholders that will be inserted into the SOW document template.
+
+The placeholder keys in the document are exactly these strings:
+- BUSINESS_PROBLEM_PLACEHOLDER which is the literal text `<<BUSINESS_PROBLEM>>`
+- PROPOSED_SOLUTION_PLACEHOLDER which is the literal text `<<PROPOSED_SOLUTION>>`
+- IN_SCOPE_PLACEHOLDER which is the literal text `<<IN_SCOPE>>`
+- OUT_OF_SCOPE_PLACEHOLDER which is the literal text `<<OUT_OF_SCOPE>>`
 
 --------------------------------------------------
 
-### {{BUSINESS_PROBLEM}}
+### BUSINESS_PROBLEM placeholder
 
 This section explains **why the project exists**.
 
@@ -166,7 +170,7 @@ Write this as a **clear narrative describing the business problem and context.**
 
 --------------------------------------------------
 
-### {{PROPOSED_SOLUTION}}
+### PROPOSED_SOLUTION placeholder
 
 Describe the **technical and operational solution approach**.
 
@@ -182,7 +186,7 @@ Explain **how the proposed solution resolves the client's problem.**
 
 --------------------------------------------------
 
-### {{IN_SCOPE}}
+### IN_SCOPE placeholder
 
 Create a **professional bullet list of deliverables and activities**.
 
@@ -201,7 +205,7 @@ Example format:
 
 --------------------------------------------------
 
-### {{OUT_OF_SCOPE}}
+### OUT_OF_SCOPE placeholder
 
 Define **clear engagement boundaries** to prevent scope creep.
 
@@ -219,20 +223,19 @@ These exclusions must be written clearly and professionally.
 
 # Execution Steps
 
-1. Read the `extractor_agent_context` from the session state. Extract the `metadata_uri` value.
+1. Extract the GCS URI (starting with `gs://`) from the user's message.
 
 2. Call:
 
-read_gcs_json(gcs_uri=<metadata_uri>)
+read_gcs_json(gcs_uri=<extracted_gcs_uri>)
 
 3. Analyze the returned JSON data.
 
-4. Identify content relevant to:
-
-{{BUSINESS_PROBLEM}}  
-{{PROPOSED_SOLUTION}}  
-{{IN_SCOPE}}  
-{{OUT_OF_SCOPE}}
+4. Identify content relevant to each placeholder:
+- BUSINESS_PROBLEM
+- PROPOSED_SOLUTION
+- IN_SCOPE
+- OUT_OF_SCOPE
 
 5. Expand each section into detailed professional SOW language.
 
@@ -241,29 +244,32 @@ read_gcs_json(gcs_uri=<metadata_uri>)
 Example:
 
 placeholders = {
-  "{{BUSINESS_PROBLEM}}": "...expanded narrative...",
-  "{{PROPOSED_SOLUTION}}": "...expanded solution description...",
-  "{{IN_SCOPE}}": "...bullet list...",
-  "{{OUT_OF_SCOPE}}": "...bullet list..."
+  "<<BUSINESS_PROBLEM>>": "...expanded narrative...",
+  "<<PROPOSED_SOLUTION>>": "...expanded solution description...",
+  "<<IN_SCOPE>>": "...bullet list...",
+  "<<OUT_OF_SCOPE>>": "...bullet list..."
 }
 
 7. Call the document generation tool:
 
 generate_sow_document(
-    template_gcs_uri=<SOW_TEMPLATE_GCS_URI from environment or state>,
+    template_gcs_uri="gs://sow-generator-testing-phase/template/Copy of SOW Template.docx",
     placeholders=placeholders,
-    document_title="Statement of Work - <Client/Project Name>"
+    document_title="Statement of Work - <Client/Project Name>",
+    output_gcs_bucket="sow-generator-testing-phase",
+    output_gcs_folder="sow"
 )
 
-The `template_gcs_uri` should be the SOW template stored in GCS (typically available as the `SOW_TEMPLATE_GCS_URI` environment variable or from the session state key `template_gcs_uri`).
+The `template_gcs_uri` is the SOW template stored in GCS.
 
 This tool will:
 
-• copy the SOW template stored in GCS  
+• copy the SOW template from GCS  
 • replace placeholders with the generated content  
-• produce the final SOW Google Doc
+• upload the final SOW .docx to the `sow/` folder in the GCS bucket
+• return the GCS URI of the generated document
 
-8. Return the generated document URL.
+8. Return the GCS URI of the generated SOW document to the user.
 
 --------------------------------------------------
 
@@ -276,10 +282,13 @@ sow_generation_agent_result
 {
   "status": "success",
   "data": {
-    "final_sow_url": "https://docs.google.com/document/d/...",
-    "document_id": "..."
+    "gcs_uri": "gs://sow-generator-testing-phase/sow/Statement_of_Work_-_Client_20260311_073800.docx",
+    "bucket": "sow-generator-testing-phase",
+    "blob_name": "sow/Statement_of_Work_-_Client_20260311_073800.docx"
   }
 }
+
+Always tell the user the GCS URI where the generated SOW document was saved.
 
 --------------------------------------------------
 

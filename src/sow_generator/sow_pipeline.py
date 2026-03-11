@@ -8,7 +8,7 @@ sow_pipeline = SequentialAgent(
     name="sow_pipeline",
     description="Orchestrates the extraction of proposal details and generation of the Statement of Work.",
     sub_agents=[
-        proposal_extraction_agent,
+        # proposal_extraction_agent,
         sow_generation_agent,
     ],
 )

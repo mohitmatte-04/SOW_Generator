@@ -1,14 +1,22 @@
-"""Tool to generate a SOW document in Google Docs format."""
+"""Tool to generate a SOW document in DOCX format.
+Placeholders in the template should use << >> format (e.g., <<PROJECT_NAME>>).
+"""
 
 import logging
 import os
-from typing import Any, Dict, List
+import json
+import copy
+import re
+from typing import Any, Dict, List, Union, Tuple
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
 from google.cloud import storage
 import google.auth
 from google.auth.transport.requests import Request
 import io
+from docx import Document
+from docx.shared import Pt, RGBColor
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 #     Args:
 #         template_gcs_uri: GCS URI to the .docx template (e.g., gs://bucket/template.docx).
-#         placeholders: Dictionary of placeholders to replace (e.g., {"{{SCOPE}}": "..."}).
+#         placeholders: Dictionary of placeholders to replace (e.g., {"<<SCOPE>>": "..."}).
 #         document_title: The title for the generated Google Doc.
 
 #     Returns:
@@ -116,20 +124,39 @@ async def generate_sow_document(
     template_gcs_uri: str,
     placeholders: Dict[str, str],
     document_title: str,
-    output_gcs_uri: str
+    output_gcs_uri: str,
+    font_name: str | None = None,
+    font_size: int | None = None
 ) -> Dict[str, Any]:
     """
     Generates a Statement of Work (SOW) by reading a DOCX template from GCS,
     replacing placeholders, and writing the final document back to GCS.
 
+    Placeholders in the template should use << >> format (e.g., <<PROJECT_NAME>>).
+
     Args:
         template_gcs_uri: GCS URI to the DOCX template (gs://bucket/template.docx)
-        placeholders: Dictionary containing placeholder replacements
+        placeholders: Dictionary mapping placeholder names to replacement values.
+                     Keys should include delimiters (e.g., {"<<NAME>>": "Acme Corp"}).
+                     Values can be strings or lists (for multiple bullet points).
         document_title: Name of the generated document
         output_gcs_uri: GCS URI where the final document should be saved
+        font_name: Optional font name to override template font (e.g., 'Calibri', 'Arial')
+        font_size: Optional font size in points to override template font size (e.g., 11, 12)
 
     Returns:
         Status and GCS URI of generated document
+
+    Example:
+        placeholders = {
+            "<<CLIENT_NAME>>": "**Acme Corp**",
+            "<<PROJECT>>": "Cloud Migration",
+            "<<DELIVERABLES>>": [
+                "Architecture Design",
+                "Implementation",
+                "Testing"
+            ]
+        }
     """
 
     try:
@@ -159,20 +186,328 @@ async def generate_sow_document(
         # 3. Replace placeholders
         # -------------------------
 
-        def replace_text_in_paragraphs(paragraphs):
-            for paragraph in paragraphs:
-                for key, value in placeholders.items():
-                    if key in paragraph.text:
-                        paragraph.text = paragraph.text.replace(key, value)
+        def parse_value(value):
+            """Parse a value that might be a string or list."""
+            if isinstance(value, list):
+                return value
+            # Check if it's a JSON array string
+            if isinstance(value, str) and value.strip().startswith('['):
+                try:
+                    parsed = json.loads(value)
+                    if isinstance(parsed, list):
+                        return parsed
+                except (json.JSONDecodeError, ValueError):
+                    pass
+            return str(value)
 
-        # Replace in paragraphs
-        replace_text_in_paragraphs(document.paragraphs)
+        def parse_rich_text(text):
+            """
+            Parse markdown-like formatting in text.
+            Supports: **bold**, *italic*, __underline__, ~~strikethrough~~
+            Returns list of (text, formatting_dict) tuples.
+            """
+            if not isinstance(text, str):
+                return [(str(text), {})]
+
+            # Pattern to match formatting markers
+            # Order matters: check longest patterns first
+            pattern = r'(\*\*.*?\*\*|\*.*?\*|__.*?__|~~.*?~~)'
+
+            parts = []
+            last_end = 0
+
+            for match in re.finditer(pattern, text):
+                # Add unformatted text before this match
+                if match.start() > last_end:
+                    parts.append((text[last_end:match.start()], {}))
+
+                matched_text = match.group(0)
+                formatting = {}
+                clean_text = matched_text
+
+                # Bold: **text**
+                if matched_text.startswith('**') and matched_text.endswith('**') and len(matched_text) > 4:
+                    clean_text = matched_text[2:-2]
+                    formatting['bold'] = True
+                # Italic: *text*
+                elif matched_text.startswith('*') and matched_text.endswith('*') and len(matched_text) > 2:
+                    clean_text = matched_text[1:-1]
+                    formatting['italic'] = True
+                # Underline: __text__
+                elif matched_text.startswith('__') and matched_text.endswith('__') and len(matched_text) > 4:
+                    clean_text = matched_text[2:-2]
+                    formatting['underline'] = True
+                # Strikethrough: ~~text~~
+                elif matched_text.startswith('~~') and matched_text.endswith('~~') and len(matched_text) > 4:
+                    clean_text = matched_text[2:-2]
+                    formatting['strike'] = True
+
+                parts.append((clean_text, formatting))
+                last_end = match.end()
+
+            # Add remaining unformatted text
+            if last_end < len(text):
+                parts.append((text[last_end:], {}))
+
+            # If no formatting was found, return the whole text
+            if not parts:
+                parts = [(text, {})]
+
+            return parts
+
+        def replace_text_simple(paragraph, key, value):
+            """Text replacement with rich text formatting support."""
+            if key not in paragraph.text:
+                return False
+
+            # Get the base run for formatting reference
+            base_run = paragraph.runs[0] if paragraph.runs else None
+
+            # Get full text
+            full_text = paragraph.text
+            if key not in full_text:
+                return False
+
+            # Find the position of the placeholder
+            placeholder_start = full_text.find(key)
+            placeholder_end = placeholder_start + len(key)
+
+            # Split text into: before placeholder, placeholder value, after placeholder
+            text_before = full_text[:placeholder_start]
+            text_after = full_text[placeholder_end:]
+
+            # Clear existing runs
+            for run in paragraph.runs:
+                run._element.getparent().remove(run._element)
+
+            # Add text before placeholder (preserve template formatting)
+            if text_before:
+                run_before = paragraph.add_run(text_before)
+                if base_run:
+                    run_before.font.name = base_run.font.name
+                    run_before.font.size = base_run.font.size
+                    run_before.font.bold = base_run.font.bold
+                    run_before.font.italic = base_run.font.italic
+                    run_before.font.underline = base_run.font.underline
+                    if base_run.font.color.rgb:
+                        run_before.font.color.rgb = base_run.font.color.rgb
+
+            # Add replacement value (with custom font if specified)
+            value_parts = parse_rich_text(value)
+            for text, formatting in value_parts:
+                if not text:
+                    continue
+
+                run = paragraph.add_run(text)
+
+                # Apply custom fonts if provided, otherwise use template fonts
+                if base_run:
+                    run.font.name = font_name if font_name else base_run.font.name
+                    if font_size:
+                        run.font.size = Pt(font_size)
+                    else:
+                        run.font.size = base_run.font.size
+                    if base_run.font.color.rgb:
+                        run.font.color.rgb = base_run.font.color.rgb
+
+                # Apply markdown formatting
+                if formatting.get('bold'):
+                    run.font.bold = True
+                elif base_run and base_run.font.bold is not None:
+                    run.font.bold = base_run.font.bold
+
+                if formatting.get('italic'):
+                    run.font.italic = True
+                elif base_run and base_run.font.italic is not None:
+                    run.font.italic = base_run.font.italic
+
+                if formatting.get('underline'):
+                    run.font.underline = True
+                elif base_run and base_run.font.underline is not None:
+                    run.font.underline = base_run.font.underline
+
+                if formatting.get('strike'):
+                    run.font.strike = True
+
+            # Add text after placeholder (preserve template formatting)
+            if text_after:
+                run_after = paragraph.add_run(text_after)
+                if base_run:
+                    run_after.font.name = base_run.font.name
+                    run_after.font.size = base_run.font.size
+                    run_after.font.bold = base_run.font.bold
+                    run_after.font.italic = base_run.font.italic
+                    run_after.font.underline = base_run.font.underline
+                    if base_run.font.color.rgb:
+                        run_after.font.color.rgb = base_run.font.color.rgb
+
+            return True
+
+
+        def insert_paragraph_after(reference_para, value, parent_element, prefix="", suffix=""):
+            """Insert a new paragraph after reference, copying its formatting and supporting rich text."""
+            # Create new paragraph (empty for now)
+            new_para = parent_element.add_paragraph()
+
+            # Copy paragraph-level formatting
+            if reference_para.style:
+                new_para.style = reference_para.style
+            new_para.alignment = reference_para.alignment
+
+            # Copy paragraph format
+            pf_src = reference_para.paragraph_format
+            pf_dst = new_para.paragraph_format
+            pf_dst.left_indent = pf_src.left_indent
+            pf_dst.right_indent = pf_src.right_indent
+            pf_dst.first_line_indent = pf_src.first_line_indent
+            pf_dst.space_before = pf_src.space_before
+            pf_dst.space_after = pf_src.space_after
+            pf_dst.line_spacing = pf_src.line_spacing
+
+            # Copy bullet/numbering properties (critical for lists)
+            # Access the underlying XML element to copy numbering properties
+            ref_pPr = reference_para._element.get_or_add_pPr()
+            new_pPr = new_para._element.get_or_add_pPr()
+
+            # Copy numPr (numbering properties) if it exists
+            ref_numPr = ref_pPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr')
+            if ref_numPr is not None:
+                # Remove any existing numPr in the new paragraph
+                existing_numPr = new_pPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr')
+                if existing_numPr is not None:
+                    new_pPr.remove(existing_numPr)
+
+                # Import and add a copy of the numbering properties
+                new_numPr = copy.deepcopy(ref_numPr)
+                new_pPr.append(new_numPr)
+
+            # Get base run for formatting
+            base_run = reference_para.runs[0] if reference_para.runs else None
+
+            # Add text before (prefix) - preserve template formatting
+            if prefix:
+                run_before = new_para.add_run(prefix)
+                if base_run:
+                    run_before.font.name = base_run.font.name
+                    run_before.font.size = base_run.font.size
+                    run_before.font.bold = base_run.font.bold
+                    run_before.font.italic = base_run.font.italic
+                    run_before.font.underline = base_run.font.underline
+                    if base_run.font.color.rgb:
+                        run_before.font.color.rgb = base_run.font.color.rgb
+
+            # Add replacement value (with custom font if specified)
+            value_parts = parse_rich_text(value)
+            for text, formatting in value_parts:
+                if not text:
+                    continue
+
+                run = new_para.add_run(text)
+
+                # Apply custom fonts if provided, otherwise use template fonts
+                if base_run:
+                    run.font.name = font_name if font_name else base_run.font.name
+                    if font_size:
+                        run.font.size = Pt(font_size)
+                    else:
+                        run.font.size = base_run.font.size
+                    if base_run.font.color.rgb:
+                        run.font.color.rgb = base_run.font.color.rgb
+
+                # Apply markdown formatting
+                if formatting.get('bold'):
+                    run.font.bold = True
+                elif base_run and base_run.font.bold is not None:
+                    run.font.bold = base_run.font.bold
+
+                if formatting.get('italic'):
+                    run.font.italic = True
+                elif base_run and base_run.font.italic is not None:
+                    run.font.italic = base_run.font.italic
+
+                if formatting.get('underline'):
+                    run.font.underline = True
+                elif base_run and base_run.font.underline is not None:
+                    run.font.underline = base_run.font.underline
+
+                if formatting.get('strike'):
+                    run.font.strike = True
+
+            # Add text after (suffix) - preserve template formatting
+            if suffix:
+                run_after = new_para.add_run(suffix)
+                if base_run:
+                    run_after.font.name = base_run.font.name
+                    run_after.font.size = base_run.font.size
+                    run_after.font.bold = base_run.font.bold
+                    run_after.font.italic = base_run.font.italic
+                    run_after.font.underline = base_run.font.underline
+                    if base_run.font.color.rgb:
+                        run_after.font.color.rgb = base_run.font.color.rgb
+
+            # Move it to the right position in XML
+            new_para._element.getparent().remove(new_para._element)
+            reference_para._element.addnext(new_para._element)
+
+            return new_para
+
+        def replace_text_with_list(paragraph, key, items, parent_element):
+            """Replace placeholder with multiple bullet points."""
+            if key not in paragraph.text:
+                return []
+
+            full_text = paragraph.text
+            placeholder_index = full_text.find(key)
+            prefix = full_text[:placeholder_index]
+            suffix = full_text[placeholder_index + len(key):]
+
+            new_paras = []
+            for i, item in enumerate(items):
+                if i == 0:
+                    # Update the original paragraph
+                    replace_text_simple(paragraph, key, str(item).strip())
+                    new_paras.append(paragraph)
+                else:
+                    # Insert new paragraph with separate prefix/suffix handling
+                    new_para = insert_paragraph_after(new_paras[-1], str(item).strip(), parent_element, prefix, suffix)
+                    new_paras.append(new_para)
+
+            return new_paras
+
+        def replace_placeholders_in_paragraphs(paragraphs, parent_element):
+            """Replace all placeholders in paragraphs."""
+            processed_ids = set()
+            i = 0
+
+            while i < len(paragraphs):
+                para = paragraphs[i]
+                para_id = id(para)
+
+                if para_id not in processed_ids:
+                    processed_ids.add(para_id)
+
+                    for key, value in placeholders.items():
+                        parsed_value = parse_value(value)
+
+                        if isinstance(parsed_value, list) and len(parsed_value) > 0:
+                            # Handle list values
+                            new_paras = replace_text_with_list(para, key, parsed_value, parent_element)
+                            for p in new_paras:
+                                processed_ids.add(id(p))
+                        else:
+                            # Handle simple string replacement
+                            replace_text_simple(para, key, str(parsed_value))
+
+                i += 1
+
+        # Replace in main document
+        replace_placeholders_in_paragraphs(document.paragraphs, document)
 
         # Replace in tables
         for table in document.tables:
             for row in table.rows:
                 for cell in row.cells:
-                    replace_text_in_paragraphs(cell.paragraphs)
+                    replace_placeholders_in_paragraphs(cell.paragraphs, cell)
 
         # -------------------------
         # 4. Save modified doc

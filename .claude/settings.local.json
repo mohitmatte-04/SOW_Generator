@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//tmp/**)",
+      "Bash(python3 -m py_compile src/sow_generator/tools/generate_sow_document.py)"
+    ]
+  }
+}

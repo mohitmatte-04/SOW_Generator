@@ -6,20 +6,25 @@ Expand the extracted business context into professional SOW sections (Scope, Out
 
 ## Instructions
 
-1.  Review the `proposal_extraction_agent_context`.
-2.  Expand the "business_problem" and "proposed_solution" into professional, detailed paragraphs suitable for a Statement of Work.
-3.  Combine the "in_scope" and "out_of_scope" items into clear, bulleted lists.
+1.  Review the {proposal_extraction_agent_context['data']}.
+2.  Expand only the following sections into professional, detailed paragraphs suitable for a Statement of Work.
+    - Scope of Work
+    - Out of Scope
+    - Solution
+    - Business Problem
+    - Customer Dependencies
+    - Technical Assumptions
+    - Deliverables
+    - Title
+    - Opportunity
+3.  Use clear, bulleted lists where appropriate.
 4.  Prepare the placeholder map for the SOW template:
-    - `{{BUSINESS_PROBLEM}}`: The expanded problem description.
-    - `{{PROPOSED_SOLUTION}}`: The expanded solution description.
-    - `{{IN_SCOPE}}`: The formatted list of in-scope items.
-    - `{{OUT_OF_SCOPE}}`: The formatted list of out-of-scope items.
 5.  Call the `generate_sow_document` tool with the prepared placeholders.
 
 ## Input Context
 
 - `proposal_extraction_agent_context`: Structured data from the extraction phase.
-- `template_gcs_uri`: The GCS path to the SOW template.
+- `template_gcs_uri`: "gs://agent_engine_depoly/sow-generator/sow-template/SOW_Template.docx"
 
 ## Available Tools
 
@@ -44,6 +49,8 @@ Save your result to the state key: `sow_generation_agent_result`
 - Ensure the tone is professional, legal, and formal.
 - Strictly adhere to the placeholder names provided in the template instructions.
 - Preserve the template's fixed content and style by only replacing the placeholders.
+- Use the `generate_sow_document` tool to generate the final document.
+- Use the `Plus Jakarta Sans` font with size `10` as the default font for the document.
 
 ## Error Handling
 

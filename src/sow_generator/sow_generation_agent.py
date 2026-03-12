@@ -2,7 +2,6 @@
 
 from pathlib import Path
 
-
 from google.adk.agents import LlmAgent
 
 from .config import REASONING_MODEL, SOW_GENERATION_CONFIG

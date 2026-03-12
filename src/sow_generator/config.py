@@ -3,8 +3,6 @@
 import os
 
 from dotenv import load_dotenv
-
-from dotenv import load_dotenv
 from google.genai import types as genai_types
 
 load_dotenv()

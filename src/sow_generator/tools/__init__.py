@@ -7,4 +7,5 @@ from .read_gcs_json import read_gcs_json
 __all__ = [
     "generate_sow_document",
     "extract_sow_from_presentation",
+    "read_gcs_json",
 ]

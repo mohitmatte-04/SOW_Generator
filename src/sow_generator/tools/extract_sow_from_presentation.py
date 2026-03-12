@@ -62,7 +62,11 @@ def _build_extraction_prompt() -> str:
 
 
 def _parse_llm_json(raw_text: str) -> dict[str, Any]:
-    """Parse LLM output into a JSON dict, handling markdown fences.
+    """Parse LLM output into a JSON dict, handling markdown fences and extra data.
+
+    Gemini may return trailing commentary, multiple JSON objects, or prose
+    after the JSON block. This function extracts the *first* complete JSON
+    object by scanning brace depth.
 
     Args:
         raw_text: Raw text response from the LLM.
@@ -71,21 +75,59 @@ def _parse_llm_json(raw_text: str) -> dict[str, Any]:
         Parsed dictionary.
 
     Raises:
-        ValueError: If the response cannot be parsed as JSON.
+        ValueError: If no valid JSON object can be found in the response.
     """
     text = raw_text.strip()
 
-    # Strip markdown code fences if present
+    # 1. Strip markdown code fences if present
     fence_pattern = r"```(?:json)?\s*\n?(.*?)\n?\s*```"
     match = re.search(fence_pattern, text, re.DOTALL)
     if match:
         text = match.group(1).strip()
 
+    # 2. Try direct parse first (fast path)
     try:
         return json.loads(text)  # type: ignore[no-any-return]
-    except json.JSONDecodeError as exc:
-        msg = f"Failed to parse LLM response as JSON: {exc}"
-        raise ValueError(msg) from exc
+    except json.JSONDecodeError:
+        pass
+
+    # 3. Fallback: extract the first complete JSON object by brace scanning
+    start = text.find("{")
+    if start == -1:
+        msg = "Failed to parse LLM response as JSON: no JSON object found"
+        raise ValueError(msg)
+
+    depth = 0
+    in_string = False
+    escape_next = False
+    for i, ch in enumerate(text[start:], start):
+        if escape_next:
+            escape_next = False
+            continue
+        if ch == "\\" and in_string:
+            escape_next = True
+            continue
+        if ch == '"':
+            in_string = not in_string
+            continue
+        if in_string:
+            continue
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                candidate = text[start : i + 1]
+                try:
+                    return json.loads(candidate)  # type: ignore[no-any-return]
+                except json.JSONDecodeError as exc:
+                    msg = (
+                        f"Failed to parse LLM response as JSON: {exc}"
+                    )
+                    raise ValueError(msg) from exc
+
+    msg = "Failed to parse LLM response as JSON: incomplete JSON object"
+    raise ValueError(msg)
 
 
 def _validate_extracted_output(

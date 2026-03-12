@@ -11,11 +11,11 @@ load_dotenv()
 FAST_MODEL = os.getenv("DEFAULT_MODEL", "gemini-3-flash-preview")
 REASONING_MODEL = os.getenv("REASONING_MODEL", "gemini-3.1-pro-preview")
 
-# Production configuration: deterministic
+# Production configuration: fully deterministic, no hallucination
 PRODUCTION_CONFIG = genai_types.GenerateContentConfig(
-    temperature=0.1,
-    top_p=0.9,
-    top_k=40,
+    temperature=0.0,  # Fully deterministic — critical for extraction fidelity
+    top_p=1.0,        # No nucleus sampling truncation at temp=0
+    top_k=1,          # Always pick the single most likely token
     # max_output_tokens=2048,
     seed=42,
 )

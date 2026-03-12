@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 from docx import Document
-from docx.shared import Inches, Pt
+from docx.shared import Inches
 from google.cloud import storage
 
 logger = logging.getLogger(__name__)
@@ -84,10 +84,12 @@ def _replace_placeholder_with_rich_content(
 
     The content string uses simple markdown conventions:
     - Lines starting with "• " or "- " become bullet paragraphs
-    - **text** becomes bold
-    - *text* becomes italic
+    - **text** becomes bold (used ONLY for sub-heading labels, not body text)
     - Blank lines become paragraph breaks
-    - Other lines become normal paragraphs
+    - Other lines become normal paragraphs that inherit the template style
+
+    Font face, size, and colour are inherited from the template paragraph
+    style — no run-level font overrides are applied.
 
     Returns True if the placeholder was found and replaced.
     """
@@ -139,10 +141,9 @@ def _replace_placeholder_with_rich_content(
                 _add_formatted_runs(target_para, stripped)
                 target_para.style = base_style
 
-            # Set consistent font size
-            for run in target_para.runs:
-                if run.font.size is None:
-                    run.font.size = Pt(11)
+            # Do NOT override run-level font properties.
+            # Runs inherit font face, size and colour from the paragraph
+            # style already applied above, preserving template formatting.
 
         break  # Only replace the first occurrence
 

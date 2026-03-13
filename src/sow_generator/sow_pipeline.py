@@ -13,6 +13,6 @@ sow_pipeline = SequentialAgent(
     ),
     sub_agents=[
         extractor_agent,
-        # sow_generation_agent,
+        sow_generation_agent,
     ],
 )

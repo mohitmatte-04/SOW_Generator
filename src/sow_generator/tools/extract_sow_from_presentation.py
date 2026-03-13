@@ -32,24 +32,48 @@ from ..utils.pptx_converter import (
 logger = logging.getLogger(__name__)
 
 _EXTRACTION_SYSTEM_PROMPT = """\
-You are a document analysis expert. You receive a proposal presentation and \
-must extract information into a structured SOW (Statement of Work) template.
+You are a strict document extraction engine. You receive a proposal presentation \
+and must extract ONLY the information explicitly present in the source document \
+into the structured SOW template below.
 
-CRITICAL RULES:
-1. Extract ONLY information explicitly present in the proposal document.
-2. DO NOT add, infer, fabricate, or embellish ANY information.
-3. Copy relevant text as-is from the source — do not rephrase or expand.
-4. Each key in the template has a DESCRIPTION of what to look for. \
-Replace the description with the ACTUAL content found in the proposal.
-5. If a section has no matching content in the proposal, set its value to "NA".
-6. Match proposal headings/titles to the closest SOW template section by \
-semantic meaning. Map content under each proposal heading into the \
-corresponding template key.
-7. If a proposal heading covers multiple template sections, split the content.
-8. If multiple proposal headings map to one template section, combine them.
-9. Filter out irrelevant content (logos, decorative text, page numbers).
-10. Return ONLY valid JSON matching the template structure — no markdown \
-fences, no commentary.
+CRITICAL RULES — FOLLOW EXACTLY:
+
+1. ZERO HALLUCINATION: Extract ONLY information that is explicitly and literally \
+present in the proposal document. DO NOT add, infer, fabricate, generate, or \
+embellish ANY information whatsoever.
+
+2. EXACT TEXT ONLY: Copy relevant text verbatim from the source document. \
+Do NOT rephrase, expand, paraphrase, or rewrite any content.
+
+3. STRICT SECTION ISOLATION: Each SOW template section must contain ONLY \
+content found under the matching heading/section in the proposal. \
+DO NOT copy or move content from one section into another section. \
+If you cannot find content that belongs to a section, set it to "NA". \
+NEVER populate a section with content that belongs to a different section.
+
+4. NA FOR MISSING CONTENT: If a section has no matching content in the \
+proposal document, set its value to "NA". Do NOT populate it with content \
+from other sections as a substitute.
+
+5. SEMANTIC HEADING MATCH: Match proposal headings/titles to the closest SOW \
+template section by semantic meaning only. Map content under each proposal \
+heading into the corresponding template key.
+
+6. SPLIT WHEN NEEDED: If a proposal heading covers multiple template sections, \
+split the content appropriately between them.
+
+7. COMBINE WHEN NEEDED: If multiple proposal headings map to one template \
+section, combine their content into that one section.
+
+8. FILTER NOISE: Ignore irrelevant content such as logos, decorative text, \
+page numbers, slide titles without body content, and navigation elements.
+
+9. JSON OUTPUT ONLY: Return ONLY valid JSON matching the template structure \
+exactly — no markdown fences, no commentary, no explanation text.
+
+10. VERIFY BEFORE OUTPUT: Before finalising your response, check each section \
+and confirm its content was found in the proposal under that heading. If in \
+doubt, set the value to "NA".
 
 SOW TEMPLATE (replace descriptions with extracted content):
 """
@@ -218,8 +242,10 @@ async def extract_sow_from_presentation(gcs_uri: str) -> dict[str, Any]:
                     ),
                 ],
                 config=genai_types.GenerateContentConfig(
-                    temperature=0.1,
-                    top_p=0.9,
+                    temperature=0.0,  # Fully deterministic
+                    top_p=1.0,
+                    top_k=1,
+                    max_output_tokens=8192,  # Large enough for full JSON schema output
                     seed=42,
                 ),
             )
@@ -243,8 +269,10 @@ async def extract_sow_from_presentation(gcs_uri: str) -> dict[str, Any]:
                     ),
                 ],
                 config=genai_types.GenerateContentConfig(
-                    temperature=0.1,
-                    top_p=0.9,
+                    temperature=0.1,  # Fully deterministic
+                    top_p=1.0,
+                    top_k=1,
+                    max_output_tokens=8192,
                     seed=42,
                 ),
             )

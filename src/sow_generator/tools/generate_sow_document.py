@@ -548,17 +548,27 @@ async def generate_sow_document(
                 if para_id not in processed_ids:
                     processed_ids.add(para_id)
 
+                    # Check if this paragraph is the document title - preserve its fonts
+                    para_is_title = False
+                    if hasattr(para, 'style') and para.style and hasattr(para.style, 'name'):
+                        # Only preserve fonts for the main Title style
+                        if para.style.name == 'Title':
+                            para_is_title = True
+                    
+                    # Determine whether to use custom fonts for this paragraph
+                    use_fonts_for_para = use_custom_fonts and not para_is_title
+
                     for key, value in placeholders.items():
                         parsed_value = parse_value(value)
 
                         if isinstance(parsed_value, list) and len(parsed_value) > 0:
                             # Handle list values
-                            new_paras = replace_text_with_list(para, key, parsed_value, parent_element, use_custom_fonts)
+                            new_paras = replace_text_with_list(para, key, parsed_value, parent_element, use_fonts_for_para)
                             for p in new_paras:
                                 processed_ids.add(id(p))
                         else:
                             # Handle simple string replacement
-                            replace_text_simple(para, key, str(parsed_value), use_custom_fonts)
+                            replace_text_simple(para, key, str(parsed_value), use_fonts_for_para)
 
                 i += 1
 

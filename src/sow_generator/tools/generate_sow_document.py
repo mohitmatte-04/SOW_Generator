@@ -257,7 +257,7 @@ async def generate_sow_document(
 
             return parts
 
-        def replace_text_simple(paragraph, key, value):
+        def replace_text_simple(paragraph, key, value, use_custom_fonts=True):
             """Text replacement with rich text formatting support."""
             if key not in paragraph.text:
                 return False
@@ -302,13 +302,18 @@ async def generate_sow_document(
 
                 run = paragraph.add_run(text)
 
-                # Apply custom fonts if provided, otherwise use template fonts
+                # Apply fonts: use custom fonts only if use_custom_fonts=True and fonts are provided
                 if base_run:
-                    run.font.name = font_name if font_name else base_run.font.name
-                    if font_size:
+                    if use_custom_fonts and font_name:
+                        run.font.name = font_name
+                    else:
+                        run.font.name = base_run.font.name
+                    
+                    if use_custom_fonts and font_size:
                         run.font.size = Pt(font_size)
                     else:
                         run.font.size = base_run.font.size
+                    
                     if base_run.font.color.rgb:
                         run.font.color.rgb = base_run.font.color.rgb
 
@@ -346,7 +351,7 @@ async def generate_sow_document(
             return True
 
 
-        def insert_paragraph_after(reference_para, value, parent_element, prefix="", suffix=""):
+        def insert_paragraph_after(reference_para, value, parent_element, prefix="", suffix="", use_custom_fonts=True):
             """Insert a new paragraph after reference, copying its formatting and supporting rich text."""
             # Create new paragraph (empty for now)
             new_para = parent_element.add_paragraph()
@@ -431,13 +436,18 @@ async def generate_sow_document(
 
                 run = new_para.add_run(text)
 
-                # Apply custom fonts if provided, otherwise use template fonts
+                # Apply fonts: use custom fonts only if use_custom_fonts=True and fonts are provided
                 if base_run:
-                    run.font.name = font_name if font_name else base_run.font.name
-                    if font_size:
+                    if use_custom_fonts and font_name:
+                        run.font.name = font_name
+                    else:
+                        run.font.name = base_run.font.name
+                    
+                    if use_custom_fonts and font_size:
                         run.font.size = Pt(font_size)
                     else:
                         run.font.size = base_run.font.size
+                    
                     if base_run.font.color.rgb:
                         run.font.color.rgb = base_run.font.color.rgb
 
@@ -478,7 +488,7 @@ async def generate_sow_document(
 
             return new_para
 
-        def replace_text_with_list(paragraph, key, items, parent_element):
+        def replace_text_with_list(paragraph, key, items, parent_element, use_custom_fonts=True):
             """Replace placeholder with multiple bullet points."""
             if key not in paragraph.text:
                 return []
@@ -492,7 +502,7 @@ async def generate_sow_document(
             for i, item in enumerate(items):
                 if i == 0:
                     # Update the original paragraph
-                    replace_text_simple(paragraph, key, item.strip())
+                    replace_text_simple(paragraph, key, item.strip(), use_custom_fonts)
                     
                     # Ensure the first item has bullets too
                     para_pPr = paragraph._element.get_or_add_pPr()
@@ -521,12 +531,12 @@ async def generate_sow_document(
                     new_paras.append(paragraph)
                 else:
                     # Insert new paragraph with separate prefix/suffix handling
-                    new_para = insert_paragraph_after(new_paras[-1], str(item).strip(), parent_element, prefix, suffix)
+                    new_para = insert_paragraph_after(new_paras[-1], str(item).strip(), parent_element, prefix, suffix, use_custom_fonts)
                     new_paras.append(new_para)
 
             return new_paras
 
-        def replace_placeholders_in_paragraphs(paragraphs, parent_element):
+        def replace_placeholders_in_paragraphs(paragraphs, parent_element, use_custom_fonts=True):
             """Replace all placeholders in paragraphs."""
             processed_ids = set()
             i = 0
@@ -543,12 +553,12 @@ async def generate_sow_document(
 
                         if isinstance(parsed_value, list) and len(parsed_value) > 0:
                             # Handle list values
-                            new_paras = replace_text_with_list(para, key, parsed_value, parent_element)
+                            new_paras = replace_text_with_list(para, key, parsed_value, parent_element, use_custom_fonts)
                             for p in new_paras:
                                 processed_ids.add(id(p))
                         else:
                             # Handle simple string replacement
-                            replace_text_simple(para, key, str(parsed_value))
+                            replace_text_simple(para, key, str(parsed_value), use_custom_fonts)
 
                 i += 1
 
@@ -560,6 +570,64 @@ async def generate_sow_document(
             for row in table.rows:
                 for cell in row.cells:
                     replace_placeholders_in_paragraphs(cell.paragraphs, cell)
+
+        # Replace in headers and footers
+        for section in document.sections:
+            # Replace in header (default/primary header)
+            header = section.header
+            replace_placeholders_in_paragraphs(header.paragraphs, header, use_custom_fonts=False)
+
+            # Replace in header tables
+            for table in header.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        replace_placeholders_in_paragraphs(cell.paragraphs, cell, use_custom_fonts=False)
+
+            # Replace in footer (default/primary footer)
+            footer = section.footer
+            replace_placeholders_in_paragraphs(footer.paragraphs, footer, use_custom_fonts=False)
+
+            # Replace in footer tables
+            for table in footer.tables:
+                for row in table.rows:
+                    for cell in row.cells:
+                        replace_placeholders_in_paragraphs(cell.paragraphs, cell, use_custom_fonts=False)
+
+            # Replace in first page header (if different)
+            if section.first_page_header:
+                first_header = section.first_page_header
+                replace_placeholders_in_paragraphs(first_header.paragraphs, first_header, use_custom_fonts=False)
+                for table in first_header.tables:
+                    for row in table.rows:
+                        for cell in row.cells:
+                            replace_placeholders_in_paragraphs(cell.paragraphs, cell, use_custom_fonts=False)
+
+            # Replace in first page footer (if different)
+            if section.first_page_footer:
+                first_footer = section.first_page_footer
+                replace_placeholders_in_paragraphs(first_footer.paragraphs, first_footer, use_custom_fonts=False)
+                for table in first_footer.tables:
+                    for row in table.rows:
+                        for cell in row.cells:
+                            replace_placeholders_in_paragraphs(cell.paragraphs, cell, use_custom_fonts=False)
+
+            # Replace in even page header (if different)
+            if section.even_page_header:
+                even_header = section.even_page_header
+                replace_placeholders_in_paragraphs(even_header.paragraphs, even_header, use_custom_fonts=False)
+                for table in even_header.tables:
+                    for row in table.rows:
+                        for cell in row.cells:
+                            replace_placeholders_in_paragraphs(cell.paragraphs, cell, use_custom_fonts=False)
+
+            # Replace in even page footer (if different)
+            if section.even_page_footer:
+                even_footer = section.even_page_footer
+                replace_placeholders_in_paragraphs(even_footer.paragraphs, even_footer, use_custom_fonts=False)
+                for table in even_footer.tables:
+                    for row in table.rows:
+                        for cell in row.cells:
+                            replace_placeholders_in_paragraphs(cell.paragraphs, cell, use_custom_fonts=False)
 
         # -------------------------
         # 4. Save modified doc
@@ -630,6 +698,7 @@ async def main():
         # Simple text replacements
         "<<CUSTOMER_NAME>>": "Acme Corporation",
         "<<CUSTOMER_SHORT_NAME>>": "Acme",
+        "<<CUSTOMER_NAME_BOLD>>": "**Acme**",
         "<<TITLE>>": "Cloud Migration Initiative",
         "<<PROVISION_DATE>>": "13 March 2026",
 

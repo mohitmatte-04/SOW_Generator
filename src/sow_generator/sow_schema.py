@@ -10,150 +10,56 @@ import copy
 from typing import Any
 
 SOW_JSON_SCHEMA: dict[str, Any] = {
-    "statement_of_work_template": {
-        "introductory_provisions": (
-            "Standard legal provisions about the SOW relationship to the "
-            "Master Services Agreement, conflict resolution between "
-            "documents, and project start date agreements."
-        ),
-        "sections": [
-            {
-                "section_number": 1,
-                "title": "SOW Summary Table",
-                "details": (
-                    "Supplier and Client full legal names, points of "
-                    "contact (name, telephone, email), SOW author, bid "
-                    "architect, SOW term (start date, end date, duration), "
-                    "and project price."
-                ),
-            },
-            {
-                "section_number": 2,
-                "title": "Executive Summary",
-                "details": (
-                    "Business objective, goals, project overview, and "
-                    "background context describing why the engagement "
-                    "is needed."
-                ),
-            },
-            {
-                "section_number": 3,
-                "title": "Scope of Work",
-                "details": (
-                    "Detailed list of activities, tasks, and work items "
-                    "that are included in the engagement. Each activity "
-                    "should be listed as a separate item."
-                ),
-            },
-            {
-                "section_number": 4,
-                "title": "Out of Scope",
-                "details": (
-                    "Activities and work items that are explicitly NOT "
-                    "included in this engagement."
-                ),
-            },
-            {
-                "section_number": 5,
-                "title": "Customer Dependencies",
-                "details": (
-                    "Requirements and responsibilities that the customer "
-                    "must fulfill for successful project delivery, such as "
-                    "providing access, approvals, SMEs, sign-offs, and "
-                    "internal coordination."
-                ),
-            },
-            {
-                "section_number": 6,
-                "title": "Assumptions",
-                "sub_sections": [
-                    {
-                        "category": "General Assumptions",
-                        "details": (
-                            "Non-technical assumptions about customer "
-                            "responsibilities, timely access, data reliance, "
-                            "RAID management, steering committee response "
-                            "times, vendor support levels, and pricing "
-                            "scope constraints."
-                        ),
-                    },
-                    {
-                        "category": "Technical Assumptions",
-                        "details": (
-                            "Technical assumptions about software upgrades, "
-                            "existing application issues, test scripts, and "
-                            "technical environment requirements."
-                        ),
-                    },
-                ],
-            },
-            {
-                "section_number": 7,
-                "title": "Deliverables",
-                "details": (
-                    "Table or list of deliverables with their success "
-                    "criteria and format (slides, docs, spreadsheets, "
-                    "code, etc.)."
-                ),
-            },
-            {
-                "section_number": 8,
-                "title": "Change Control Management",
-                "details": (
-                    "Procedures for handling scope changes including change "
-                    "order requirements, review timelines, and reasons for "
-                    "initiation such as scope modifications or dependency "
-                    "delays."
-                ),
-            },
-            {
-                "section_number": 9,
-                "title": "Commercials and Timeline",
-                "details": (
-                    "Pricing model (fixed bid or T&M), work location "
-                    "(onshore/offshore), project offering with duration "
-                    "and price, invoicing schedule, exclusions (3rd party "
-                    "licenses, taxes), and travel expense policies."
-                ),
-            },
-            {
-                "section_number": 10,
-                "title": "SOW Sign-off",
-                "details": (
-                    "Termination rights, notice requirements, payment terms "
-                    "for fees earned to date, and signature blocks for "
-                    "both parties."
-                ),
-            },
-            {
-                "section_number": 11,
-                "title": "Appendices",
-                "sub_sections": [
-                    {
-                        "name": "Appendix A: In-scope Volumetrics",
-                        "details": (
-                            "Quantifiable measures and metrics for the "
-                            "project scope."
-                        ),
-                    },
-                    {
-                        "name": "Appendix B: RACI",
-                        "details": (
-                            "Responsibility matrix identifying roles for "
-                            "Client, Partner, and Provider."
-                        ),
-                    },
-                    {
-                        "name": "Appendix C: Accelerators Prerequisite",
-                        "details": (
-                            "Prerequisites for any accelerators or tools "
-                            "to be used in the engagement."
-                        ),
-                    },
-                ],
-            },
-        ],
+  "project_metadata": {
+    "title": "DESCRIPTION: The specific project or engagement name (e.g., 'Teradata to GCP Migration')",
+    "customer_name": "DESCRIPTION: Full legal name of the client organization",
+    "customer_short_name": "DESCRIPTION: Abbreviated customer name or acronym",
+    "provision_date": "DESCRIPTION: Date the SOW was generated (format: YYYY-MM-DD)",
+    "msa_date": "DESCRIPTION: Effective date of the Master Services Agreement"
+  },
+  "sow_content": {
+    "opportunity": "DESCRIPTION: Business problem, current situation, and project justification",
+    "solution_overview": "DESCRIPTION: High-level technical solution and approach summary",
+    "activities": "DESCRIPTION: Detailed list of tasks and work steps Onix will perform or simply scope of work for the project",
+    "deliverables": "DESCRIPTION: Tangible outputs (reports, code, diagrams, etc.)",
+    "out_of_scope": "DESCRIPTION: Tasks explicitly NOT included to prevent scope creep",
+    "limitations": "DESCRIPTION: Constraints or restrictions affecting service delivery",
+    "success_criteria": "DESCRIPTION: Benchmarks for project success",
+    "assumptions": {
+      "project_assumptions": "DESCRIPTION: Non-technical assumptions about customer responsibilities, timelines, access",
+      "technical_assumptions": "DESCRIPTION: Technical assumptions about software, environment, test scripts"
+    },
+    "customer_roles_responsibilities": {
+      "project_roles": "DESCRIPTION: Customer team members and their project roles",
+      "responsibilities": "DESCRIPTION: Customer obligations for successful delivery"
+    },
+    "project_governance": {
+      "location": "DESCRIPTION: Work location (onshore/offshore/hybrid)",
+      "raid_management": "DESCRIPTION: Risk, Action, Issue, Decision tracking process",
+      "change_control": "DESCRIPTION: Procedures for handling scope changes"
+    },
+    "project_closure": {
+      "knowledge_transfer": "DESCRIPTION: Knowledge transfer plan and documentation handover"
+    },
+    "contacts": {
+      "onix_escalation": "DESCRIPTION: Onix escalation contacts (name, role, email, phone)",
+      "customer_primary": "DESCRIPTION: Primary customer contacts (name, role, email, phone)"
+    },
+    "fees_expenses": {
+      "professional_services": "DESCRIPTION: Professional services pricing and breakdown",
+      "expenses": "DESCRIPTION: Expense policies and billable items",
+      "summary": "DESCRIPTION: Total fees and expense summary",
+      "timeline": "DESCRIPTION: Tentative project timeline and phases",
+      "payment_schedule": "DESCRIPTION: Milestone-based payment schedule",
+      "payment_terms": "DESCRIPTION: Payment terms and conditions"
+    },
+    "appendices": {
+      "prerequisites": "DESCRIPTION: Prerequisites for engagement (Appendix A)",
+      "engagement_model": "DESCRIPTION: Proposed engagement model details (Appendix B)",
+      "raci": "DESCRIPTION: High-level RACI matrix (Appendix C)",
+      "architecture": "DESCRIPTION: GCP reference architecture details (Appendix D)"
     }
+  }
 }
 
 

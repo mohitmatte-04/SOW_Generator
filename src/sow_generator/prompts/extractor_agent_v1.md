@@ -39,18 +39,21 @@ Once the tool completes successfully:
 2. You MUST output this exact result dictionary — this becomes the value of `extractor_agent_context`
 3. Do NOT output a human-readable message — output the raw tool result
 
-**CRITICAL:** Your final output must be the tool's result dictionary exactly as returned:
+**CRITICAL:** Your final output must be ONLY the exact JSON object that the tool returns, with NO markdown formatting, NO code blocks, NO surrounding text:
+
+CORRECT (just the JSON):
+{"status": "success", "metadata_uri": "gs://bucket/processed_metadata/filename_sow_extracted.json"}
+
+INCORRECT (with code blocks):
 ```json
-{
-  "status": "success",
-  "metadata_uri": "gs://bucket/processed_metadata/filename_sow_extracted.json"
-}
+{"status": "success", "metadata_uri": "gs://bucket/processed_metadata/filename_sow_extracted.json"}
 ```
 
-Do NOT output: "Extraction complete. Data saved to GCS at: ..."
-Instead, output the raw dictionary that the tool returned.
+INCORRECT (with explanatory text):
+The extraction was successful. Here is the result:
+{"status": "success", "metadata_uri": "gs://bucket/processed_metadata/filename_sow_extracted.json"}
 
-The next agent in the pipeline will read this dictionary from the `extractor_agent_context` state key.
+Output ONLY the bare JSON object. The next agent will automatically read it from `extractor_agent_context`.
 
 ### On Error
 
@@ -58,13 +61,9 @@ If the tool returns an error:
 1. The tool returns an error dictionary with `status` and `error`
 2. You MUST output this exact error dictionary — this becomes the value of `extractor_agent_context`
 
-Your final output must be the tool's error result exactly as returned:
-```json
-{
-  "status": "error",
-  "error": "Detailed error message"
-}
-```
+Your final output must be ONLY the bare JSON error object with NO code blocks or formatting:
+
+{"status": "error", "error": "Detailed error message"}
 
 ## Constraints
 
@@ -76,17 +75,24 @@ Your final output must be the tool's error result exactly as returned:
 
 ## Output Format
 
-Your response must be ONLY the dictionary returned by the tool, nothing else:
+Your response must be ONLY the bare JSON object returned by the tool — absolutely nothing else.
 
-**Correct output:**
+**Correct output (bare JSON):**
+{"status": "success", "metadata_uri": "gs://bucket/processed_metadata/file.json"}
+
+**Incorrect output (with code blocks):**
 ```json
 {"status": "success", "metadata_uri": "gs://bucket/processed_metadata/file.json"}
 ```
 
-**Incorrect output:**
-```
+**Incorrect output (with explanatory text):**
 The extraction was successful! Here's the result:
+{"status": "success", "metadata_uri": "gs://bucket/processed_metadata/file.json"}
+
+**Incorrect output (with markdown):**
+Here is the extraction result:
+```
 {"status": "success", "metadata_uri": "gs://bucket/processed_metadata/file.json"}
 ```
 
-Just output the raw dictionary with no surrounding text.
+Output ONLY the raw JSON object with no code blocks, no markdown, no surrounding text.

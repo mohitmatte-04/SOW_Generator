@@ -263,13 +263,6 @@ assumptions = data.get("sow_content", {}).get("assumptions", {})
 project_assumptions = assumptions.get("project_assumptions", "NA")
 technical_assumptions = assumptions.get("technical_assumptions", "NA")
 
-# Combine appendices
-appendices = data.get("sow_content", {}).get("appendices", {})
-appendix_parts = []
-for key, value in appendices.items():
-    if value and value != "NA":
-        appendix_parts.append(f"**{key.replace('_', ' ').title()}**\n{value}")
-appendix_details = "\n\n".join(appendix_parts) if appendix_parts else "Not specified in source data."
 ```
 
 ### Handling Missing or "NA" Values

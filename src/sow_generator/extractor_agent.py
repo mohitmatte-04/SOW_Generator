@@ -14,7 +14,7 @@ from .config import PRODUCTION_CONFIG, REASONING_MODEL
 from .tools.extract_sow_from_presentation import extract_sow_from_presentation
 
 # Load prompt
-PROMPT_FILE = Path(__file__).parent / "prompts" / "extractor_agent_v1.txt"
+PROMPT_FILE = Path(__file__).parent / "prompts" / "extractor_agent_v1.md"
 with PROMPT_FILE.open(encoding="utf-8") as f:
     PROMPT = f.read()
 

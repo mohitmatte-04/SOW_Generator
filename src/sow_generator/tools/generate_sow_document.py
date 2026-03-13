@@ -181,6 +181,8 @@ async def generate_sow_document(
         # -------------------------
 
         document = Document(template_stream)
+        for style in document.styles:
+            print(f"style: {style.name}")
 
         # -------------------------
         # 3. Replace placeholders
@@ -364,22 +366,47 @@ async def generate_sow_document(
             pf_dst.space_after = pf_src.space_after
             pf_dst.line_spacing = pf_src.line_spacing
 
-            # Copy bullet/numbering properties (critical for lists)
+            # Copy or apply bullet/numbering properties (critical for lists)
             # Access the underlying XML element to copy numbering properties
             ref_pPr = reference_para._element.get_or_add_pPr()
             new_pPr = new_para._element.get_or_add_pPr()
 
-            # Copy numPr (numbering properties) if it exists
+            # Check if reference paragraph has numbering
             ref_numPr = ref_pPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr')
+            
             if ref_numPr is not None:
-                # Remove any existing numPr in the new paragraph
+                # Copy existing numbering properties
                 existing_numPr = new_pPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr')
                 if existing_numPr is not None:
                     new_pPr.remove(existing_numPr)
-
-                # Import and add a copy of the numbering properties
                 new_numPr = copy.deepcopy(ref_numPr)
                 new_pPr.append(new_numPr)
+            else:
+                # No bullets in template, apply default bullet style
+                # Try to use 'List Bullet' style if available
+                try:
+                    new_para.style = 'List Bullet'
+                except KeyError:
+                    # If 'List Bullet' style doesn't exist, create bullet using numbering
+                    from docx.oxml import parse_xml
+                    from docx.oxml.ns import nsdecls
+                    
+                    # Create numbering properties for a bullet list
+                    numPr_xml = f'''
+                    <w:numPr {nsdecls('w')}>
+                        <w:ilvl w:val="0"/>
+                        <w:numId w:val="1"/>
+                    </w:numPr>
+                    '''
+                    numPr = parse_xml(numPr_xml)
+                    
+                    # Remove any existing numPr
+                    existing_numPr = new_pPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr')
+                    if existing_numPr is not None:
+                        new_pPr.remove(existing_numPr)
+                    
+                    # Add the bullet numbering
+                    new_pPr.append(numPr)
 
             # Get base run for formatting
             base_run = reference_para.runs[0] if reference_para.runs else None
@@ -465,7 +492,32 @@ async def generate_sow_document(
             for i, item in enumerate(items):
                 if i == 0:
                     # Update the original paragraph
-                    replace_text_simple(paragraph, key, str(item).strip())
+                    replace_text_simple(paragraph, key, item.strip())
+                    
+                    # Ensure the first item has bullets too
+                    para_pPr = paragraph._element.get_or_add_pPr()
+                    para_numPr = para_pPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr')
+                    
+                    if para_numPr is None:
+                        # No bullets, apply them
+                        try:
+                            paragraph.style = 'List Bullet'
+                        except KeyError:
+                            # Create bullet using numbering
+                            from docx.oxml import parse_xml
+                            from docx.oxml.ns import nsdecls
+                            
+                            numPr_xml = f'''
+                            <w:numPr {nsdecls('w')}>
+                                <w:ilvl w:val="0"/>
+                                <w:numId w:val="1"/>
+                            </w:numPr>
+                            '''
+                            numPr = parse_xml(numPr_xml)
+                            existing = para_pPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr')
+                            if existing is not None:
+                                para_pPr.remove(existing)
+                            para_pPr.append(numPr)
                     new_paras.append(paragraph)
                 else:
                     # Insert new paragraph with separate prefix/suffix handling
@@ -552,3 +604,139 @@ async def generate_sow_document(
             "status": "error",
             "error": str(e)
         }
+
+
+# -------------------------
+# Main test function
+# -------------------------
+
+async def main():
+    """
+    Test function to demonstrate usage of generate_sow_document.
+
+    Before running:
+    1. Set up a GCS bucket with a DOCX template containing placeholders
+    2. Update the GCS URIs below with your actual bucket/paths
+    3. Ensure you have GCS credentials configured
+    """
+
+    # Configure your GCS paths
+    TEMPLATE_GCS_URI = "gs://agent_engine_depoly/sow-generator/sow-template/SOW Template.docx"
+    OUTPUT_GCS_URI = "gs://agent_engine_depoly/sow-generator/generated-sows/test.docx"
+
+    # Sample placeholders matching your template
+    # Template should have placeholders like <<CLIENT_NAME>>, <<PROJECT_NAME>>, etc.
+    sample_placeholders = {
+        # Simple text replacements
+        "<<CUSTOMER_NAME>>": "Acme Corporation",
+        "<<CUSTOMER_SHORT_NAME>>": "Acme",
+        "<<TITLE>>": "Cloud Migration Initiative",
+        "<<PROVISION_DATE>>": "13 March 2026",
+
+        # Rich text examples
+        "<<OPPORTUNITY>>": "This project aims to **migrate** critical workloads to the cloud, enabling *greater scalability* and __improved performance__.",
+
+        "<<SOLUTION_OVERVIEW>>": "This is the solution overview.",
+
+        "<<ACTIVITIES>>": ["This is activity 1", "This is activity 2", "This is activity 3"],
+
+        # List replacements (will create bullet points)
+        "<<DELIVERABLES>>": [
+            "**Architecture Design Document** - Comprehensive cloud architecture blueprint",
+            "Implementation Plan - Detailed migration roadmap",
+            "Testing & Validation Report",
+            "*Training Materials* for IT staff",
+            "Post-Migration Support (90 days)"
+        ],
+        
+        "<<IN_SCOPE>>": "In Scope",
+
+        "<<IN_SCOPE_ACTIVITIES>>": [
+            "Migration of production databases to Cloud SQL",
+            "Implementation of Kubernetes clusters",
+            "Setup of CI/CD pipelines",
+            "Security hardening and compliance validation",
+            "Performance testing and optimization"
+        ],
+
+        "<<OUT_OF_SCOPE>>": [
+            "Legacy system decommissioning",
+            "Third-party software licensing",
+            "Hardware procurement",
+            "~~On-premises infrastructure maintenance~~"
+        ],
+        
+        "<<LIMITATIONS>>": "This is limitation",
+
+        "<<SUCCESS_CRITERIA>>": ["This is success criteria 1", "This is success criteria 2", "This is success criteria 3"],
+        
+
+        "<<MILESTONES>>": [
+            "**Phase 1**: Discovery & Assessment - Weeks 1-4",
+            "**Phase 2**: Architecture Design - Weeks 5-8",
+            "**Phase 3**: Implementation - Weeks 9-16",
+            "**Phase 4**: Testing & Validation - Weeks 17-20",
+            "**Phase 5**: Go-Live & Handover - Weeks 21-24"
+        ],
+
+        "<<ASSUMPTIONS>>": [
+            "Client will provide timely access to all systems",
+            "Necessary cloud credits are available",
+            "Key stakeholders are available for weekly reviews",
+            "Existing documentation is accurate and up-to-date"
+        ],
+
+        "<<RISKS>>": [
+            "**High**: Data migration complexity - *Mitigation: Phased approach with rollback plan*",
+            "**Medium**: Resource availability constraints",
+            "**Low**: Third-party API compatibility issues"
+        ]
+    }
+
+    print("=" * 70)
+    print("SOW Document Generator - Test Execution")
+    print("=" * 70)
+    print(f"\nTemplate: {TEMPLATE_GCS_URI}")
+    print(f"Output Location: {OUTPUT_GCS_URI}")
+    print(f"Number of placeholders: {len(sample_placeholders)}")
+    print("\nGenerating document...\n")
+
+    # Generate the document
+    result = await generate_sow_document(
+        template_gcs_uri=TEMPLATE_GCS_URI,
+        placeholders=sample_placeholders,
+        document_title="SOW_Acme_Cloud_Migration_2026",
+        output_gcs_uri=OUTPUT_GCS_URI,
+        font_name="Plus Jakarta Sans",  # Optional: override template font
+        font_size=10          # Optional: override template font size
+    )
+
+    # Display results
+    print("=" * 70)
+    print("Generation Result")
+    print("=" * 70)
+
+    if result["status"] == "success":
+        print("✅ SUCCESS!")
+        print(f"\nDocument Title: {result['data']['document_title']}")
+        print(f"GCS URI: {result['data']['gcs_uri']}")
+        print("\nYou can download the document using:")
+        print(f"  gsutil cp {result['data']['gcs_uri']} ./")
+    else:
+        print("❌ FAILED!")
+        print(f"Error: {result['error']}")
+
+    print("\n" + "=" * 70)
+
+
+if __name__ == "__main__":
+    import asyncio
+
+    # Set up logging
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+    # Run the async main function
+    asyncio.run(main())

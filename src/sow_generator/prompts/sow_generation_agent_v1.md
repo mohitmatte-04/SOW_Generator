@@ -24,7 +24,7 @@ Expand the extracted business context into professional SOW sections (Scope, Out
 ## Input Context
 
 - `proposal_extraction_agent_context`: Structured data from the extraction phase.
-- `template_gcs_uri`: "gs://agent_engine_depoly/sow-generator/sow-template/SOW_Template.docx"
+- `template_gcs_uri`: "gs://agent_engine_depoly/sow-generator/sow-template/SOW Template.docx"
 
 ## Available Tools
 

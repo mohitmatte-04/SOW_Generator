@@ -14,23 +14,23 @@ from pathlib import Path
 import uvicorn
 from fastapi import FastAPI
 from google.adk.cli.fast_api import get_fast_api_app
-
-from .utils import (
-    ServerEnv,
-    configure_otel_resource,
-    initialize_environment,
-    setup_opentelemetry,
-)
+from dotenv import load_dotenv
+# from .utils import (
+#     ServerEnv,
+#     configure_otel_resource,
+#     initialize_environment,
+#     setup_opentelemetry,
+# )
 
 # Load and validate environment configuration
-env = initialize_environment(ServerEnv)
-
+# env = initialize_environment(ServerEnv)
+load_dotenv()
 # Configure OpenTelemetry resource attributes environment variable
 # This must happen before ADK creates its TracerProvider
-configure_otel_resource(
-    agent_name=env.agent_name,
-    project_id=env.google_cloud_project,
-)
+# configure_otel_resource(
+#     agent_name="sow-generator",
+#     project_id="search-ahmed",
+# )
 
 # Use .resolve() to handle symlinks and ensure absolute path across environments
 AGENT_DIR = os.getenv("AGENT_DIR", str(Path(__file__).resolve().parent.parent))
@@ -38,12 +38,11 @@ AGENT_DIR = os.getenv("AGENT_DIR", str(Path(__file__).resolve().parent.parent))
 # ADK fastapi app will set up OTel using resource attributes from env vars
 app: FastAPI = get_fast_api_app(
     agents_dir=AGENT_DIR,
-    session_service_uri=env.agent_engine_uri,
-    artifact_service_uri=env.artifact_service_uri,
-    memory_service_uri=env.agent_engine_uri,
-    allow_origins=env.allow_origins_list,
-    web=env.serve_web_interface,
-    reload_agents=env.reload_agents,
+    # session_service_uri=env.agent_engine_uri,
+    # artifact_service_uri=env.artifact_service_uri,
+    # allow_origins=env.allow_origins_list,
+    web=True,
+    reload_agents=True,
 )
 
 
@@ -92,16 +91,16 @@ def main() -> None:
         OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT: OpenTelemetry capture
     """
     # Add our Cloud exporters and logging to ADK's TracerProvider
-    setup_opentelemetry(
-        project_id=env.google_cloud_project,
-        agent_name=env.agent_name,
-        log_level=env.log_level,
-    )
+    # setup_opentelemetry(
+    #     project_id=env.google_cloud_project,
+    #     agent_name=env.agent_name,
+    #     log_level=env.log_level,
+    # )
 
     uvicorn.run(
         app,
-        host=env.host,
-        port=env.port,
+        host="localhost",
+        port=8080,
     )
 
     return

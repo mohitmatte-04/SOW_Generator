@@ -29,11 +29,11 @@ SOW_OUTPUT_GCS_URI = os.getenv(
 
 # Production configuration: fully deterministic, no hallucination
 PRODUCTION_CONFIG = genai_types.GenerateContentConfig(
-    temperature=0.0,  # Fully deterministic — critical for extraction fidelity
+    # temperature=0.0,  # Fully deterministic — critical for extraction fidelity
     top_p=1.0,        # No nucleus sampling truncation at temp=0
     top_k=1,          # Always pick the single most likely token
     # max_output_tokens=2048,
-    seed=42,
+    # seed=42,  # Seed not supported by all models
 )
 
 # Creative configuration

@@ -5,6 +5,7 @@ extraction workflow.
 """
 
 import logging
+import json
 from pathlib import Path
 from typing import Any, Optional
 
@@ -13,6 +14,8 @@ from google.adk.tools.tool_context import ToolContext
 from google.adk.agents.llm_agent import LlmRequest, LlmResponse
 from google.adk.tools.base_tool import BaseTool
 from google.genai import types as genai_types
+
+from .tools.convert_slides_to_pdf import convert_slides_to_pdf
 
 # Configure logger with console and file handlers
 logger = logging.getLogger(__name__)
@@ -124,46 +127,53 @@ async def before_model_callback(
     try:
         # Get artifact info from session state
         pdf_artifact_filename = callback_context.state.get("pdf_artifact_filename")
-        if not pdf_artifact_filename:
-            logger.info("No PDF artifact found, skipping PDF attachment")
+        is_pdf_generated = callback_context.state.get("is_pdf_generated")
+        if not is_pdf_generated:
+            logger.info("PDF not generated, generating the PDF")
+            drive_url = json.loads(callback_context.state.get('presentation_source'))['drive_url']
+            logger.info(f"extracted drive url: {drive_url}")
+
+            # Call convert_slides_to_pdf and get the result dictionary
+            result = await convert_slides_to_pdf(drive_url)
+
+            if result.get("status") != "success":
+                logger.error(f"PDF conversion failed: {result.get('error')}")
+                return None
+
+            pdf_bytes = result.get("pdf_bytes")
+            if not pdf_bytes:
+                logger.error("No pdf_bytes in conversion result")
+                return None
+            
+            original_file_name = result.get("original_filename")
+            if not original_file_name:
+                logger.error("No original_filename in conversion result")
+                return None
+
+            callback_context.state["is_pdf_generated"] = True
+
+            pdf_part = genai_types.Part.from_bytes(
+                data=pdf_bytes, mime_type="application/pdf"
+            )
+
+            # Add PDF to the last user message in the request contents
+            if llm_request.contents:
+                # Find the last user message and add the PDF to it
+                for content in reversed(llm_request.contents):
+                    if content.role == "user":
+                        # Create a new parts list with existing parts + PDF
+                        existing_parts = list(content.parts) if content.parts else []
+                        content.parts = existing_parts + [pdf_part]
+                        logger.info("PDF artifact attached to llm input")
+                        return None
+            else:
+                logger.warning("Could not find user content to attach PDF artifact")
+            
             return None
-
-        pdf_artifact = await callback_context.load_artifact(filename=
-            pdf_artifact_filename
-        )
-
-        # Load the PDF artifact
-        logger.info("Loaded PDF artifact for model: %s", pdf_artifact_filename)
-        # pdf_artifact = await callback_context.load_artifact(filename=pdf_artifact_filename)
-
-        if not pdf_artifact or not pdf_artifact.inline_data:
-            logger.warning("PDF artifact '%s' not found or has no data", pdf_artifact_filename)
-            return None
-
-        logger.info("Successfully loaded PDF artifact '%s' (%d bytes)",
-                   pdf_artifact_filename, len(pdf_artifact.inline_data.data))
-        logger.info("MIME Type: %s", pdf_artifact.inline_data.mime_type)
-
-        # Add PDF to the last user message in the request contents
-        if llm_request.contents:
-            # Find the last user message and add the PDF to it
-            for content in reversed(llm_request.contents):
-                if content.role == "user":
-                    # Add PDF Part to the user's message parts
-                    if not content.parts:
-                        content.parts = []
-                    content.parts.append(pdf_artifact)
-                    logger.info("PDF artifact attached to model input")
-                    break
-        else:
-            logger.warning("Could not find user content to attach PDF artifact")
-
-        # Return None to proceed with the modified request
-        return None
 
     except Exception as exc:
         logger.error(
-            "Failed to attach PDF artifact to model input: %s",
+            "Failed to attach PDF artifact to llm input: %s",
             exc,
             exc_info=True,
         )

@@ -24,14 +24,14 @@ from .utils import (
 from .api_routes import router as api_router
 
 # Load and validate environment configuration
-env = initialize_environment(ServerEnv)
-
+# env = initialize_environment(ServerEnv)
+load_dotenv()
 # Configure OpenTelemetry resource attributes environment variable
 # This must happen before ADK creates its TracerProvider
-configure_otel_resource(
-    agent_name=env.agent_name,
-    project_id=env.google_cloud_project,
-)
+# configure_otel_resource(
+#     agent_name="sow-generator",
+#     project_id="search-ahmed",
+# )
 
 # Use .resolve() to handle symlinks and ensure absolute path across environments
 AGENT_DIR = os.getenv("AGENT_DIR", str(Path(__file__).resolve().parent.parent))
@@ -96,16 +96,16 @@ def main() -> None:
         OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT: OpenTelemetry capture
     """
     # Add our Cloud exporters and logging to ADK's TracerProvider
-    setup_opentelemetry(
-        project_id=env.google_cloud_project,
-        agent_name=env.agent_name,
-        log_level=env.log_level,
-    )
+    # setup_opentelemetry(
+    #     project_id=env.google_cloud_project,
+    #     agent_name=env.agent_name,
+    #     log_level=env.log_level,
+    # )
 
     uvicorn.run(
         app,
-        host=env.host,
-        port=env.port,
+        host="localhost",
+        port=8080,
     )
 
     return

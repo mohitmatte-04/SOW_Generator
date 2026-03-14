@@ -15,22 +15,10 @@ import uvicorn
 from fastapi import FastAPI
 from google.adk.cli.fast_api import get_fast_api_app
 from dotenv import load_dotenv
-# from .utils import (
-#     ServerEnv,
-#     configure_otel_resource,
-#     initialize_environment,
-#     setup_opentelemetry,
-# )
 
 # Load and validate environment configuration
 # env = initialize_environment(ServerEnv)
 load_dotenv()
-# Configure OpenTelemetry resource attributes environment variable
-# This must happen before ADK creates its TracerProvider
-# configure_otel_resource(
-#     agent_name="sow-generator",
-#     project_id="search-ahmed",
-# )
 
 # Use .resolve() to handle symlinks and ensure absolute path across environments
 AGENT_DIR = os.getenv("AGENT_DIR", str(Path(__file__).resolve().parent.parent))
@@ -40,7 +28,12 @@ app: FastAPI = get_fast_api_app(
     agents_dir=AGENT_DIR,
     # session_service_uri=env.agent_engine_uri,
     # artifact_service_uri=env.artifact_service_uri,
-    # allow_origins=env.allow_origins_list,
+    allow_origins=[
+    "http://localhost:3000",
+    "http://localhost:8080", 
+    "http://localhost",
+    "*"  # Allow all origins for development/testing
+    ],
     web=True,
     reload_agents=True,
 )
@@ -97,10 +90,13 @@ def main() -> None:
     #     log_level=env.log_level,
     # )
 
+    # Read port from environment (Cloud Run sets this dynamically)
+    port = int(os.getenv("PORT", "8080"))
+
     uvicorn.run(
         app,
-        host="localhost",
-        port=8080,
+        host="0.0.0.0",
+        port=port,
     )
 
     return

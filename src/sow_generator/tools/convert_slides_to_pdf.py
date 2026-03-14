@@ -124,17 +124,17 @@ async def convert_slides_to_pdf(drive_url: str) -> dict[str, Any]:
 
         # Step 2: Convert to PDF using Google Slides API
         try:
-            # Get credentials file path from environment or use default
-            credentials_file = os.getenv(
-                "GOOGLE_APPLICATION_CREDENTIALS",
-                str(
-                    Path(__file__).parent.parent
-                    / "search-ahmed-541d805510f2.json"
-                ),
-            )
+            # Get credentials from environment - can be file path or JSON string
+            credentials = os.getenv("sow-generator-sa")
+
+            if not credentials:
+                msg = "Missing credentials: 'sow-generator-sa' environment variable not set"
+                logger.error(msg)
+                return {"status": "error", "error": msg}
 
             logger.info("Initializing Google Slides converter")
-            converter = GoogleSlidesConverter(credentials_file)
+            # Pass credentials directly - GoogleSlidesConverter will detect if it's a file path or JSON string
+            converter = GoogleSlidesConverter(credentials)
 
             logger.info("Converting Google Drive file to PDF using Google Slides API")
             pdf_bytes, original_filename = converter.convert_drive_file_to_pdf(

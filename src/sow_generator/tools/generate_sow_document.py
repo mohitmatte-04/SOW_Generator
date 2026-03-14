@@ -9,7 +9,7 @@ import copy
 import re
 from typing import Any, Dict, List, Union, Tuple
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload
+from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload, MediaIoBaseUpload
 from google.cloud import storage
 import google.auth
 from google.auth.transport.requests import Request
@@ -125,12 +125,13 @@ async def generate_sow_document(
     placeholders: Dict[str, str],
     document_title: str,
     output_gcs_uri: str,
+    drive_folder_id: str | None = None,
     font_name: str | None = None,
     font_size: int | None = None
 ) -> Dict[str, Any]:
     """
     Generates a Statement of Work (SOW) by reading a DOCX template from GCS,
-    replacing placeholders, and writing the final document back to GCS.
+    replacing placeholders, and uploading to Google Drive.
 
     Placeholders in the template should use << >> format (e.g., <<PROJECT_NAME>>).
 
@@ -140,12 +141,13 @@ async def generate_sow_document(
                      Keys should include delimiters (e.g., {"<<NAME>>": "Acme Corp"}).
                      Values can be strings or lists (for multiple bullet points).
         document_title: Name of the generated document
-        output_gcs_uri: GCS URI where the final document should be saved
+        output_gcs_uri: GCS URI where the final document should be saved (for backup)
+        drive_folder_id: Google Drive folder ID where document should be uploaded
         font_name: Optional font name to override template font (e.g., 'Calibri', 'Arial')
         font_size: Optional font size in points to override template font size (e.g., 11, 12)
 
     Returns:
-        Status and GCS URI of generated document
+        Status, Google Drive URL, and GCS URI of generated document
 
     Example:
         placeholders = {
@@ -710,7 +712,52 @@ async def generate_sow_document(
         output_stream.seek(0)
 
         # -------------------------
-        # 5. Upload generated doc to GCS
+        # 5. Upload to Google Drive (if folder ID provided)
+        # -------------------------
+
+        drive_url = None
+        if drive_folder_id:
+            try:
+                # Authenticate with Google Drive
+                credentials, _ = google.auth.default(
+                    scopes=["https://www.googleapis.com/auth/drive.file"]
+                )
+                if credentials.expired and credentials.refresh_token:
+                    credentials.refresh(Request())
+
+                drive_service = build("drive", "v3", credentials=credentials)
+
+                # Reset stream position
+                output_stream.seek(0)
+
+                # Upload file to Google Drive
+                file_metadata = {
+                    "name": f"{document_title}.docx",
+                    "parents": [drive_folder_id],
+                    "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                }
+
+                media = MediaIoBaseUpload(
+                    output_stream,
+                    mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    resumable=True
+                )
+
+                uploaded_file = drive_service.files().create(
+                    body=file_metadata,
+                    media_body=media,
+                    fields="id, webViewLink"
+                ).execute()
+
+                drive_url = uploaded_file.get("webViewLink")
+                logger.info(f"Uploaded to Google Drive: {drive_url}")
+
+            except Exception as e:
+                logger.error(f"Failed to upload to Google Drive: {e}", exc_info=True)
+                # Continue even if Drive upload fails
+
+        # -------------------------
+        # 6. Upload to GCS (backup)
         # -------------------------
 
         output_bucket = output_gcs_uri.split("/")[2]
@@ -718,9 +765,12 @@ async def generate_sow_document(
 
         output_bucket_obj = storage_client.bucket(output_bucket)
 
-        final_blob_path = f"{output_path_prefix}/{document_title}.docx"
+        final_blob_path = f"{output_path_prefix}{document_title}.docx"
 
         output_blob = output_bucket_obj.blob(final_blob_path)
+
+        # Reset stream position for GCS upload
+        output_stream.seek(0)
 
         output_blob.upload_from_file(
             output_stream,
@@ -728,12 +778,14 @@ async def generate_sow_document(
         )
 
         final_gcs_uri = f"gs://{output_bucket}/{final_blob_path}"
+        logger.info(f"Uploaded to GCS: {final_gcs_uri}")
 
         return {
             "status": "success",
             "data": {
                 "document_title": document_title,
-                "gcs_uri": final_gcs_uri
+                "gcs_uri": final_gcs_uri,
+                "drive_url": drive_url
             }
         }
 

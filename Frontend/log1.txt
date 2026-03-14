@@ -1,0 +1,35 @@
+home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/auth/_default.py:114: UserWarning: Your application has authenticated using end user credentials from Google Cloud SDK without a quota project. You might receive a "quota exceeded" or "API not enabled" error. See the following page for troubleshooting: https://cloud.google.com/docs/authentication/adc-troubleshooting/user-creds. 
+  warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
+2026-03-14 18:09:25,994 - sow_generator.extractor_callbacks - INFO - PDF not generated, generating the PDF
+2026-03-14 18:09:25,995 - sow_generator.extractor_callbacks - INFO - extracted drive url: https://docs.google.com/presentation/d/1Ff2Px5HBvRc88COmZBfE9YDKsuvTTYmwTtoel0491Qg/edit?usp=sharing
+2026-03-14 18:09:25,995 - sow_generator.tools.convert_slides_to_pdf - INFO - Starting conversion for: https://docs.google.com/presentation/d/1Ff2Px5HBvRc88COmZBfE9YDKsuvTTYmwTtoel0491Qg/edit?usp=sharing
+2026-03-14 18:09:25,995 - sow_generator.tools.convert_slides_to_pdf - INFO - Extracted file ID: 1Ff2Px5HBvRc88COmZBfE9YDKsuvTTYmwTtoel0491Qg
+2026-03-14 18:09:25,995 - sow_generator.tools.convert_slides_to_pdf - INFO - Initializing Google Slides converter
+2026-03-14 18:09:26,048 - sow_generator.tools.convert_slides_to_pdf - INFO - Converting Google Drive file to PDF using Google Slides API
+2026-03-14 18:09:44,346 - sow_generator.tools.convert_slides_to_pdf - INFO - PDF conversion successful: 9397525 bytes
+2026-03-14 18:09:44,347 - sow_generator.extractor_callbacks - INFO - PDF artifact attached to llm input
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/auth/_default.py:114: UserWarning: Your application has authenticated using end user credentials from Google Cloud SDK without a quota project. You might receive a "quota exceeded" or "API not enabled" error. See the following page for troubleshooting: https://cloud.google.com/docs/authentication/adc-troubleshooting/user-creds. 
+  warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/auth/_default.py:114: UserWarning: Your application has authenticated using end user credentials from Google Cloud SDK without a quota project. You might receive a "quota exceeded" or "API not enabled" error. See the following page for troubleshooting: https://cloud.google.com/docs/authentication/adc-troubleshooting/user-creds. 
+  warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/auth/_default.py:114: UserWarning: Your application has authenticated using end user credentials from Google Cloud SDK without a quota project. You might receive a "quota exceeded" or "API not enabled" error. See the following page for troubleshooting: https://cloud.google.com/docs/authentication/adc-troubleshooting/user-creds. 
+  warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
+style: TableNormal
+style: normal
+style: Heading 1
+style: Heading 2
+style: Heading 3
+style: Heading 4
+style: Heading 5
+style: Heading 6
+style: Title
+style: Subtitle
+style: None
+style: None
+style: None
+style: None
+style: None
+style: None
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/auth/_default.py:114: UserWarning: Your application has authenticated using end user credentials from Google Cloud SDK without a quota project. You might receive a "quota exceeded" or "API not enabled" error. See the following page for troubleshooting: https://cloud.google.com/docs/authentication/adc-troubleshooting/user-creds. 
+  warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
+INFO:     127.0.0.1:40564 - "GET /debug/trace/session/9288bd52-78cf-4fe8-8b32-72df20867aa1 HTTP/1.1" 200 OK

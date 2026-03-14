@@ -1,0 +1,419 @@
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/auth/_default.py:114: UserWarning: Your application has authenticated using end user credentials from Google Cloud SDK without a quota project. You might receive a "quota exceeded" or "API not enabled" error. See the following page for troubleshooting: https://cloud.google.com/docs/authentication/adc-troubleshooting/user-creds. 
+  warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/cli/fast_api.py:192: UserWarning: [EXPERIMENTAL] InMemoryCredentialService: This feature is experimental and may change or be removed in future versions without notice. It may introduce breaking changes at any time.
+  credential_service = InMemoryCredentialService()
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/auth/credential_service/in_memory_credential_service.py:33: UserWarning: [EXPERIMENTAL] BaseCredentialService: This feature is experimental and may change or be removed in future versions without notice. It may introduce breaking changes at any time.
+  super().__init__()
+INFO:     Started server process [1922]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://localhost:8080 (Press CTRL+C to quit)
+INFO:     127.0.0.1:48954 - "OPTIONS /api/generate-sow HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48954 - "POST /api/generate-sow HTTP/1.1" 200 OK
+Session 682b29fd-9313-48cd-935f-8dacb33b1792: Error generating SOW - cannot import name 'create_simple_session' from 'google.adk.agents' (/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/agents/__init__.py)
+Traceback (most recent call last):
+  File "/home/mohitmatte/Sow-generator/SOW_Generator/src/sow_generator/api_routes.py", line 55, in process_sow_generation
+    from google.adk.agents import create_simple_session
+ImportError: cannot import name 'create_simple_session' from 'google.adk.agents' (/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/agents/__init__.py)
+INFO:     127.0.0.1:48954 - "OPTIONS /api/sow-progress/682b29fd-9313-48cd-935f-8dacb33b1792 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48954 - "GET /api/sow-progress/682b29fd-9313-48cd-935f-8dacb33b1792 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48954 - "POST /api/generate-sow HTTP/1.1" 200 OK
+Session 0018238a-d6ea-441c-a039-5542f998d522: Error generating SOW - cannot import name 'create_simple_session' from 'google.adk.agents' (/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/agents/__init__.py)
+Traceback (most recent call last):
+  File "/home/mohitmatte/Sow-generator/SOW_Generator/src/sow_generator/api_routes.py", line 55, in process_sow_generation
+    from google.adk.agents import create_simple_session
+ImportError: cannot import name 'create_simple_session' from 'google.adk.agents' (/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/agents/__init__.py)
+INFO:     127.0.0.1:48954 - "OPTIONS /api/sow-progress/0018238a-d6ea-441c-a039-5542f998d522 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48954 - "GET /api/sow-progress/0018238a-d6ea-441c-a039-5542f998d522 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48956 - "POST /api/generate-sow HTTP/1.1" 200 OK
+Session ec85034e-0845-41d7-8def-30f2ce4257f7: Error generating SOW - cannot import name 'create_simple_session' from 'google.adk.agents' (/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/agents/__init__.py)
+Traceback (most recent call last):
+  File "/home/mohitmatte/Sow-generator/SOW_Generator/src/sow_generator/api_routes.py", line 55, in process_sow_generation
+    from google.adk.agents import create_simple_session
+ImportError: cannot import name 'create_simple_session' from 'google.adk.agents' (/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/agents/__init__.py)
+INFO:     127.0.0.1:48956 - "OPTIONS /api/sow-progress/ec85034e-0845-41d7-8def-30f2ce4257f7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48956 - "GET /api/sow-progress/ec85034e-0845-41d7-8def-30f2ce4257f7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48956 - "POST /api/generate-sow HTTP/1.1" 200 OK
+Session 5126c950-4aba-4359-85bc-d846f2582759: Error generating SOW - cannot import name 'create_simple_session' from 'google.adk.agents' (/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/agents/__init__.py)
+Traceback (most recent call last):
+  File "/home/mohitmatte/Sow-generator/SOW_Generator/src/sow_generator/api_routes.py", line 55, in process_sow_generation
+    from google.adk.agents import create_simple_session
+ImportError: cannot import name 'create_simple_session' from 'google.adk.agents' (/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/agents/__init__.py)
+INFO:     127.0.0.1:48956 - "OPTIONS /api/sow-progress/5126c950-4aba-4359-85bc-d846f2582759 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48956 - "GET /api/sow-progress/5126c950-4aba-4359-85bc-d846f2582759 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48956 - "POST /api/generate-sow HTTP/1.1" 200 OK
+Session 7898880f-719c-4b7b-abaa-928744d64246: Error generating SOW - cannot import name 'create_simple_session' from 'google.adk.agents' (/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/agents/__init__.py)
+Traceback (most recent call last):
+  File "/home/mohitmatte/Sow-generator/SOW_Generator/src/sow_generator/api_routes.py", line 55, in process_sow_generation
+    from google.adk.agents import create_simple_session
+ImportError: cannot import name 'create_simple_session' from 'google.adk.agents' (/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/agents/__init__.py)
+INFO:     127.0.0.1:48956 - "OPTIONS /api/sow-progress/7898880f-719c-4b7b-abaa-928744d64246 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48956 - "GET /api/sow-progress/7898880f-719c-4b7b-abaa-928744d64246 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48956 - "POST /api/generate-sow HTTP/1.1" 200 OK
+Session 8f25c88f-ab39-4742-bfbd-d8354cfb0ffd: Error generating SOW - cannot import name 'create_simple_session' from 'google.adk.agents' (/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/agents/__init__.py)
+Traceback (most recent call last):
+  File "/home/mohitmatte/Sow-generator/SOW_Generator/src/sow_generator/api_routes.py", line 55, in process_sow_generation
+    from google.adk.agents import create_simple_session
+ImportError: cannot import name 'create_simple_session' from 'google.adk.agents' (/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/agents/__init__.py)
+INFO:     127.0.0.1:48956 - "OPTIONS /api/sow-progress/8f25c88f-ab39-4742-bfbd-d8354cfb0ffd HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48956 - "GET /api/sow-progress/8f25c88f-ab39-4742-bfbd-d8354cfb0ffd HTTP/1.1" 200 OK
+^CINFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1922]
+^Cmohitmatte@DM2094:~/Sow-generator/SOW_Generator$ uv run python -m sow_generator.server
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/auth/_default.py:114: UserWarning: Your application has authenticated using end user credentials from Google Cloud SDK without a quota project. You might receive a "quota exceeded" or "API not enabled" error. See the following page for troubleshooting: https://cloud.google.com/docs/authentication/adc-troubleshooting/user-creds. 
+  warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/cli/fast_api.py:192: UserWarning: [EXPERIMENTAL] InMemoryCredentialService: This feature is experimental and may change or be removed in future versions without notice. It may introduce breaking changes at any time.
+  credential_service = InMemoryCredentialService()
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/adk/auth/credential_service/in_memory_credential_service.py:33: UserWarning: [EXPERIMENTAL] BaseCredentialService: This feature is experimental and may change or be removed in future versions without notice. It may introduce breaking changes at any time.
+  super().__init__()
+INFO:     Started server process [3725]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://localhost:8080 (Press CTRL+C to quit)
+INFO:     127.0.0.1:56764 - "POST /api/generate-sow HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "OPTIONS /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/auth/_default.py:114: UserWarning: Your application has authenticated using end user credentials from Google Cloud SDK without a quota project. You might receive a "quota exceeded" or "API not enabled" error. See the following page for troubleshooting: https://cloud.google.com/docs/authentication/adc-troubleshooting/user-creds. 
+  warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+2026-03-14 18:01:42,287 - sow_generator.extractor_callbacks - INFO - PDF not generated, generating the PDF
+2026-03-14 18:01:42,288 - sow_generator.extractor_callbacks - INFO - extracted drive url: https://docs.google.com/presentation/d/1Ff2Px5HBvRc88COmZBfE9YDKsuvTTYmwTtoel0491Qg/edit?usp=drive_link
+2026-03-14 18:01:42,288 - sow_generator.tools.convert_slides_to_pdf - INFO - Starting conversion for: https://docs.google.com/presentation/d/1Ff2Px5HBvRc88COmZBfE9YDKsuvTTYmwTtoel0491Qg/edit?usp=drive_link
+2026-03-14 18:01:42,290 - sow_generator.tools.convert_slides_to_pdf - INFO - Extracted file ID: 1Ff2Px5HBvRc88COmZBfE9YDKsuvTTYmwTtoel0491Qg
+2026-03-14 18:01:42,290 - sow_generator.tools.convert_slides_to_pdf - INFO - Initializing Google Slides converter
+2026-03-14 18:01:42,358 - sow_generator.tools.convert_slides_to_pdf - INFO - Converting Google Drive file to PDF using Google Slides API
+2026-03-14 18:01:59,778 - sow_generator.tools.convert_slides_to_pdf - INFO - PDF conversion successful: 9397525 bytes
+2026-03-14 18:01:59,778 - sow_generator.extractor_callbacks - INFO - PDF artifact attached to llm input
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/auth/_default.py:114: UserWarning: Your application has authenticated using end user credentials from Google Cloud SDK without a quota project. You might receive a "quota exceeded" or "API not enabled" error. See the following page for troubleshooting: https://cloud.google.com/docs/authentication/adc-troubleshooting/user-creds. 
+  warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56764 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/auth/_default.py:114: UserWarning: Your application has authenticated using end user credentials from Google Cloud SDK without a quota project. You might receive a "quota exceeded" or "API not enabled" error. See the following page for troubleshooting: https://cloud.google.com/docs/authentication/adc-troubleshooting/user-creds. 
+  warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+Warning: there are non-text parts in the response: ['function_call'], returning concatenated text result from text parts. Check the full candidates.content.parts accessor to get the full model response.
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/auth/_default.py:114: UserWarning: Your application has authenticated using end user credentials from Google Cloud SDK without a quota project. You might receive a "quota exceeded" or "API not enabled" error. See the following page for troubleshooting: https://cloud.google.com/docs/authentication/adc-troubleshooting/user-creds. 
+  warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
+style: TableNormal
+style: normal
+style: Heading 1
+style: Heading 2
+style: Heading 3
+style: Heading 4
+style: Heading 5
+style: Heading 6
+style: Title
+style: Subtitle
+style: None
+style: None
+style: None
+style: None
+style: None
+style: None
+INFO:     127.0.0.1:56768 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+/home/mohitmatte/Sow-generator/SOW_Generator/.venv/lib/python3.13/site-packages/google/auth/_default.py:114: UserWarning: Your application has authenticated using end user credentials from Google Cloud SDK without a quota project. You might receive a "quota exceeded" or "API not enabled" error. See the following page for troubleshooting: https://cloud.google.com/docs/authentication/adc-troubleshooting/user-creds. 
+  warnings.warn(_CLOUD_SDK_CREDENTIALS_WARNING)
+INFO:     127.0.0.1:32932 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32946 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32960 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32964 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32932 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32960 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32946 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32946 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32946 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32946 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32946 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32946 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32946 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32946 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32946 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32946 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK
+Could not extract GCS URI from agent response, using configured location: gs://sow-generator-testing-phase/sow/Generated_SOW.docx
+INFO:     127.0.0.1:32952 - "GET /api/sow-progress/cf4fc41a-6d21-4c38-a351-85e5a7589420 HTTP/1.1" 200 OK

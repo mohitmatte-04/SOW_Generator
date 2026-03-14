@@ -1,0 +1,15 @@
+2026-03-14 18:01:42,287 - sow_generator.extractor_callbacks - INFO - PDF not generated, generating the PDF
+2026-03-14 18:01:42,288 - sow_generator.extractor_callbacks - INFO - extracted drive url: https://docs.google.com/presentation/d/1Ff2Px5HBvRc88COmZBfE9YDKsuvTTYmwTtoel0491Qg/edit?usp=drive_link
+2026-03-14 18:01:59,778 - sow_generator.extractor_callbacks - INFO - PDF artifact attached to llm input
+2026-03-14 18:09:25,994 - sow_generator.extractor_callbacks - INFO - PDF not generated, generating the PDF
+2026-03-14 18:09:25,995 - sow_generator.extractor_callbacks - INFO - extracted drive url: https://docs.google.com/presentation/d/1Ff2Px5HBvRc88COmZBfE9YDKsuvTTYmwTtoel0491Qg/edit?usp=sharing
+2026-03-14 18:09:44,347 - sow_generator.extractor_callbacks - INFO - PDF artifact attached to llm input
+2026-03-14 18:24:26,487 - sow_generator.extractor_callbacks - INFO - PDF not generated, generating the PDF
+2026-03-14 18:24:26,489 - sow_generator.extractor_callbacks - INFO - extracted drive url: https://docs.google.com/presentation/d/1Ff2Px5HBvRc88COmZBfE9YDKsuvTTYmwTtoel0491Qg/edit?usp=sharing
+2026-03-14 18:24:46,254 - sow_generator.extractor_callbacks - INFO - PDF artifact attached to llm input
+2026-03-14 18:55:14,251 - sow_generator.extractor_callbacks - INFO - PDF not generated, generating the PDF
+2026-03-14 18:55:14,252 - sow_generator.extractor_callbacks - INFO - extracted drive url: https://docs.google.com/presentation/d/1Ff2Px5HBvRc88COmZBfE9YDKsuvTTYmwTtoel0491Qg/edit?usp=sharing
+2026-03-14 18:55:33,227 - sow_generator.extractor_callbacks - INFO - PDF artifact attached to llm input
+2026-03-14 19:04:41,635 - sow_generator.extractor_callbacks - INFO - PDF not generated, generating the PDF
+2026-03-14 19:04:41,636 - sow_generator.extractor_callbacks - INFO - extracted drive url: https://docs.google.com/presentation/d/1Ff2Px5HBvRc88COmZBfE9YDKsuvTTYmwTtoel0491Qg/edit?usp=sharing
+2026-03-14 19:05:00,911 - sow_generator.extractor_callbacks - INFO - PDF artifact attached to llm input

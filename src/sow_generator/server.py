@@ -14,6 +14,7 @@ from pathlib import Path
 import uvicorn
 from fastapi import FastAPI
 from google.adk.cli.fast_api import get_fast_api_app
+from dotenv import load_dotenv
 
 from .utils import (
     ServerEnv,
@@ -24,8 +25,8 @@ from .utils import (
 from .api_routes import router as api_router
 
 # Load and validate environment configuration
-# env = initialize_environment(ServerEnv)
 load_dotenv()
+env = initialize_environment(ServerEnv)
 # Configure OpenTelemetry resource attributes environment variable
 # This must happen before ADK creates its TracerProvider
 # configure_otel_resource(

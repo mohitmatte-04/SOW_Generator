@@ -18,6 +18,10 @@ SOW_TEMPLATE_GCS_URI = os.getenv(
 )
 
 # SOW Output Configuration
+SOW_OUTPUT_DRIVE_FOLDER_ID = os.getenv(
+    "SOW_OUTPUT_DRIVE_FOLDER_ID",
+    None  # Must be configured in .env
+)
 SOW_OUTPUT_FOLDER_URL = os.getenv(
     "SOW_OUTPUT_FOLDER_URL",
     "https://drive.google.com/drive/folders/YOUR_FOLDER_ID_HERE"

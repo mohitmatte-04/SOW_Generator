@@ -3,8 +3,8 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export interface GenerateSOWRequest {
-  proposal_file_url: string;
-  document_title?: string;
+  proposalFolderUrl: string;
+  documentTitle?: string;
 }
 
 export interface GenerateSOWResponse {

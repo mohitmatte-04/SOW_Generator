@@ -74,7 +74,7 @@ export default function Home() {
 
       // Start SOW generation
       const response = await generateSOW({
-        proposal_file_url: data.proposalFolderUrl,
+        proposalFolderUrl: data.proposalFolderUrl,
       });
 
       if (!response.session_id) {

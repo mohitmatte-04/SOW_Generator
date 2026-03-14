@@ -1,9 +1,15 @@
 """SOW Generator Sequential Pipeline."""
+import logging
 
 from google.adk.agents import SequentialAgent
-
+from google.adk.apps import App
+from google.adk.plugins.global_instruction_plugin import GlobalInstructionPlugin
+from google.adk.plugins.logging_plugin import LoggingPlugin
 from .extractor_agent import extractor_agent
 from .sow_generation_agent import sow_generation_agent
+
+logger = logging.getLogger(__name__)
+logger.addHandler(logging.StreamHandler())
 
 sow_pipeline = SequentialAgent(
     name="sow_pipeline",
@@ -13,6 +19,19 @@ sow_pipeline = SequentialAgent(
     ),
     sub_agents=[
         extractor_agent,
-        sow_generation_agent,
+        # sow_generation_agent,
     ],
 )
+
+# app = App(
+#     name="sow-generator",
+#     root_agent=sow_pipeline,
+#     plugins=[
+#         GlobalInstructionPlugin(return_global_instruction),
+#         LoggingPlugin()
+#     ],
+#     events_compaction_config=None,
+#     context_cache_config=None,
+#     resumability_config=None,
+
+# )

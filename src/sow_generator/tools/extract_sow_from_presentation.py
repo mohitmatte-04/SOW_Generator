@@ -1,39 +1,39 @@
-"""Tool to extract SOW-relevant data from a PPTX presentation in GCS.
+# """Tool to extract SOW-relevant data from a PPTX presentation in GCS.
 
-Orchestrates the full extraction pipeline: download from GCS, convert to
-PDF, send to Gemini multimodal for structured extraction against the SOW
-JSON schema, save results back to GCS.
-"""
+# Orchestrates the full extraction pipeline: download from GCS, convert to
+# PDF using Google Slides API, save PDF as artifact using ADK artifact service,
+# send to Gemini multimodal for structured extraction against the SOW JSON schema,
+# save results back to GCS.
+# """
 
-import json
-import logging
-import os
-import re
-from pathlib import Path
-from typing import Any
+# import json
+# import logging
+# import os
+# import re
+# from pathlib import Path
+# from typing import Any
 
-from google import genai
-from google.genai import types as genai_types
+# from google import genai
+# from google.adk.agents.tool_context import ToolContext
+# from google.genai import types as genai_types
 
-from ..sow_schema import SOW_JSON_SCHEMA
-from ..utils.gcs_utils import (
-    delete_gcs_blob,
-    download_blob_to_tempfile,
-    parse_gcs_uri,
-    upload_file_to_gcs,
-    upload_json_to_gcs,
-)
-from ..utils.pptx_converter import (
-    ConversionError,
-    convert_pptx_to_pdf,
-    extract_text_from_pptx,
-)
+# from ..sow_schema import SOW_JSON_SCHEMA
+# from ..utils.gcs_utils import (
+#     download_blob_to_tempfile,
+#     parse_gcs_uri,
+#     upload_json_to_gcs,
+# )
+# from ..utils.google_slides_to_pdf_converter import (
+#     ConversionError,
+#     GoogleSlidesConverter,
+# )
+# from ..utils.pptx_converter import extract_text_from_pptx
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
-_EXTRACTION_SYSTEM_PROMPT = """\
-You are a document analysis expert. You receive a proposal presentation and \
-must extract information into a structured SOW (Statement of Work) template.
+# _EXTRACTION_SYSTEM_PROMPT = """\
+# You are a document analysis expert. You receive a proposal presentation and \
+# must extract information into a structured SOW (Statement of Work) template.
 
 CRITICAL RULES - NO HALLUCINATION:
 1. Extract ONLY information EXPLICITLY present in the proposal document.
@@ -241,112 +241,116 @@ FINAL VALIDATION BEFORE RETURNING JSON:
 4. Are nested structures properly represented with nested arrays?
 5. Is the JSON valid and parseable?
 
-SOW TEMPLATE (replace descriptions with extracted content):
-"""
+# SOW TEMPLATE (replace descriptions with extracted content):
+# """
 
 
-def _build_extraction_prompt() -> str:
-    """Build the full extraction prompt including the SOW schema."""
-    schema_str = json.dumps(SOW_JSON_SCHEMA, indent=2)
-    return _EXTRACTION_SYSTEM_PROMPT + schema_str
+# def _build_extraction_prompt() -> str:
+#     """Build the full extraction prompt including the SOW schema."""
+#     schema_str = json.dumps(SOW_JSON_SCHEMA, indent=2)
+#     return _EXTRACTION_SYSTEM_PROMPT + schema_str
 
 
-def _parse_llm_json(raw_text: str) -> dict[str, Any]:
-    """Parse LLM output into a JSON dict, handling markdown fences and extra data.
+# def _parse_llm_json(raw_text: str) -> dict[str, Any]:
+#     """Parse LLM output into a JSON dict, handling markdown fences and extra data.
 
-    Gemini may return trailing commentary, multiple JSON objects, or prose
-    after the JSON block. This function extracts the *first* complete JSON
-    object by scanning brace depth.
+#     Gemini may return trailing commentary, multiple JSON objects, or prose
+#     after the JSON block. This function extracts the *first* complete JSON
+#     object by scanning brace depth.
 
-    Args:
-        raw_text: Raw text response from the LLM.
+#     Args:
+#         raw_text: Raw text response from the LLM.
 
-    Returns:
-        Parsed dictionary.
+#     Returns:
+#         Parsed dictionary.
 
-    Raises:
-        ValueError: If no valid JSON object can be found in the response.
-    """
-    text = raw_text.strip()
+#     Raises:
+#         ValueError: If no valid JSON object can be found in the response.
+#     """
+#     text = raw_text.strip()
 
-    # 1. Strip markdown code fences if present
-    fence_pattern = r"```(?:json)?\s*\n?(.*?)\n?\s*```"
-    match = re.search(fence_pattern, text, re.DOTALL)
-    if match:
-        text = match.group(1).strip()
+#     # 1. Strip markdown code fences if present
+#     fence_pattern = r"```(?:json)?\s*\n?(.*?)\n?\s*```"
+#     match = re.search(fence_pattern, text, re.DOTALL)
+#     if match:
+#         text = match.group(1).strip()
 
-    # 2. Try direct parse first (fast path)
-    try:
-        return json.loads(text)  # type: ignore[no-any-return]
-    except json.JSONDecodeError:
-        pass
+#     # 2. Try direct parse first (fast path)
+#     try:
+#         return json.loads(text)  # type: ignore[no-any-return]
+#     except json.JSONDecodeError:
+#         pass
 
-    # 3. Fallback: extract the first complete JSON object by brace scanning
-    start = text.find("{")
-    if start == -1:
-        msg = "Failed to parse LLM response as JSON: no JSON object found"
-        raise ValueError(msg)
+#     # 3. Fallback: extract the first complete JSON object by brace scanning
+#     start = text.find("{")
+#     if start == -1:
+#         msg = "Failed to parse LLM response as JSON: no JSON object found"
+#         raise ValueError(msg)
 
-    depth = 0
-    in_string = False
-    escape_next = False
-    for i, ch in enumerate(text[start:], start):
-        if escape_next:
-            escape_next = False
-            continue
-        if ch == "\\" and in_string:
-            escape_next = True
-            continue
-        if ch == '"':
-            in_string = not in_string
-            continue
-        if in_string:
-            continue
-        if ch == "{":
-            depth += 1
-        elif ch == "}":
-            depth -= 1
-            if depth == 0:
-                candidate = text[start : i + 1]
-                try:
-                    return json.loads(candidate)  # type: ignore[no-any-return]
-                except json.JSONDecodeError as exc:
-                    msg = (
-                        f"Failed to parse LLM response as JSON: {exc}"
-                    )
-                    raise ValueError(msg) from exc
+#     depth = 0
+#     in_string = False
+#     escape_next = False
+#     for i, ch in enumerate(text[start:], start):
+#         if escape_next:
+#             escape_next = False
+#             continue
+#         if ch == "\\" and in_string:
+#             escape_next = True
+#             continue
+#         if ch == '"':
+#             in_string = not in_string
+#             continue
+#         if in_string:
+#             continue
+#         if ch == "{":
+#             depth += 1
+#         elif ch == "}":
+#             depth -= 1
+#             if depth == 0:
+#                 candidate = text[start : i + 1]
+#                 try:
+#                     return json.loads(candidate)  # type: ignore[no-any-return]
+#                 except json.JSONDecodeError as exc:
+#                     msg = (
+#                         f"Failed to parse LLM response as JSON: {exc}"
+#                     )
+#                     raise ValueError(msg) from exc
 
-    msg = "Failed to parse LLM response as JSON: incomplete JSON object"
-    raise ValueError(msg)
-
-
-def _validate_extracted_output(
-    extracted: dict[str, Any],
-) -> dict[str, Any]:
-    """Validate and normalize LLM output.
-
-    Ensures the output has the expected ``statement_of_work_template``
-    top-level key. If the LLM returned inner content directly, wraps it.
-    """
-    if "statement_of_work_template" in extracted:
-        return extracted
-    return {"statement_of_work_template": extracted}
+#     msg = "Failed to parse LLM response as JSON: incomplete JSON object"
+#     raise ValueError(msg)
 
 
-async def extract_sow_from_presentation(gcs_uri: str) -> dict[str, Any]:
-    """Extract SOW-relevant data from a PPTX file stored in GCS.
+# def _validate_extracted_output(
+#     extracted: dict[str, Any],
+# ) -> dict[str, Any]:
+#     """Validate and normalize LLM output.
 
-    This tool orchestrates a multi-step pipeline:
-    1. Downloads the PPTX from GCS.
-    2. Converts PPTX → PDF (or extracts text as fallback).
-    3. Sends the content to Gemini for structured extraction.
-    4. Merges the LLM output into the canonical SOW JSON schema.
-    5. Saves the result as JSON to ``/processed_metadata/`` in the same bucket.
-    6. Cleans up temporary files.
+#     Ensures the output has the expected ``statement_of_work_template``
+#     top-level key. If the LLM returned inner content directly, wraps it.
+#     """
+#     if "statement_of_work_template" in extracted:
+#         return extracted
+#     return {"statement_of_work_template": extracted}
 
-    Args:
-        gcs_uri: GCS URI to the PPTX file
-            (e.g. ``gs://bucket-name/path/to/file.pptx``).
+
+# async def extract_sow_from_presentation(
+#     context: ToolContext, gcs_uri: str
+# ) -> dict[str, Any]:
+#     """Extract SOW-relevant data from a PPTX file stored in GCS.
+
+#     This tool orchestrates a multi-step pipeline:
+#     1. Downloads the PPTX from GCS.
+#     2. Converts PPTX → PDF using Google Slides API.
+#     3. Saves the PDF as an artifact using ADK artifact service.
+#     4. Sends the PDF artifact to Gemini for structured extraction.
+#     5. Merges the LLM output into the canonical SOW JSON schema.
+#     6. Saves the result as JSON to ``/processed_metadata/`` in the same bucket.
+#     7. Cleans up temporary local files (PDF artifact persists via artifact service).
+
+#     Args:
+#         context: ADK ToolContext for accessing artifact service and session.
+#         gcs_uri: GCS URI to the PPTX file
+#             (e.g. ``gs://bucket-name/path/to/file.pptx``).
 
     Returns:
         A dictionary containing:
@@ -407,7 +411,7 @@ async def extract_sow_from_presentation(gcs_uri: str) -> dict[str, Any]:
             location=os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1"),
         )
 
-        extraction_prompt = _build_extraction_prompt()
+#         extraction_prompt = _build_extraction_prompt()
 
         # Send PDF to Gemini (directly from GCS)
         logger.info("Sending PDF to Gemini via GCS: %s", pdf_gcs_uri)
@@ -471,23 +475,31 @@ async def extract_sow_from_presentation(gcs_uri: str) -> dict[str, Any]:
         extracted_data = _parse_llm_json(raw_text)
         sow_output = _validate_extracted_output(extracted_data)
 
-        # ── Step 5: Save result JSON to GCS ──────────────────────────────
-        bucket_name, blob_path = parse_gcs_uri(gcs_uri)
-        source_stem = Path(blob_path).stem
-        metadata_blob = f"processed_metadata/{source_stem}_sow_extracted.json"
-        metadata_uri = f"gs://{bucket_name}/{metadata_blob}"
+#         # ── Step 5: Save result JSON to GCS ──────────────────────────────
+#         bucket_name, blob_path = parse_gcs_uri(gcs_uri)
+#         source_stem = Path(blob_path).stem
+#         metadata_blob = f"processed_metadata/{source_stem}_sow_extracted.json"
+#         metadata_uri = f"gs://{bucket_name}/{metadata_blob}"
 
-        upload_json_to_gcs(sow_output, metadata_uri)
-        logger.info("Extraction results saved to: %s", metadata_uri)
+#         upload_json_to_gcs(sow_output, metadata_uri)
+#         logger.info("Extraction results saved to: %s", metadata_uri)
 
-        return {
-            "status": "success",
-            "metadata_uri": metadata_uri,
-        }
+#         # Prepare result with artifact information
+#         result = {
+#             "status": "success",
+#             "metadata_uri": metadata_uri,
+#         }
 
-    except Exception as exc:
-        logger.error("Extraction failed: %s", exc, exc_info=True)
-        return {"status": "error", "error": str(exc)}
+#         # Include PDF artifact information if PDF conversion was used
+#         if pdf_artifact_filename:
+#             result["pdf_artifact_filename"] = pdf_artifact_filename
+#             result["pdf_artifact_version"] = pdf_artifact_version
+
+#         return result
+
+#     except Exception as exc:
+#         logger.error("Extraction failed: %s", exc, exc_info=True)
+#         return {"status": "error", "error": str(exc)}
 
     finally:
         # ── Step 6: Cleanup temporary files ──────────────────────────────

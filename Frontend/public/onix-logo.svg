@@ -1,0 +1,10 @@
+<svg width="180" height="48" viewBox="0 0 180 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Hexagon Icon -->
+  <path d="M24 4L36.6603 12V28L24 36L11.3397 28V12L24 4Z" fill="#f35959" stroke="#f35959" stroke-width="2"/>
+  <path d="M24 14L30.1962 18V26L24 30L17.8038 26V18L24 14Z" fill="white"/>
+
+  <!-- ONIX Text -->
+  <text x="50" y="32" font-family="Plus Jakarta Sans, sans-serif" font-size="28" font-weight="700" fill="#1a1a1a" letter-spacing="-0.02em">
+    ONIX
+  </text>
+</svg>

@@ -11,6 +11,22 @@ load_dotenv()
 FAST_MODEL = os.getenv("DEFAULT_MODEL", "gemini-3-flash-preview")
 REASONING_MODEL = os.getenv("REASONING_MODEL", "gemini-3.1-pro-preview")
 
+# SOW Template Configuration
+SOW_TEMPLATE_GCS_URI = os.getenv(
+    "SOW_TEMPLATE_GCS_URI",
+    "gs://sow-generator-testing-phase/templates/sow_template.docx"
+)
+
+# SOW Output Configuration
+SOW_OUTPUT_FOLDER_URL = os.getenv(
+    "SOW_OUTPUT_FOLDER_URL",
+    "https://drive.google.com/drive/folders/YOUR_FOLDER_ID_HERE"
+)
+SOW_OUTPUT_GCS_URI = os.getenv(
+    "SOW_OUTPUT_GCS_URI",
+    "gs://sow-generator-testing-phase/generated-sows"
+)
+
 # Production configuration: fully deterministic, no hallucination
 PRODUCTION_CONFIG = genai_types.GenerateContentConfig(
     temperature=0.0,  # Fully deterministic — critical for extraction fidelity

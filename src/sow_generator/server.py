@@ -21,6 +21,7 @@ from .utils import (
     initialize_environment,
     setup_opentelemetry,
 )
+from .api_routes import router as api_router
 
 # Load and validate environment configuration
 env = initialize_environment(ServerEnv)
@@ -45,6 +46,9 @@ app: FastAPI = get_fast_api_app(
     web=env.serve_web_interface,
     reload_agents=env.reload_agents,
 )
+
+# Include API routes for frontend integration
+app.include_router(api_router)
 
 
 @app.get("/health")

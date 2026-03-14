@@ -10,7 +10,7 @@ SCOPES = [
     "https://www.googleapis.com/auth/drive"
 ]
 
-SERVICE_ACCOUNT_FILE = "service_account.json"
+SERVICE_ACCOUNT_FILE = "prj-sandbox-presales-portal-b9a1ce61abb0.json"
 TEMPLATE_ID = "18f5Mg1wyYWriRnVORaBFy6agxJqtPnz4i9edLFe9xIs"
 TARGET_FOLDER_ID = "1aAvRRCZ_unwkt38MZfA-_mraBV-RsZXb"
 
@@ -215,6 +215,59 @@ class DocsTemplateEngine:
             print(f"Warning: Could not delete document {document_id}: {e}")
 
     # ---------------------------------------
+    # List folders and files in root folder
+    # ---------------------------------------
+    def list_root_contents(self):
+        """List all folders and files in the root folder of Google Drive.
+
+        Returns:
+            Dictionary with 'folders' and 'files' lists, each containing:
+                - id: File/folder ID
+                - name: File/folder name
+                - mimeType: MIME type
+                - createdTime: Creation timestamp
+                - modifiedTime: Last modification timestamp
+        """
+        try:
+            # Query for items in root folder
+            # 'root' in parents means files/folders directly in the root
+            results = self.drive_service.files().list(
+                q="'root' in parents and trashed=false",
+                fields="files(id, name, mimeType, createdTime, modifiedTime)",
+                orderBy="folder,name",
+                supportsAllDrives=True
+            ).execute()
+
+            items = results.get('files', [])
+
+            # Separate folders and files
+            folders = []
+            files = []
+
+            folder_mime_type = 'application/vnd.google-apps.folder'
+
+            for item in items:
+                if item['mimeType'] == folder_mime_type:
+                    folders.append(item)
+                else:
+                    files.append(item)
+
+            return {
+                'folders': folders,
+                'files': files,
+                'total_count': len(items)
+            }
+
+        except Exception as e:
+            print(f"Error listing root contents: {e}")
+            return {
+                'folders': [],
+                'files': [],
+                'total_count': 0,
+                'error': str(e)
+            }
+
+    # ---------------------------------------
     # Generate document
     # ---------------------------------------
     def generate(self, template_id, data, title, save_to_gcs=False, bucket_name=None,
@@ -299,7 +352,24 @@ def main():
 
     engine = DocsTemplateEngine(SERVICE_ACCOUNT_FILE)
 
+    # List root folder contents
     print("=" * 70)
+    print("Listing Root Folder Contents")
+    print("=" * 70)
+
+    root_contents = engine.list_root_contents()
+
+    print(f"\nTotal items in root: {root_contents['total_count']}")
+
+    print(f"\nFolders ({len(root_contents['folders'])}):")
+    for folder in root_contents['folders']:
+        print(f"  - {folder['name']} (ID: {folder['id']})")
+
+    print(f"\nFiles ({len(root_contents['files'])}):")
+    for file in root_contents['files']:
+        print(f"  - {file['name']} (ID: {file['id']}) - {file['mimeType']}")
+
+    print("\n" + "=" * 70)
     print("Generating SOW Document")
     print("=" * 70)
 
@@ -342,4 +412,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    engine = DocsTemplateEngine(SERVICE_ACCOUNT_FILE)
+    print(engine.list_root_contents())

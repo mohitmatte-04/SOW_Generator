@@ -6,19 +6,46 @@ extraction workflow.
 
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional
 
-from google.adk.agents import CallbackContext
+from google.adk.agents.callback_context import CallbackContext
+from google.adk.tools.tool_context import ToolContext
+from google.adk.agents.llm_agent import LlmRequest, LlmResponse
+from google.adk.tools.base_tool import BaseTool
 from google.genai import types as genai_types
 
+# Configure logger with console and file handlers
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+    # Console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+    # File handler
+    from logging.handlers import RotatingFileHandler
+    log_dir = Path(__file__).parent.parent.parent / "logs"
+    log_dir.mkdir(exist_ok=True)
+    file_handler = RotatingFileHandler(
+        log_dir / "extractor_callbacks.log",
+        maxBytes=10*1024*1024,  # 10MB
+        backupCount=5
+    )
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
+    logger.setLevel(logging.INFO)
 
 
-async def after_convert_callback(
-    context: CallbackContext,
-    tool_name: str,
-    tool_args: dict[str, Any],
-    tool_result: dict[str, Any],
+async def after_tool_callback(
+    tool: BaseTool,
+    args: dict[str, Any],
+    tool_context: ToolContext,
+    tool_response: dict[str, Any],
 ) -> None:
     """After-tool callback for convert_slides_to_pdf.
 
@@ -26,34 +53,31 @@ async def after_convert_callback(
     Stores the artifact filename in session state for the next tool.
 
     Args:
-        context: ADK CallbackContext for accessing artifact service and state.
-        tool_name: Name of the tool that was executed.
-        tool_args: Arguments passed to the tool.
-        tool_result: Result returned by the tool.
+        tool: The tool function that was executed.
+        args: Arguments passed to the tool.
+        tool_context: ADK CallbackContext for accessing artifact service and state.
+        tool_response: Result returned by the tool.
     """
     # Only handle convert_slides_to_pdf tool
+    tool_name = tool.name
+    logger.info(f"After tool callback for tool: {tool_name}")
     if tool_name != "convert_slides_to_pdf":
         return
 
     # Check if conversion was successful
-    if tool_result.get("status") != "success":
+    if tool_response.get("status") != "success":
         logger.warning("Conversion failed, skipping artifact save")
         return
 
-    pdf_path_str = tool_result.get("pdf_path")
-    original_filename = tool_result.get("original_filename")
+    original_filename = tool_response.get("original_filename")
+    pdf_bytes = tool_response.get("pdf_bytes")
 
-    if not pdf_path_str or not original_filename:
-        logger.error("Missing pdf_path or original_filename in tool result")
+    if not pdf_bytes:
+        logger.error("Missing pdf_bytes in tool result")
         return
 
     try:
-        # Read PDF bytes
-        pdf_path = Path(pdf_path_str)
-        with open(pdf_path, "rb") as f:
-            pdf_bytes = f.read()
-
-        # Create artifact Part
+        # Create artifact Part from PDF bytes
         pdf_artifact = genai_types.Part.from_bytes(
             data=pdf_bytes, mime_type="application/pdf"
         )
@@ -62,8 +86,8 @@ async def after_convert_callback(
         artifact_filename = f"{original_filename}_converted.pdf"
 
         # Save using ADK artifact service
-        logger.info("Saving PDF as artifact: %s", artifact_filename)
-        version = await context.save_artifact(
+        logger.info("Saving PDF as artifact: %s (%d bytes)", artifact_filename, len(pdf_bytes))
+        version = await tool_context.save_artifact(
             filename=artifact_filename, artifact=pdf_artifact
         )
         logger.info(
@@ -71,91 +95,76 @@ async def after_convert_callback(
         )
 
         # Store artifact info in session state for next tool
-        await context.set_state(
-            "pdf_artifact_filename", artifact_filename
-        )
-        await context.set_state("pdf_artifact_version", version)
-        await context.set_state("original_gcs_uri", tool_args.get("gcs_uri"))
-
+        tool_context.state["pdf_artifact_filename"] = artifact_filename
+        tool_context.state["pdf_artifact_version"] = version
+        tool_context.state["original_drive_url"] = args.get("drive_url")
+        logger.info("pdf_artifact_file_size: %d", len(pdf_bytes))
         logger.info("Artifact info stored in session state")
-
-        # Cleanup local PDF file
-        if pdf_path.exists():
-            pdf_path.unlink()
-            # Try to remove temp directory
-            try:
-                pdf_path.parent.rmdir()
-            except OSError:
-                pass
 
     except Exception as exc:
         logger.error("Failed to save PDF artifact: %s", exc, exc_info=True)
 
 
-async def before_extract_callback(
-    context: CallbackContext,
-    tool_name: str,
-    tool_args: dict[str, Any],
-) -> dict[str, Any]:
-    """Before-tool callback for extract_sow_from_pdf.
+async def before_model_callback(
+    callback_context: CallbackContext,
+    llm_request: LlmRequest,
+) -> Optional[LlmResponse]:
+    """Before-model callback to attach PDF artifact to model input.
 
-    Loads the PDF artifact saved by convert_slides_to_pdf and constructs
-    the GCS URI for Gemini.
+    Loads the PDF artifact saved by convert_slides_to_pdf and adds it
+    to the model's input contents so Gemini can analyze it directly.
 
     Args:
-        context: ADK CallbackContext for accessing artifact service and state.
-        tool_name: Name of the tool about to be executed.
-        tool_args: Arguments to be passed to the tool.
+        callback_context: ADK CallbackContext for accessing artifact service and state.
+        llm_request: The LLM request that will be sent to the model.
 
     Returns:
-        Modified tool arguments with pdf_gcs_uri added.
+        None to allow the request to proceed, or LlmResponse to short-circuit.
     """
-    # Only handle extract_sow_from_pdf tool
-    if tool_name != "extract_sow_from_pdf":
-        return tool_args
-
     try:
         # Get artifact info from session state
-        pdf_artifact_filename = await context.get_state("pdf_artifact_filename")
-        original_gcs_uri = await context.get_state("original_gcs_uri")
-
+        pdf_artifact_filename = callback_context.state.get("pdf_artifact_filename")
         if not pdf_artifact_filename:
-            logger.error("PDF artifact filename not found in session state")
-            return tool_args
+            logger.info("No PDF artifact found, skipping PDF attachment")
+            return None
 
-        if not original_gcs_uri:
-            logger.error("Original GCS URI not found in session state")
-            return tool_args
+        pdf_artifact = await callback_context.load_artifact(filename=
+            pdf_artifact_filename
+        )
 
-        # Construct the GCS URI for the artifact
-        # ADK artifacts follow pattern: gs://bucket/artifacts/{app_name}/{user_id}/{session_id}/{filename}
-        import os
+        # Load the PDF artifact
+        logger.info("Loaded PDF artifact for model: %s", pdf_artifact_filename)
+        # pdf_artifact = await callback_context.load_artifact(filename=pdf_artifact_filename)
 
-        artifact_service_uri = os.getenv("ARTIFACT_SERVICE_URI", "")
-        if artifact_service_uri.startswith("gs://"):
-            app_name = context.app_name or "sow_generator"
-            user_id = context.user_id or "default_user"
-            session_id = context.session_id or "default_session"
-            pdf_gcs_uri = f"{artifact_service_uri.rstrip('/')}/artifacts/{app_name}/{user_id}/{session_id}/{pdf_artifact_filename}"
+        if not pdf_artifact or not pdf_artifact.inline_data:
+            logger.warning("PDF artifact '%s' not found or has no data", pdf_artifact_filename)
+            return None
+
+        logger.info("Successfully loaded PDF artifact '%s' (%d bytes)",
+                   pdf_artifact_filename, len(pdf_artifact.inline_data.data))
+        logger.info("MIME Type: %s", pdf_artifact.inline_data.mime_type)
+
+        # Add PDF to the last user message in the request contents
+        if llm_request.contents:
+            # Find the last user message and add the PDF to it
+            for content in reversed(llm_request.contents):
+                if content.role == "user":
+                    # Add PDF Part to the user's message parts
+                    if not content.parts:
+                        content.parts = []
+                    content.parts.append(pdf_artifact)
+                    logger.info("PDF artifact attached to model input")
+                    break
         else:
-            logger.error("ARTIFACT_SERVICE_URI not configured as GCS URI")
-            return tool_args
+            logger.warning("Could not find user content to attach PDF artifact")
 
-        logger.info("Loading PDF artifact for extraction: %s", pdf_gcs_uri)
-
-        # Add the PDF GCS URI to tool arguments
-        modified_args = {
-            **tool_args,
-            "pdf_gcs_uri": pdf_gcs_uri,
-            "original_gcs_uri": original_gcs_uri,
-        }
-
-        return modified_args
+        # Return None to proceed with the modified request
+        return None
 
     except Exception as exc:
         logger.error(
-            "Failed to prepare PDF artifact for extraction: %s",
+            "Failed to attach PDF artifact to model input: %s",
             exc,
             exc_info=True,
         )
-        return tool_args
+        return None

@@ -17,7 +17,31 @@ from google.genai import types as genai_types
 from ..sow_schema import SOW_JSON_SCHEMA
 from ..utils.gcs_utils import parse_gcs_uri, upload_json_to_gcs
 
+# Configure logger with console and file handlers
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+    # Console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+    # File handler
+    from logging.handlers import RotatingFileHandler
+    log_dir = Path(__file__).parent.parent.parent.parent / "logs"
+    log_dir.mkdir(exist_ok=True)
+    file_handler = RotatingFileHandler(
+        log_dir / "extract_sow_from_pdf.log",
+        maxBytes=10*1024*1024,  # 10MB
+        backupCount=5
+    )
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
+    logger.setLevel(logging.INFO)
 
 _EXTRACTION_SYSTEM_PROMPT = """\
 You are a document analysis expert. You receive a proposal presentation and \
@@ -128,7 +152,7 @@ def _validate_extracted_output(extracted: dict[str, Any]) -> dict[str, Any]:
 
 
 async def extract_sow_from_pdf(
-    pdf_gcs_uri: str, original_gcs_uri: str
+    pdf_gcs_uri: str, original_drive_url: str
 ) -> dict[str, Any]:
     """Extract SOW-relevant data from a PDF file.
 
@@ -140,7 +164,7 @@ async def extract_sow_from_pdf(
 
     Args:
         pdf_gcs_uri: GCS URI to the PDF file (loaded from artifact).
-        original_gcs_uri: Original GCS URI of the source PPTX (for naming).
+        original_drive_url: Original Google Drive URL of the source presentation (for naming).
 
     Returns:
         A dictionary containing:
@@ -190,10 +214,22 @@ async def extract_sow_from_pdf(
         sow_output = _validate_extracted_output(extracted_data)
 
         # Step 4: Save result JSON to GCS
-        bucket_name, blob_path = parse_gcs_uri(original_gcs_uri)
-        source_stem = Path(blob_path).stem
+        # Use environment variable for output bucket or default
+        output_bucket = os.getenv("SOW_OUTPUT_BUCKET", "prj-sandbox-presales-portal-sow-generator")
+
+        # Extract filename from Drive URL or PDF artifact path
+        # The pdf_gcs_uri contains the filename with artifact path
+        import re
+        filename_match = re.search(r"/([^/]+)_converted\.pdf$", pdf_gcs_uri)
+        if filename_match:
+            source_stem = filename_match.group(1)
+        else:
+            # Fallback to timestamp-based naming
+            from datetime import datetime
+            source_stem = f"presentation_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+
         metadata_blob = f"processed_metadata/{source_stem}_sow_extracted.json"
-        metadata_uri = f"gs://{bucket_name}/{metadata_blob}"
+        metadata_uri = f"gs://{output_bucket}/{metadata_blob}"
 
         upload_json_to_gcs(sow_output, metadata_uri)
         logger.info("Extraction results saved to: %s", metadata_uri)

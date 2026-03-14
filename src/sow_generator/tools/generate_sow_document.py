@@ -488,8 +488,47 @@ async def generate_sow_document(
 
             return new_para
 
+        def flatten_nested_item(item, level=0):
+            """
+            Flatten a potentially nested array item into a list of (text, indent_level) tuples.
+
+            Handles nested structure: [main_point, [sub_point_1, sub_point_2]]
+
+            Args:
+                item: Either a string or a nested array [main_text, [sub_items...]]
+                level: Current indentation level (0 for main bullets, 1 for sub-bullets, etc.)
+
+            Returns:
+                List of (text, indent_level) tuples
+            """
+            if isinstance(item, str):
+                # Simple string item
+                return [(item.strip(), level)]
+            elif isinstance(item, list):
+                if len(item) == 0:
+                    return []
+                elif len(item) == 1:
+                    # Single element array - treat as simple item
+                    return flatten_nested_item(item[0], level)
+                elif len(item) == 2 and isinstance(item[0], str) and isinstance(item[1], list):
+                    # Nested structure: [main_point, [sub_points]]
+                    result = [(item[0].strip(), level)]
+                    # Recursively flatten sub-items at increased indent level
+                    for sub_item in item[1]:
+                        result.extend(flatten_nested_item(sub_item, level + 1))
+                    return result
+                else:
+                    # Array of items at same level
+                    result = []
+                    for sub_item in item:
+                        result.extend(flatten_nested_item(sub_item, level))
+                    return result
+            else:
+                # Fallback: convert to string
+                return [(str(item).strip(), level)]
+
         def replace_text_with_list(paragraph, key, items, parent_element, use_custom_fonts=True):
-            """Replace placeholder with multiple bullet points."""
+            """Replace placeholder with multiple bullet points, supporting nested sub-bullets."""
             if key not in paragraph.text:
                 return []
 
@@ -498,16 +537,22 @@ async def generate_sow_document(
             prefix = full_text[:placeholder_index]
             suffix = full_text[placeholder_index + len(key):]
 
+            # Flatten the items list to handle nested arrays
+            # This converts nested structures to (text, indent_level) tuples
+            flattened_items = []
+            for item in items:
+                flattened_items.extend(flatten_nested_item(item))
+
             new_paras = []
-            for i, item in enumerate(items):
+            for i, (text, indent_level) in enumerate(flattened_items):
                 if i == 0:
                     # Update the original paragraph
-                    replace_text_simple(paragraph, key, item.strip(), use_custom_fonts)
-                    
+                    replace_text_simple(paragraph, key, text, use_custom_fonts)
+
                     # Ensure the first item has bullets too
                     para_pPr = paragraph._element.get_or_add_pPr()
                     para_numPr = para_pPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr')
-                    
+
                     if para_numPr is None:
                         # No bullets, apply them
                         try:
@@ -516,10 +561,10 @@ async def generate_sow_document(
                             # Create bullet using numbering
                             from docx.oxml import parse_xml
                             from docx.oxml.ns import nsdecls
-                            
+
                             numPr_xml = f'''
                             <w:numPr {nsdecls('w')}>
-                                <w:ilvl w:val="0"/>
+                                <w:ilvl w:val="{indent_level}"/>
                                 <w:numId w:val="1"/>
                             </w:numPr>
                             '''
@@ -528,10 +573,27 @@ async def generate_sow_document(
                             if existing is not None:
                                 para_pPr.remove(existing)
                             para_pPr.append(numPr)
+                    else:
+                        # Update indent level for existing numbering
+                        ilvl_elem = para_numPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}ilvl')
+                        if ilvl_elem is not None:
+                            ilvl_elem.set('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val', str(indent_level))
+
                     new_paras.append(paragraph)
                 else:
-                    # Insert new paragraph with separate prefix/suffix handling
-                    new_para = insert_paragraph_after(new_paras[-1], str(item).strip(), parent_element, prefix, suffix, use_custom_fonts)
+                    # Insert new paragraph with appropriate indent level
+                    new_para = insert_paragraph_after(new_paras[-1], text, parent_element, prefix, suffix, use_custom_fonts)
+
+                    # Set the indent level for sub-bullets
+                    new_pPr = new_para._element.get_or_add_pPr()
+                    new_numPr = new_pPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr')
+
+                    if new_numPr is not None:
+                        # Update indent level
+                        ilvl_elem = new_numPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}ilvl')
+                        if ilvl_elem is not None:
+                            ilvl_elem.set('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val', str(indent_level))
+
                     new_paras.append(new_para)
 
             return new_paras

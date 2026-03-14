@@ -73,64 +73,78 @@ You may elaborate on processes and methodology, but you must NOT introduce new s
 
 ## Formatting Requirements (CRITICAL)
 
-The `generate_sow_document` tool understands simple markdown formatting. You MUST follow these rules exactly to ensure uniform formatting across the entire document.
+The `generate_sow_document` tool automatically handles document formatting. You MUST follow these rules for the data you pass to the tool:
 
-### Bold — Sub-Heading Labels ONLY
+### Data Structure Rules
 
-Use `**text**` ONLY for sub-heading labels within a section. Examples:
-- `**General Assumptions**`
-- `**Technical Assumptions**`
-- `**Deliverable Name**`
-- `**Pricing Model**`
+1. **Preserve the structure from extracted JSON:**
+   - If the JSON has an **array** (list), pass it as an array — the tool will create bullets
+   - If the JSON has a **string** (paragraph), pass it as a string — the tool will create paragraphs
+   - If the JSON has **nested arrays** (sub-bullets), pass them as nested arrays — the tool will create indented sub-bullets
 
-DO NOT use bold on bullet content or body paragraph text.
-DO NOT bold action verbs in bullet points.
-The body text and all bullet point content must be plain (no bold, no italic).
+2. **DO NOT manually format bullets:**
+   - DO NOT add `• ` or `- ` or `* ` symbols to text
+   - DO NOT convert arrays to newline-separated strings with bullet symbols
+   - The tool handles ALL bullet creation automatically
 
-### Bullet lists:
-- The `generate_sow_document` tool will automatically create proper Word bullets from plain text lines
-- DO NOT manually add `• ` symbols at the start of lines
-- Simply write each bullet item as plain text on its own line, separated by `\n`
-- Each line will become a separate bullet point in the document
-- The content must be plain text — no bold, no italic on bullet content
-- DO NOT use numbered lists (1. 2. 3.) in your output
+3. **Rich text formatting (use sparingly):**
+   - Use `**text**` ONLY for sub-heading labels like `**General Assumptions**` or `**Deliverable Name**`
+   - DO NOT use bold, italic, or other formatting on regular content text
+   - Keep bullet point content as plain text
 
-### Line breaks and paragraph breaks:
-- Convert all `\n` characters from the JSON into appropriate paragraph breaks
-- Use a blank line between paragraphs to create separate paragraph blocks
-- Each non-empty line becomes its own paragraph in the document
+### Examples
 
-### Headers within content:
-- DO NOT use markdown headers (# ## ###) — the document template already has section headers
-- Use `**bold text**` only for sub-category labels within a section (e.g., "**General Assumptions**")
-
-### Example of CORRECT formatting:
-
-```
-**General Assumptions**
-The Client shall provide timely access to all required environments and systems.
-Steering committee responses will be provided within five business days.
-All pricing is based on the assumptions outlined in this document.
-
-**Technical Assumptions**
-The existing application environment will be free of critical defects prior to migration.
-Test scripts will be provided by the Client for all critical business processes.
+**CORRECT - Preserve array structure:**
+```python
+placeholders = {
+    "<<ACTIVITIES>>": [
+        "Design cloud architecture",
+        "Migrate databases to GCP",
+        "Implement security controls"
+    ]
+}
 ```
 
-(The tool will automatically convert each line into a bullet point in Word)
-
-### Example of INCORRECT formatting (DO NOT DO THIS):
-
+**CORRECT - Nested arrays for sub-bullets:**
+```python
+placeholders = {
+    "<<ACTIVITIES>>": [
+        ["Phase 1: Planning", [
+            "Requirements gathering",
+            "Stakeholder interviews"
+        ]],
+        "Phase 2: Implementation",
+        ["Phase 3: Testing", [
+            "Unit testing",
+            "Integration testing"
+        ]]
+    ]
+}
 ```
-**General Assumptions**
-• The Client shall provide timely access...  ← DO NOT add • manually
-• Steering committee responses will be...    ← DO NOT add • manually
 
-**General Assumptions**
-**Timely Access** — The Client shall provide...  ← DO NOT bold bullet content
+**CORRECT - Paragraph content:**
+```python
+placeholders = {
+    "<<OPPORTUNITY>>": "The client faces challenges with legacy infrastructure that cannot scale to meet growing demands. This has resulted in performance issues."
+}
 ```
 
-The bullet content must always be plain text. Only the sub-heading label above the bullets may be bold. The tool adds the bullets automatically - do NOT add `• ` manually.
+**INCORRECT - Don't add manual bullets:**
+```python
+placeholders = {
+    "<<ACTIVITIES>>": [
+        "• Design cloud architecture",  # ❌ Don't add •
+        "• Migrate databases to GCP"    # ❌ Don't add •
+    ]
+}
+```
+
+**INCORRECT - Don't convert arrays to strings:**
+```python
+placeholders = {
+    "<<ACTIVITIES>>": "Design cloud architecture\n• Migrate databases\n• Implement security"  # ❌ Keep as array
+}
+```
 
 --------------------------------------------------
 
@@ -362,78 +376,116 @@ Stay grounded in what the JSON describes — do not introduce entirely new techn
 
 ### <<ACTIVITIES>>
 
-Extract from `sow_content.activities`.
+Extract from `sow_content.activities` and **preserve the data structure**:
 
-Plain text list of ALL activities. No bold on content.
-Each activity on its own line, separated by `\n`. The tool will automatically create bullets.
-• Do not merge or collapse multiple activities into a single line
-• Include all sub-steps or conditions mentioned in the JSON
+- **If JSON contains an array:** Pass it directly as an array (tool creates bullets)
+- **If JSON contains a string:** Pass it as a string (paragraph format)
+- **If JSON contains nested arrays:** Preserve nesting (tool creates indented sub-bullets)
 
-Format:
+DO NOT convert arrays to strings or add bullet symbols (•, -, *).
+
+Example (simple array):
+```python
+"<<ACTIVITIES>>": [
+    "Design target system architecture aligned with requirements",
+    "Configure all required cloud infrastructure components"
+]
 ```
-Activity one described in plain professional text
-Activity two described in plain professional text
-Activity three described in plain professional text
+
+Example (nested array with sub-bullets):
+```python
+"<<ACTIVITIES>>": [
+    ["Phase 1: Planning", [
+        "Requirements gathering",
+        "Stakeholder interviews"
+    ]],
+    "Phase 2: Implementation"
+]
 ```
 
-If "NA", write: "Not specified in source data."
+If "NA", use: "Not specified in source data."
 
 ### <<DELIVERABLES>>
 
-Extract from `sow_content.deliverables`.
+Extract from `sow_content.deliverables` and **preserve the data structure**.
 
-Plain text list. Each deliverable on its own line.
-For each deliverable, include its name and description if available.
+If JSON contains an array, pass it as an array. For structured deliverables with names and descriptions:
 
-Format:
-```
-**Deliverable Name**
-Description of the deliverable, its format, and success criteria in plain text
-
-**Another Deliverable**
-Description in plain text
+```python
+"<<DELIVERABLES>>": [
+    "**Architecture Design Document**\nComprehensive cloud architecture blueprint",
+    "**Migration Runbook**\nStep-by-step migration procedures"
+]
 ```
 
-If "NA", write: "Not specified in source data."
+Or simpler format:
+```python
+"<<DELIVERABLES>>": [
+    "Architecture Design Document - Cloud architecture blueprint",
+    "Migration Runbook - Migration procedures",
+    "Testing Report - Validation results"
+]
+```
+
+If "NA", use: "Not specified in source data."
 
 ### <<OUT_OF_SCOPE>>
 
-Extract from `sow_content.out_of_scope`.
+Extract from `sow_content.out_of_scope` and **preserve the data structure**.
 
-Plain text list of ALL activities NOT included.
-Each item on its own line, separated by `\n`. The tool will automatically create bullets.
-• Written clearly and professionally in plain text
-• Include every item mentioned in the JSON
+If JSON contains an array, pass it directly as an array:
 
-If "NA", write: "Not specified in source data."
+```python
+"<<OUT_OF_SCOPE>>": [
+    "Ongoing operational support post go-live",
+    "Procurement of third-party licenses",
+    "Legacy system decommissioning"
+]
+```
+
+DO NOT convert to newline-separated string or add bullet symbols.
+
+If "NA", use: "Not specified in source data."
 
 ### <<LIMITATIONS>>
 
-Extract from `sow_content.limitations`.
+Extract from `sow_content.limitations` and **preserve the data structure**.
 
-Write as plain text paragraphs or bullet list.
+- If JSON has array: pass as array
+- If JSON has string: pass as string (paragraph)
 
-Format:
+Example (array):
+```python
+"<<LIMITATIONS>>": [
+    "Access to production environments limited to business hours",
+    "Third-party API availability dependent on vendor support"
+]
 ```
-Limitation one described in plain professional text
-Limitation two described in plain professional text
+
+Example (paragraph):
+```python
+"<<LIMITATIONS>>": "Access to production environments is limited to business hours. Third-party API availability is dependent on vendor support schedules."
 ```
 
 If "NA", write: "Not specified in source data."
 
 ### <<SUCCESS_CRITERIA>>
 
-Extract from `sow_content.success_criteria`.
+Extract from `sow_content.success_criteria` and **preserve the data structure**.
 
 If "NA", infer success criteria from `sow_content.activities` or `sow_content.deliverables`.
 Write specific, measurable benchmarks that define project success.
 
-Format:
+If JSON has array, pass as array:
+```python
+"<<SUCCESS_CRITERIA>>": [
+    "Successful completion of all migration activities",
+    "Validated system performance meets or exceeds baseline requirements",
+    "All deliverables approved by Client stakeholders"
+]
 ```
-Successful completion of all migration activities
-Validated system performance meets or exceeds baseline requirements
-All deliverables approved by Client stakeholders
-```
+
+If creating from scratch (when "NA"), create as array with 3-5 measurable criteria.
 
 ### <<CUSTOMER_NAME_BOLD>>
 

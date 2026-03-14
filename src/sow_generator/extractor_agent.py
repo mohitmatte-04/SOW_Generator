@@ -32,7 +32,7 @@ from .tools.convert_slides_to_pdf import convert_slides_to_pdf
 
 # Load promp
 
-PROMPT_FILE = Path(__file__).parent / "prompts" / "extractor_agent_v1.md"
+PROMPT_FILE = Path(__file__).parent / "prompts" / "extractor_agent_v2.md"
 
 with PROMPT_FILE.open(encoding="utf-8") as f:
 
@@ -61,11 +61,9 @@ extractor_agent = LlmAgent(
 
     output_key="extractor_agent_context",
 
-    generate_content_config=PRODUCTION_CONFIG,
+    # generate_content_config=PRODUCTION_CONFIG,
 
     after_tool_callback=after_tool_callback,
-
-    # before_model_callback=before_model_callback,
-
+    before_model_callback=before_model_callback,
 )
 

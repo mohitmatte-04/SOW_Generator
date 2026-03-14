@@ -5,6 +5,7 @@ from google.adk.agents import SequentialAgent
 from google.adk.apps import App
 from google.adk.plugins.global_instruction_plugin import GlobalInstructionPlugin
 from google.adk.plugins.logging_plugin import LoggingPlugin
+from .input_parser_agent import input_parser_agent
 from .extractor_agent import extractor_agent
 from .sow_generation_agent import sow_generation_agent
 
@@ -18,8 +19,9 @@ sow_pipeline = SequentialAgent(
         "and generation of the Statement of Work."
     ),
     sub_agents=[
+        input_parser_agent,
         extractor_agent,
-        # sow_generation_agent,
+        sow_generation_agent,
     ],
 )
 

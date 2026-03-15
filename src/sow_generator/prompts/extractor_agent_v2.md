@@ -46,19 +46,19 @@ Return a JSON object with this exact structure:
 {
   "status": "success",
   "extracted_json": {
-      "<<TITLE>>": "extracted content or NA",
-      "<<CUSTOMER_NAME>>": "extracted content or NA",
-      "<<CUSTOMER_SHORT_NAME>>": "extracted content or NA",
-      "<<OPPORTUNITY>>": "extracted content or NA",
-      "<<SOLUTION_OVERVIEW>>": "extracted content or NA",
-      "<<SCOPE_OF_WORK>>": "extracted content or NA",
-      "<<ACTIVITIES>>": "extracted content or NA",
-      "<<DELIVERABLES>>": "extracted content or NA",
-      "<<OUT_OF_SCOPE>>": "extracted content or NA",
-      "<<LIMITATIONS>>": "extracted content or NA",
-      "<<TIMELINE>>": "extracted content or NA",
-      "<<ASSUMPTIONS_AND_DEPENDENCIES>>": "extracted content or NA",
-      "<<SUCCESS_CRITERIA>>": "extracted content or NA",
+      "title": "extracted content or NA",
+      "customer_name": "extracted content or NA",
+      "customer_short_name": "extracted content or NA",
+      "opportunity": "extracted content or NA",
+      "solution_overview": "extracted content or NA",
+      "scope_of_work": "extracted content or NA",
+      "activities": "extracted content or NA",
+      "deliverables": "extracted content or NA",
+      "out_of_scope": "extracted content or NA",
+      "limitations": "extracted content or NA",
+      "timeline": "extracted content or NA",
+      "assumptions_and_dependencies": "extracted content or NA",
+      "success_criteria": "extracted content or NA",
   }
 }
 ```

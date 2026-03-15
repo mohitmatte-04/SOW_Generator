@@ -234,11 +234,23 @@ export default function Home() {
               )}
 
               {currentStage !== "idle" && currentStage !== "complete" && (
-                <ProgressTracker
-                  currentStage={currentStage}
-                  progress={progress}
-                  message={progressMessage}
-                />
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex flex-col items-center justify-center py-12 space-y-6"
+                >
+                  <div className="relative">
+                    <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+                  </div>
+                  <div className="text-center space-y-2">
+                    <h3 className="text-xl font-semibold text-gray-900">
+                      Generating Your SOW...
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {progressMessage || "Processing your proposal with AI"}
+                    </p>
+                  </div>
+                </motion.div>
               )}
 
               {currentStage === "complete" && generatedSowUrl && (
@@ -255,10 +267,14 @@ export default function Home() {
                     <h3 className="text-2xl font-bold text-green-900">
                       SOW Generated Successfully!
                     </h3>
-                    <p className="text-muted-foreground text-center max-w-md">
-                      Your Statement of Work has been created and saved to your
-                      Google Drive folder.
-                    </p>
+                    <div className="bg-gray-50 rounded-lg p-4 max-w-2xl w-full">
+                      <p className="text-sm font-medium text-gray-700 mb-2">
+                        Document saved to:
+                      </p>
+                      <p className="text-sm text-gray-600 break-all font-mono bg-white p-3 rounded border border-gray-200">
+                        {generatedSowUrl}
+                      </p>
+                    </div>
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4">
@@ -268,7 +284,7 @@ export default function Home() {
                       onClick={() => window.open(generatedSowUrl, "_blank")}
                     >
                       <Download className="mr-2 h-5 w-5" />
-                      View Generated SOW
+                      Open in Google Drive
                     </Button>
                     <Button
                       size="lg"

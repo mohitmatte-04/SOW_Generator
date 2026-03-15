@@ -597,7 +597,6 @@ generate_sow_document(
     placeholders=<placeholders dict>,
     document_title="Statement of Work - <Client/Project Name>",
     output_gcs_uri="gs://sow-generator-testing-phase/sow",
-    drive_folder_id="1aAvRRCZ_unwkt38MZfA-_mraBV-RsZXb",
     font_name="Plus Jakarta Sans",
     font_size=10
 )
@@ -610,9 +609,8 @@ The tool will:
 • Replace each placeholder with formatted content
 • Automatically create Word bullet points for multi-line text
 • Apply font formatting (Plus Jakarta Sans, size 10)
-• Upload the final .docx to Google Drive (in the specified folder)
-• Upload a backup copy to the GCS folder
-• Return both the Google Drive URL and GCS URI
+• Upload the final .docx to the GCS folder
+• Return the GCS URI of the generated document
 
 --------------------------------------------------
 
@@ -623,10 +621,9 @@ After successful document generation, report the result to the user clearly:
 Example:
 "The Statement of Work document has been generated successfully.
 
-Google Drive: https://docs.google.com/document/d/DOCUMENT_ID/view
-GCS Backup: gs://sow-generator-testing-phase/sow/Statement_of_Work_ClientName.docx
+GCS Location: gs://sow-generator-testing-phase/sow/Statement_of_Work_ClientName.docx
 
-The document has been uploaded to Google Drive and is ready for review."
+The document has been saved to GCS and is ready for download."
 
 --------------------------------------------------
 

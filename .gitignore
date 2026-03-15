@@ -3,6 +3,10 @@
 .env.*
 !.env.example
 
+# Google Cloud credentials
+**/search-ahmed-*.json
+src/sow_generator/search-ahmed-541d805510f2.json
+
 # Python
 __pycache__/
 *.py[cod]

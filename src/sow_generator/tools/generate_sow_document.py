@@ -14,11 +14,36 @@ from google.cloud import storage
 import google.auth
 from google.auth.transport.requests import Request
 import io
+from pathlib import Path
 from docx import Document
 from docx.shared import Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
+# Configure logger with console and file handlers
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+    # Console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+    # File handler
+    from logging.handlers import RotatingFileHandler
+    log_dir = Path(__file__).parent.parent.parent.parent / "logs"
+    log_dir.mkdir(exist_ok=True)
+    file_handler = RotatingFileHandler(
+        log_dir / "generate_sow_document.log",
+        maxBytes=10*1024*1024,  # 10MB
+        backupCount=5
+    )
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
+    logger.setLevel(logging.INFO)
 
 # async def generate_sow_document(
 #     template_gcs_uri: str,
@@ -162,14 +187,28 @@ async def generate_sow_document(
     """
 
     try:
+        logger.info("=" * 80)
+        logger.info("🚀 SOW GENERATION TOOL STARTED")
+        logger.info("=" * 80)
+        logger.info(f"📄 Document Title: {document_title}")
+        logger.info(f"📋 Template URI: {template_gcs_uri}")
+        logger.info(f"💾 Output URI: {output_gcs_uri}")
+        logger.info(f"🔢 Number of placeholders: {len(placeholders)}")
+        logger.info(f"📝 Placeholders: {list(placeholders.keys())}")
+        logger.info("=" * 80)
+
         storage_client = storage.Client()
 
         # -------------------------
         # 1. Download template
         # -------------------------
+        logger.info("⬇️  STEP 1: Downloading template from GCS...")
 
         template_bucket = template_gcs_uri.split("/")[2]
         template_blob_path = "/".join(template_gcs_uri.split("/")[3:])
+
+        logger.info(f"   Bucket: {template_bucket}")
+        logger.info(f"   Blob: {template_blob_path}")
 
         bucket = storage_client.bucket(template_bucket)
         blob = bucket.blob(template_blob_path)
@@ -178,17 +217,21 @@ async def generate_sow_document(
         blob.download_to_file(template_stream)
         template_stream.seek(0)
 
+        logger.info(f"✅ Template downloaded successfully ({len(template_stream.getvalue())} bytes)")
+
         # -------------------------
         # 2. Load DOCX template
         # -------------------------
+        logger.info("📖 STEP 2: Loading DOCX template...")
 
         document = Document(template_stream)
-        for style in document.styles:
-            print(f"style: {style.name}")
+        logger.info(f"✅ Document loaded - {len(document.paragraphs)} paragraphs, {len(document.tables)} tables")
 
         # -------------------------
         # 3. Replace placeholders
         # -------------------------
+        logger.info("🔄 STEP 3: Replacing placeholders...")
+        placeholder_count = 0
 
         def parse_value(value):
             """Parse a value that might be a string or list."""
@@ -602,6 +645,7 @@ async def generate_sow_document(
 
         def replace_placeholders_in_paragraphs(paragraphs, parent_element, use_custom_fonts=True):
             """Replace all placeholders in paragraphs."""
+            nonlocal placeholder_count
             processed_ids = set()
             i = 0
 
@@ -618,7 +662,7 @@ async def generate_sow_document(
                         # Only preserve fonts for the main Title style
                         if para.style.name == 'Title':
                             para_is_title = True
-                    
+
                     # Determine whether to use custom fonts for this paragraph
                     use_fonts_for_para = use_custom_fonts and not para_is_title
 
@@ -627,11 +671,18 @@ async def generate_sow_document(
 
                         if isinstance(parsed_value, list) and len(parsed_value) > 0:
                             # Handle list values
+                            if key in para.text:
+                                logger.info(f"   ✏️  Replacing {key} with list ({len(parsed_value)} items)")
+                                placeholder_count += 1
                             new_paras = replace_text_with_list(para, key, parsed_value, parent_element, use_fonts_for_para)
                             for p in new_paras:
                                 processed_ids.add(id(p))
                         else:
                             # Handle simple string replacement
+                            if key in para.text:
+                                value_preview = str(parsed_value)[:50] if len(str(parsed_value)) > 50 else str(parsed_value)
+                                logger.info(f"   ✏️  Replacing {key} with: {value_preview}...")
+                                placeholder_count += 1
                             replace_text_simple(para, key, str(parsed_value), use_fonts_for_para)
 
                 i += 1
@@ -703,94 +754,83 @@ async def generate_sow_document(
                         for cell in row.cells:
                             replace_placeholders_in_paragraphs(cell.paragraphs, cell, use_custom_fonts=False)
 
+        # Log placeholder replacement summary
+        logger.info("=" * 80)
+        logger.info(f"✅ STEP 3 COMPLETE: Placeholder replacement finished")
+        logger.info(f"   📊 Total placeholders replaced: {placeholder_count}")
+        logger.info("=" * 80)
+
         # -------------------------
         # 4. Save modified doc
         # -------------------------
+        logger.info("💾 STEP 4: Saving modified document to memory...")
 
         output_stream = io.BytesIO()
         document.save(output_stream)
         output_stream.seek(0)
 
-        # -------------------------
-        # 5. Upload to Google Drive (if folder ID provided)
-        # -------------------------
-
-        drive_url = None
-        if drive_folder_id:
-            try:
-                # Authenticate with Google Drive
-                credentials, _ = google.auth.default(
-                    scopes=["https://www.googleapis.com/auth/drive.file"]
-                )
-                if credentials.expired and credentials.refresh_token:
-                    credentials.refresh(Request())
-
-                drive_service = build("drive", "v3", credentials=credentials)
-
-                # Reset stream position
-                output_stream.seek(0)
-
-                # Upload file to Google Drive
-                file_metadata = {
-                    "name": f"{document_title}.docx",
-                    "parents": [drive_folder_id],
-                    "mimeType": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                }
-
-                media = MediaIoBaseUpload(
-                    output_stream,
-                    mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    resumable=True
-                )
-
-                uploaded_file = drive_service.files().create(
-                    body=file_metadata,
-                    media_body=media,
-                    fields="id, webViewLink"
-                ).execute()
-
-                drive_url = uploaded_file.get("webViewLink")
-                logger.info(f"Uploaded to Google Drive: {drive_url}")
-
-            except Exception as e:
-                logger.error(f"Failed to upload to Google Drive: {e}", exc_info=True)
-                # Continue even if Drive upload fails
+        document_size = len(output_stream.getvalue())
+        logger.info(f"✅ Document saved successfully ({document_size:,} bytes)")
+        logger.info("=" * 80)
 
         # -------------------------
-        # 6. Upload to GCS (backup)
+        # 5. Upload to GCS (primary storage)
         # -------------------------
+        # NOTE: Google Drive upload is disabled for now
+        logger.info("☁️  STEP 5: Uploading document to Google Cloud Storage...")
 
         output_bucket = output_gcs_uri.split("/")[2]
         output_path_prefix = "/".join(output_gcs_uri.split("/")[3:])
 
+        logger.info(f"   🪣 GCS Bucket: {output_bucket}")
+        logger.info(f"   📂 Path Prefix: {output_path_prefix}")
+
         output_bucket_obj = storage_client.bucket(output_bucket)
 
         final_blob_path = f"{output_path_prefix}{document_title}.docx"
+        logger.info(f"   📄 Final Blob Path: {final_blob_path}")
 
         output_blob = output_bucket_obj.blob(final_blob_path)
 
         # Reset stream position for GCS upload
         output_stream.seek(0)
 
+        logger.info(f"   ⬆️  Uploading {document_size:,} bytes to GCS...")
         output_blob.upload_from_file(
             output_stream,
             content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
 
         final_gcs_uri = f"gs://{output_bucket}/{final_blob_path}"
-        logger.info(f"Uploaded to GCS: {final_gcs_uri}")
+        logger.info(f"✅ Upload successful!")
+        logger.info("=" * 80)
+        logger.info("🎉 SOW GENERATION TOOL COMPLETED SUCCESSFULLY!")
+        logger.info("=" * 80)
+        logger.info(f"📄 Document Title: {document_title}")
+        logger.info(f"💾 GCS URI: {final_gcs_uri}")
+        logger.info(f"📊 Total Placeholders Replaced: {placeholder_count}")
+        logger.info(f"📦 Document Size: {document_size:,} bytes")
+        logger.info("=" * 80)
 
         return {
             "status": "success",
             "data": {
                 "document_title": document_title,
-                "gcs_uri": final_gcs_uri,
-                "drive_url": drive_url
+                "gcs_uri": final_gcs_uri
             }
         }
 
     except Exception as e:
-        logger.error(f"Failed to generate SOW document: {e}", exc_info=True)
+        logger.error("=" * 80)
+        logger.error("❌ SOW GENERATION TOOL FAILED!")
+        logger.error("=" * 80)
+        logger.error(f"📄 Document Title: {document_title}")
+        logger.error(f"📋 Template URI: {template_gcs_uri}")
+        logger.error(f"💾 Output URI: {output_gcs_uri}")
+        logger.error(f"❌ Error: {str(e)}")
+        logger.error("=" * 80)
+        logger.error("Full traceback:", exc_info=True)
+        logger.error("=" * 80)
 
         return {
             "status": "error",

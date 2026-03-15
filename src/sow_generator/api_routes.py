@@ -4,13 +4,38 @@ import asyncio
 import logging
 import uuid
 from typing import Optional
+from pathlib import Path
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from .session_manager import GenerationStage, session_manager
 from .config import SOW_TEMPLATE_GCS_URI, SOW_OUTPUT_GCS_URI
 
+# Configure logger with console and file handlers
 logger = logging.getLogger(__name__)
+if not logger.handlers:
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    )
+
+    # Console handler
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+    logger.addHandler(console_handler)
+
+    # File handler
+    from logging.handlers import RotatingFileHandler
+    log_dir = Path(__file__).parent.parent.parent / "logs"
+    log_dir.mkdir(exist_ok=True)
+    file_handler = RotatingFileHandler(
+        log_dir / "api_routes.log",
+        maxBytes=10*1024*1024,  # 10MB
+        backupCount=5
+    )
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+
+    logger.setLevel(logging.INFO)
 
 router = APIRouter()
 

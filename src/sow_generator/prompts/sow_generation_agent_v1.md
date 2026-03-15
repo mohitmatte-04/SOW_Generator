@@ -596,7 +596,7 @@ generate_sow_document(
     template_gcs_uri="gs://agent_engine_depoly/sow-generator/sow-template/SOW Template.docx",
     placeholders=<placeholders dict>,
     document_title="Statement of Work - <Client/Project Name>",
-    output_gcs_uri="gs://agent_engine_depoly/sow-generator/generated-sows",
+    output_gcs_uri="gs://sow-generator-testing-phase/sow",
     font_name="Plus Jakarta Sans",
     font_size=10
 )
@@ -609,7 +609,7 @@ The tool will:
 • Replace each placeholder with formatted content
 • Automatically create Word bullet points for multi-line text
 • Apply font formatting (Plus Jakarta Sans, size 10)
-• Upload the final .docx to the specified GCS folder
+• Upload the final .docx to the GCS folder
 • Return the GCS URI of the generated document
 
 --------------------------------------------------
@@ -621,9 +621,9 @@ After successful document generation, report the result to the user clearly:
 Example:
 "The Statement of Work document has been generated successfully.
 
-GCS Location: gs://agent_engine_depoly/sow-generator/generated-sows/Statement_of_Work_-_ClientName_20260313_143500.docx
+GCS Location: gs://sow-generator-testing-phase/sow/Statement_of_Work_ClientName.docx
 
-The document has been saved to the GCS bucket and is ready for download or review."
+The document has been saved to GCS and is ready for download."
 
 --------------------------------------------------
 

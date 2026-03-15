@@ -59,6 +59,15 @@ CRITICAL RULES - NO HALLUCINATION:
    - If still uncertain, choose the ONE most appropriate field (don't duplicate)
    - One page can contribute to multiple fields ONLY if it has clear sub-headings
 
+   **Special Case - "Assumptions and Dependencies" Slide:**
+   This heading is common and contains BOTH project_assumptions AND technical_assumptions mixed together.
+
+   How to differentiate:
+   - **Technical assumptions** contain keywords: software, environment, data, infrastructure, scripts, test, tools, licenses, migration, system, application, database, API, integration, platform
+   - **Project assumptions** contain keywords: customer, client, team, timeline, access, approval, availability, resources, POC, onboarding, stable environment, change freeze
+
+   Extract each assumption to the appropriate field based on these keywords.
+
 9. Return ONLY valid JSON matching the template structure — no markdown fences, no commentary.
 
 DEDUPLICATION RULE (CRITICAL):
@@ -250,8 +259,6 @@ FINAL VALIDATION BEFORE RETURNING JSON:
   "project_metadata": {
     "title": "DESCRIPTION: The specific project or engagement name (e.g., 'Teradata to GCP Migration')",
     "customer_name": "DESCRIPTION: Full legal name of the client organization",
-    "customer_short_name": "DESCRIPTION: Abbreviated customer name or acronym",
-    "provision_date": "DESCRIPTION: Date the SOW was generated (format: YYYY-MM-DD)",
     "msa_date": "DESCRIPTION: Effective date of the Master Services Agreement"
   },
   "sow_content": {
@@ -263,8 +270,8 @@ FINAL VALIDATION BEFORE RETURNING JSON:
     "limitations": "DESCRIPTION: Constraints or restrictions affecting service delivery",
     "success_criteria": "DESCRIPTION: Benchmarks for project success",
     "assumptions": {
-      "project_assumptions": "DESCRIPTION: Non-technical assumptions about customer responsibilities, timelines, access",
-      "technical_assumptions": "DESCRIPTION: Technical assumptions about software, environment, test scripts"
+      "project_assumptions": "DESCRIPTION: Non-technical/business assumptions about customer responsibilities, timelines, access, and operational matters. Common slide heading: 'Assumptions and Dependencies'. Examples: 'Legacy system environments will remain stable', 'Customer will provide timely approvals', 'Point of contact available throughout project'",
+      "technical_assumptions": "DESCRIPTION: Technical assumptions about software, infrastructure, environment, data, test scripts, and system readiness. Often found under 'Assumptions and Dependencies' heading. Differentiate by technical keywords (software, environment, data, scripts, infrastructure, system, tools, licenses). Examples: 'Test scripts will be provided by Client', 'Existing application environment will be free of critical defects', 'Access to all required development environments', 'Migration strategy will be lift and shift with no data model changes'"
     },
     "customer_roles_responsibilities": {
       "project_roles": "DESCRIPTION: Customer team members and their project roles",

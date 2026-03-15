@@ -602,14 +602,22 @@ def _replace_placeholders_in_paragraphs(paragraphs, parent_element, placeholders
             for key, value in placeholders.items():
                 parsed_value = _parse_value(value)
 
+                # Check if placeholder exists in this paragraph
+                if key in para.text:
+                    logger.info(f"Found placeholder {repr(key)} in paragraph: {para.text[:100]}...")
+
                 if isinstance(parsed_value, list) and len(parsed_value) > 0:
                     # Handle list values
                     new_paras = _replace_text_with_list(para, key, parsed_value, parent_element, font_name, font_size, use_fonts_for_para)
+                    if len(new_paras) > 0:
+                        logger.info(f"Replaced {repr(key)} with list of {len(parsed_value)} items")
                     for p in new_paras:
                         processed_ids.add(id(p))
                 else:
                     # Handle simple string replacement
-                    _replace_text_simple(para, key, str(parsed_value), font_name, font_size, use_fonts_for_para)
+                    replaced = _replace_text_simple(para, key, str(parsed_value), font_name, font_size, use_fonts_for_para)
+                    if replaced:
+                        logger.info(f"Replaced {repr(key)} with string value")
 
         i += 1
 
@@ -891,6 +899,17 @@ async def generate_sow_document(
             ]
         }
     """
+    logger.info("=" * 80)
+    logger.info("generate_sow_document called")
+    logger.info(f"template_gcs_uri: {template_gcs_uri}")
+    logger.info(f"document_title: {document_title}")
+    logger.info(f"output_gcs_uri: {output_gcs_uri}")
+    logger.info(f"font_name: {font_name}, font_size: {font_size}")
+    logger.info(f"Number of placeholders: {len(placeholders)}")
+    logger.info("Placeholders keys:")
+    for key in placeholders.keys():
+        logger.info(f"  - {repr(key)}")
+    logger.info("=" * 80)
 
     try:
         storage_client = storage.Client()

@@ -651,6 +651,8 @@ If required information cannot be derived from the JSON:
 ## Execution Order Summary
 
 1. Read `extractor_agent_context` from session state
+{extractor_agent_context}
+
 2. Extract `metadata_uri` from the context
 3. Call `read_gcs_json(gcs_uri=metadata_uri)` to download the extracted JSON
 4. Extract metadata using direct JSON path access:

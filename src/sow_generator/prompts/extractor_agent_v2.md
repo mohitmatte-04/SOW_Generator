@@ -24,16 +24,19 @@ Analyze the PDF presentation and extract information following these rules:
 
 **SOW Template Sections:**
 Extract information for these key sections:
-- Executive Summary
-- Business Objectives
+- Title
+- Customer Name
+- Customer Short Name
+- Opportunity
+- Solution Overview
 - Scope of Work
+- Activities
 - Deliverables
+- Out of Scope
+- Limitations
 - Timeline/Milestones
-- Resources/Team
 - Assumptions and Dependencies
 - Success Criteria
-- Risks and Mitigation
-- Budget/Pricing (if applicable)
 
 ## Output Format
 
@@ -43,18 +46,19 @@ Return a JSON object with this exact structure:
 {
   "status": "success",
   "extracted_json": {
-    "statement_of_work_template": {
-      "executive_summary": "extracted content or NA",
-      "business_objectives": "extracted content or NA",
+      "title": "extracted content or NA",
+      "customer_name": "extracted content or NA",
+      "customer_short_name": "extracted content or NA",
+      "opportunity": "extracted content or NA",
+      "solution_overview": "extracted content or NA",
       "scope_of_work": "extracted content or NA",
+      "activities": "extracted content or NA",
       "deliverables": "extracted content or NA",
+      "out_of_scope": "extracted content or NA",
+      "limitations": "extracted content or NA",
       "timeline": "extracted content or NA",
-      "resources": "extracted content or NA",
-      "assumptions": "extracted content or NA",
+      "assumptions_and_dependencies": "extracted content or NA",
       "success_criteria": "extracted content or NA",
-      "risks": "extracted content or NA",
-      "budget": "extracted content or NA"
-    }
   }
 }
 ```

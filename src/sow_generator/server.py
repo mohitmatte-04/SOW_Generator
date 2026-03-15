@@ -40,16 +40,17 @@ AGENT_DIR = os.getenv("AGENT_DIR", str(Path(__file__).resolve().parent.parent))
 # ADK fastapi app will set up OTel using resource attributes from env vars
 app: FastAPI = get_fast_api_app(
     agents_dir=AGENT_DIR,
-    session_service_uri=env.agent_engine_uri,
-    artifact_service_uri=env.artifact_service_uri,
-    memory_service_uri=env.agent_engine_uri,
-    allow_origins=env.allow_origins_list,
-    web=env.serve_web_interface,
-    reload_agents=env.reload_agents,
+    # session_service_uri=env.agent_engine_uri,
+    # artifact_service_uri=env.artifact_service_uri,
+    allow_origins=[
+    "http://localhost:3000",
+    "http://localhost:8080", 
+    "http://localhost",
+    "*"  # Allow all origins for development/testing
+    ],
+    web=True,
+    reload_agents=True,
 )
-
-# Include API routes for frontend integration
-app.include_router(api_router)
 
 
 @app.get("/health")
@@ -103,10 +104,13 @@ def main() -> None:
     #     log_level=env.log_level,
     # )
 
+    # Read port from environment (Cloud Run sets this dynamically)
+    port = int(os.getenv("PORT", "8080"))
+
     uvicorn.run(
         app,
-        host="localhost",
-        port=8080,
+        host="0.0.0.0",
+        port=port,
     )
 
     return

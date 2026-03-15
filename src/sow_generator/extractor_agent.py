@@ -33,7 +33,7 @@ extractor_agent = LlmAgent(
         "PDF conversion via Google Slides API and structured extraction via Gemini."
     ),
     instruction=PROMPT,
-    tools=[convert_slides_to_pdf],
+    tools=[],
     output_key="extractor_agent_context",
 
     # generate_content_config=PRODUCTION_CONFIG,

@@ -5,7 +5,7 @@ from pathlib import Path
 from google.adk.agents import LlmAgent
 
 from .config import REASONING_MODEL, SOW_GENERATION_CONFIG
-from .tools import generate_sow_document, read_gcs_json
+from .tools import generate_sow_document
 
 # Load prompt
 PROMPT_FILE = Path(__file__).parent / "prompts" / "sow_generation_agent_v2.md"

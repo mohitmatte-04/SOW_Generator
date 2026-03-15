@@ -5,6 +5,7 @@ multimodal processing with Gemini. Uses Google Drive/Slides API
 for native, high-quality conversion.
 """
 
+import json
 import logging
 import tempfile
 from pathlib import Path
@@ -23,22 +24,54 @@ class ConversionError(RuntimeError):
 class GoogleSlidesConverter:
     """Convert PPTX files to PDF using Google Slides API."""
 
-    def __init__(self, credentials_file: str | Path):
+    def __init__(self, credentials_file: str | Path | dict):
         """Initialize with service account credentials.
-        
+
         Args:
-            credentials_file: Path to service account JSON file.
+            credentials_file: Service account credentials in one of these formats:
+                - str/Path: Path to service account JSON file
+                - str: JSON string containing service account data
+                - dict: Parsed service account JSON data
         """
         scopes = [
             "https://www.googleapis.com/auth/drive",
             "https://www.googleapis.com/auth/presentations.readonly"
         ]
-        
-        creds = service_account.Credentials.from_service_account_file(
-            str(credentials_file),
-            scopes=scopes
-        )
-        
+
+        # Handle different credential formats
+        if isinstance(credentials_file, dict):
+            # Already a parsed JSON dict
+            creds = service_account.Credentials.from_service_account_info(
+                credentials_file,
+                scopes=scopes
+            )
+        elif isinstance(credentials_file, (str, Path)):
+            # Check if it's a file path or JSON string
+            credentials_path = Path(credentials_file) if isinstance(credentials_file, str) else credentials_file
+
+            if credentials_path.exists() and credentials_path.is_file():
+                # It's a file path
+                creds = service_account.Credentials.from_service_account_file(
+                    str(credentials_file),
+                    scopes=scopes
+                )
+            else:
+                # Assume it's a JSON string
+                try:
+                    credentials_dict = json.loads(str(credentials_file))
+                    creds = service_account.Credentials.from_service_account_info(
+                        credentials_dict,
+                        scopes=scopes
+                    )
+                except json.JSONDecodeError as e:
+                    raise ValueError(
+                        f"Invalid credentials: not a valid file path or JSON string: {e}"
+                    ) from e
+        else:
+            raise TypeError(
+                f"credentials_file must be str, Path, or dict, got {type(credentials_file)}"
+            )
+
         self.drive_service = build("drive", "v3", credentials=creds)
         self.slides_service = build("slides", "v1", credentials=creds)
 

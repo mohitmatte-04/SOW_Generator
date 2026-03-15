@@ -7,8 +7,9 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 # Set working directory
 WORKDIR /app
 
-# Copy dependency files
+# Copy dependency files and source code
 COPY pyproject.toml uv.lock ./
+COPY src ./src
 
 # Install dependencies in a virtual environment
 RUN uv sync --frozen --no-dev
@@ -25,26 +26,31 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Set working directory
 WORKDIR /app
 
-# Copy virtual environment from builder
-COPY --from=builder /app/.venv /app/.venv
+# Create non-root user for security first
+RUN useradd -m -u 1000 appuser
 
-# Copy application code
-COPY src ./src
+# Copy virtual environment from builder and set ownership
+COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv
+
+# Copy application code and set ownership
+COPY --chown=appuser:appuser src ./src
+
+# Create logs directory with proper permissions for appuser
+RUN mkdir -p /app/logs && chown -R appuser:appuser /app/logs
 
 # Copy service account file (if using file-based auth)
 # NOTE: In production, prefer using Workload Identity or default service account
-# COPY service_account.json ./
+# COPY --chown=appuser:appuser service_account.json ./
 
 # Set environment variables
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    # Cloud Run provides PORT environment variable
     HOST=0.0.0.0
+# Note: PORT is not set here to allow runtime override (e.g., Cloud Run sets this dynamically)
+# Default port 8080 is handled in server.py via os.getenv("PORT", "8080")
 
-# Create non-root user for security
-RUN useradd -m -u 1000 appuser && \
-    chown -R appuser:appuser /app
+# Switch to non-root user
 USER appuser
 
 # Health check

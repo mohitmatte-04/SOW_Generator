@@ -73,3 +73,8 @@ logs/
 *.pdf
 *.zip
 *.tar.gz
+
+# Service account credentials (use env vars or mount in production)
+src/**/*.json
+*.json
+!uv.lock

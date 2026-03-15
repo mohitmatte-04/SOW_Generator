@@ -184,6 +184,19 @@ async def generate_sow_document(
         for style in document.styles:
             print(f"style: {style.name}")
 
+        # Log header images for debugging
+        logger.info("=" * 80)
+        logger.info("Checking template headers for images...")
+        for section_idx, section in enumerate(document.sections):
+            header = section.header
+            image_count = 0
+            for para in header.paragraphs:
+                for run in para.runs:
+                    if run._element.xpath('.//w:drawing'):
+                        image_count += 1
+            logger.info(f"Section {section_idx}: Header has {image_count} images")
+        logger.info("=" * 80)
+
         # -------------------------
         # 3. Replace placeholders
         # -------------------------
@@ -364,9 +377,11 @@ async def generate_sow_document(
             # Copy paragraph format
             pf_src = reference_para.paragraph_format
             pf_dst = new_para.paragraph_format
-            pf_dst.left_indent = pf_src.left_indent
+            # NOTE: Don't copy left_indent/first_line_indent if we're using ilvl numbering
+            # The numbering level (ilvl) will control indentation automatically
+            # pf_dst.left_indent = pf_src.left_indent  # Commented out - conflicts with ilvl
+            # pf_dst.first_line_indent = pf_src.first_line_indent  # Commented out
             pf_dst.right_indent = pf_src.right_indent
-            pf_dst.first_line_indent = pf_src.first_line_indent
             pf_dst.space_before = pf_src.space_before
             pf_dst.space_after = pf_src.space_after
             pf_dst.line_spacing = pf_src.line_spacing

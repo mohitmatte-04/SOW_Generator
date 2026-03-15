@@ -10,14 +10,13 @@ enabling simultaneous ADK web UI traces and Google Cloud observability.
 
 import os
 from pathlib import Path
-
+from dotenv import load_dotenv
 import uvicorn
 from fastapi import FastAPI
 from google.adk.cli.fast_api import get_fast_api_app
 from dotenv import load_dotenv
 
 # Load and validate environment configuration
-# env = initialize_environment(ServerEnv)
 load_dotenv()
 
 # Use .resolve() to handle symlinks and ensure absolute path across environments

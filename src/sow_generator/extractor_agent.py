@@ -65,7 +65,7 @@ extractor_agent = LlmAgent(
     output_key="extractor_agent_context",
     output_schema=ExtractorSchema,
     # generate_content_config=PRODUCTION_CONFIG,
-    after_tool_callback=after_tool_callback,
+    # after_tool_callback=after_tool_callback,
     before_model_callback=before_model_callback,
 )
 

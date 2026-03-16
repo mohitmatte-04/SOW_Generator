@@ -252,6 +252,9 @@ async def after_agent_callback(callback_context: CallbackContext) -> Optional[ge
             font_size=10
         )
         
+        callback_context.state["is_pdf_generated"] = False
+        callback_context.state["sow_generation_agent_result"] = None
+        
         if doc_result.get("status") == "success":
             gcs_uri = doc_result["data"]["gcs_uri"]
             success_msg = f"The Statement of Work document has been generated successfully.\n\nGCS Location: {gcs_uri}\n\nThe document has been saved to the GCS bucket and is ready for download or review."
@@ -284,6 +287,8 @@ async def after_agent_callback(callback_context: CallbackContext) -> Optional[ge
             )
 
     except Exception as exc:
+        callback_context.state["is_pdf_generated"] = False
+        callback_context.state["sow_generation_agent_result"] = None
         error_msg = f"Exception during SOW document generation in callback: {str(exc)}"
         logger.error(f"[Callback] {error_msg}", exc_info=True)
         return genai_types.Content(

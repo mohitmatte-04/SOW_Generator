@@ -233,15 +233,6 @@ async def process_sow_generation(session_id: str, proposal_url: str, document_ti
             result_url=final_url
         )
 
-        # Also update the message
-        location_msg = f"Google Drive: {generated_drive_url}" if generated_drive_url else f"GCS: {generated_sow_gcs_uri}"
-        session_manager.update_progress(
-            session_id,
-            GenerationStage.COMPLETE,
-            100,
-            f"SOW saved! {location_msg}"
-        )
-
         logger.info(f"Session {session_id}: SOW generation completed successfully")
 
     except Exception as e:

@@ -198,20 +198,24 @@ async def process_sow_generation(session_id: str, proposal_url: str, document_ti
         generated_sow_gcs_uri = None
 
         if result_text:
+            logger.info(f"Agent response text: {result_text}")  # Added: Log full response
+            
             # Try to extract Google Drive URL
             drive_match = re.search(r'https://[^\s]*drive\.google\.com/[^\s]+', result_text)
             if drive_match:
                 generated_drive_url = drive_match.group(0)
 
-            # Try to extract GCS URI
-            gcs_match = re.search(r'gs://[^\s]+\.docx', result_text)
+            # Try to extract GCS URI - handles spaces in filenames
+            # Matches from 'gs://' to '.docx' including any characters (including spaces)
+            gcs_match = re.search(r'gs://[^\n]+?\.docx', result_text)  # ✅ FIXED: Handles spaces!
             if gcs_match:
-                generated_sow_gcs_uri = gcs_match.group(0)
+                generated_sow_gcs_uri = gcs_match.group(0).strip()
+                logger.info(f"✅ Successfully extracted GCS URI: {generated_sow_gcs_uri}")
 
         # If we couldn't extract URLs, use the configured output location
         if not generated_sow_gcs_uri:
             generated_sow_gcs_uri = f"{SOW_OUTPUT_GCS_URI}{document_title}.docx"
-            logger.warning(f"Could not extract GCS URI from agent response, using configured location: {generated_sow_gcs_uri}")
+            logger.warning(f"⚠️ Could not extract GCS URI from agent response, using configured location: {generated_sow_gcs_uri}")
 
         # Enhanced logging for SOW save location
         logger.info(f"{'=' * 80}")

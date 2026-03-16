@@ -10,14 +10,29 @@ enabling simultaneous ADK web UI traces and Google Cloud observability.
 
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+
 import uvicorn
 from fastapi import FastAPI
 from google.adk.cli.fast_api import get_fast_api_app
 from dotenv import load_dotenv
 
+# from .utils import (
+#     ServerEnv,
+#     configure_otel_resource,
+#     initialize_environment,
+#     setup_opentelemetry,
+# )
+from sow_generator.api_routes import router as api_router
+
 # Load and validate environment configuration
 load_dotenv()
+# env = initialize_environment(ServerEnv)
+# Configure OpenTelemetry resource attributes environment variable
+# This must happen before ADK creates its TracerProvider
+# configure_otel_resource(
+#     agent_name="sow-generator",
+#     project_id="search-ahmed",
+# )
 
 # Use .resolve() to handle symlinks and ensure absolute path across environments
 AGENT_DIR = os.getenv("AGENT_DIR", str(Path(__file__).resolve().parent.parent))
@@ -29,13 +44,16 @@ app: FastAPI = get_fast_api_app(
     # artifact_service_uri=env.artifact_service_uri,
     allow_origins=[
     "http://localhost:3000",
-    "http://localhost:8080", 
+    "http://localhost:8080",
     "http://localhost",
     "*"  # Allow all origins for development/testing
     ],
     web=True,
     reload_agents=True,
 )
+
+# Include API routes for frontend integration
+app.include_router(api_router)
 
 
 @app.get("/health")

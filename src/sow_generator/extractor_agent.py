@@ -12,10 +12,38 @@ The agent operates as an independent module in a SequentialAgent pipeline.
 
 
 from pathlib import Path
+from typing import List
+
+from pydantic import BaseModel
 from google.adk.agents import LlmAgent
+
 from .config import PRODUCTION_CONFIG, REASONING_MODEL
 from .extractor_callbacks import after_tool_callback, before_model_callback
 from .tools.convert_slides_to_pdf import convert_slides_to_pdf
+
+
+class ProjectMetadata(BaseModel):
+    title: str
+    customer_name: str
+    msa_date: str
+
+
+class SowContent(BaseModel):
+    opportunity: str
+    solution_overview: str | list
+    activities: str | list
+    deliverables: str | list
+    out_of_scope: str | list
+    limitations: str | list
+    success_criteria: str | list
+    technical_assumptions: str | list
+    payment_schedule: str | list
+    add_appendix_details: str | list
+
+
+class ExtractorSchema(BaseModel):
+    project_metadata: ProjectMetadata
+    sow_content: SowContent
 
 # Load promp
 
@@ -35,9 +63,8 @@ extractor_agent = LlmAgent(
     instruction=PROMPT,
     tools=[],
     output_key="extractor_agent_context",
-
+    output_schema=ExtractorSchema,
     # generate_content_config=PRODUCTION_CONFIG,
-
     after_tool_callback=after_tool_callback,
     before_model_callback=before_model_callback,
 )

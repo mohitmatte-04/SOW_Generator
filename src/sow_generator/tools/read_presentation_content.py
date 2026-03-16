@@ -2,119 +2,165 @@
 
 import logging
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 from pptx import Presentation
-from googleapiclient.discovery import build
-from google.oauth2 import service_account
-from google.auth.transport.requests import Request
-import google.auth
+from google.cloud import storage
+import tempfile
+import asyncio
 
 logger = logging.getLogger(__name__)
 
-async def read_presentation_content(
-    presentation_source: str,
-) -> Dict[str, Any]:
+async def extract_slide_structure(slide):
     """
-    Reads and extracts text content from a Google Slides URL or a local .pptx file.
+    Extracts structured content from a single PowerPoint slide.
+
+    This function parses a slide to identify its title, bullet points (with levels),
+    tables, and speaker notes.
 
     Args:
-        presentation_source: URL to Google Slides or local path to a .pptx file.
+        slide: A pptx.slide.Slide object to extract content from.
 
     Returns:
-        A dictionary containing the status, extracted text, and any error message.
-        Example: {"status": "success", "data": {"text": "...", "slides": [...]}}
+        dict: A dictionary containing:
+            - title (str): The text content of the title shape, if present.
+            - bullets (list[dict]): A list of objects with 'level' (int) and 'text' (str).
+            - tables (list[list[list[str]]]): A 3D list representing table data [table][row][cell].
+            - text_blocks (list): Currently unused placeholder for additional text items.
+            - notes (str): The text from the speaker notes slide, if present.
     """
+
+    slide_data = {
+        "title": "",
+        "bullets": [],
+        "tables": [],
+        "text_blocks": [],
+        "notes": ""
+    }
+
+    for shape in slide.shapes:
+
+        # --- TITLE ---
+        if shape == slide.shapes.title and shape.has_text_frame:
+            slide_data["title"] = shape.text.strip()
+            continue
+
+        # --- TEXT / BULLETS ---
+        if shape.has_text_frame:
+
+            for paragraph in shape.text_frame.paragraphs:
+
+                text = paragraph.text.strip()
+
+                if not text:
+                    continue
+
+                bullet = {
+                    "level": paragraph.level,
+                    "text": text
+                }
+
+                slide_data["bullets"].append(bullet)
+
+        # --- TABLES ---
+        if shape.has_table:
+
+            table_data = []
+
+            for row in shape.table.rows:
+
+                row_data = []
+
+                for cell in row.cells:
+                    row_data.append(cell.text.strip())
+
+                table_data.append(row_data)
+
+            slide_data["tables"].append(table_data)
+
+    # --- SPEAKER NOTES ---
+    if slide.has_notes_slide:
+        notes = slide.notes_slide.notes_text_frame.text.strip()
+        slide_data["notes"] = notes
+
+    return slide_data
+
+
+async def read_presentation_content(gcs_uri: str):
+    """
+    Extracts structured data (titles, bullets, tables, notes) including text from each slide of the presentation.
+
+    Args:
+        gcs_uri (str): The Google Cloud Storage URI of the .pptx file (e.g., "gs://bucket/path/file.pptx").
+
+    Returns:
+        dict: A dictionary with a "status" ("success" or "error"):
+            - If "success": "data" contains:
+                - title (str): Filename of the presentation.
+                - slides (list[dict]): List of structured slide contents.
+                - full_text (str): A flattened string of all extracted bullet text.
+            - If "error": "error" contains the exception message.
+    """
+
     try:
-        if "docs.google.com/presentation" in presentation_source:
-            return await _read_google_slides(presentation_source)
-        elif presentation_source.lower().endswith(".pptx"):
-            return await _read_local_pptx(presentation_source)
-        else:
-            return {
-                "status": "error",
-                "error": "Unsupported presentation source. Must be a Google Slides URL or a local .pptx file.",
-            }
-    except Exception as e:
-        logger.error(f"Failed to read presentation: {e}", exc_info=True)
-        return {"status": "error", "error": str(e)}
 
-async def _read_google_slides(url: str) -> Dict[str, Any]:
-    """Reads content from Google Slides using the Slides API."""
-    try:
-        # Extract presentation ID from URL
-        # URL format: https://docs.google.com/presentation/d/<PRESENTATION_ID>/edit...
-        parts = url.split("/")
-        if "d" not in parts:
-             return {"status": "error", "error": "Invalid Google Slides URL format."}
-        presentation_id = parts[parts.index("d") + 1]
+        if not gcs_uri.startswith("gs://"):
+            raise ValueError("Invalid GCS URI. Expected format: gs://bucket/file.pptx")
 
-        # Authenticate
-        credentials, project = google.auth.default(
-            scopes=["https://www.googleapis.com/auth/presentations.readonly"]
-        )
-        if credentials.expired and credentials.refresh_token:
-            credentials.refresh(Request())
+        # Parse GCS path
+        path = gcs_uri.replace("gs://", "")
+        bucket_name, blob_path = path.split("/", 1)
 
-        service = build("slides", "v1", credentials=credentials)
-        presentation = service.presentations().get(presentationId=presentation_id).execute()
-        slides = presentation.get("slides", [])
+        # Initialize client
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(blob_path)
 
-        extracted_slides = []
-        full_text = []
+        with tempfile.NamedTemporaryFile(suffix=".pptx", delete=False) as temp_file:
+            temp_file_path = temp_file.name
+            temp_file.close() # Close the file handle for Windows compatibility
 
-        for i, slide in enumerate(slides):
-            slide_text = []
-            for element in slide.get("pageElements", []):
-                if "shape" in element and "text" in element["shape"]:
-                    text_content = element["shape"]["text"].get("textElements", [])
-                    for text_element in text_content:
-                        if "textRun" in text_element:
-                            slide_text.append(text_element["textRun"]["content"])
-            
-            content = "".join(slide_text).strip()
-            extracted_slides.append({"slide_number": i + 1, "content": content})
-            full_text.append(content)
+            try:
+                blob.download_to_filename(temp_file_path)
+
+                prs = Presentation(temp_file_path)
+
+                slides_data = []
+                all_text = []
+
+                for i, slide in enumerate(prs.slides):
+
+                    slide_struct = await extract_slide_structure(slide)
+
+                    slides_data.append({
+                        "slide_number": i + 1,
+                        **slide_struct
+                    })
+
+                    # Flatten text for fallback LLM context
+                    combined_text = " ".join(
+                        [b["text"] for b in slide_struct["bullets"]]
+                    )
+
+                    all_text.append(combined_text)
+            finally:
+                # Always cleanup the temporary file
+                if os.path.exists(temp_file_path):
+                    os.remove(temp_file_path)
 
         return {
             "status": "success",
             "data": {
-                "text": "\n\n".join(full_text),
-                "slides": extracted_slides,
-                "title": presentation.get("title", "Untitled Presentation")
+                "title": blob_path.split("/")[-1],
+                "slides": slides_data,
+                "full_text": "\n".join(all_text)
             }
         }
 
     except Exception as e:
-        logger.error(f"Error reading Google Slides: {e}")
-        return {"status": "error", "error": f"Google Slides API error: {str(e)}"}
 
-async def _read_local_pptx(path: str) -> Dict[str, Any]:
-    """Reads content from a local .pptx file."""
-    try:
-        if not os.path.exists(path):
-            return {"status": "error", "error": f"File not found: {path}"}
-
-        prs = Presentation(path)
-        extracted_slides = []
-        full_text = []
-
-        for i, slide in enumerate(prs.slides):
-            slide_text = []
-            for shape in slide.shapes:
-                if hasattr(shape, "text"):
-                    slide_text.append(shape.text)
-            
-            content = "\n".join(slide_text).strip()
-            extracted_slides.append({"slide_number": i + 1, "content": content})
-            full_text.append(content)
+        logger.error(f"Error reading presentation from GCS: {e}", exc_info=True)
 
         return {
-            "status": "success",
-            "data": {
-                "text": "\n\n".join(full_text),
-                "slides": extracted_slides,
-            }
+            "status": "error",
+            "error": str(e)
         }
-    except Exception as e:
-        logger.error(f"Error reading local PPTX: {e}")
-        return {"status": "error", "error": f"PPTX parsing error: {str(e)}"}

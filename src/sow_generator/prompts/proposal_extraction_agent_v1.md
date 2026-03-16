@@ -11,7 +11,12 @@ Accurately extract the business problem, proposed solution, in-scope activities,
 3.  Identify the "Proposed Solution" or "Approach" suggested in the proposal.
 4.  List the "In-Scope" items (what the project will do).
 5.  List the "Out-of-Scope" items (what the project will NOT do).
-6.  Ensure the extracted information is concise but captures the essential high-level details.
+6.  List the "Customer Dependencies" items (what are the dependencies on customer).
+7.  List the "Technical Assumptions" items (what are the technical assumptions made).
+8.  List the "Deliverables" items (what are the artifacts to be delivered).
+9.  List the "Title" of the proposal.
+10. List the "Opportunity" name.
+11. Ensure the extracted information is comprehensive but captures the essential high-level details.
 
 ## Input Context
 
@@ -22,7 +27,7 @@ You will have access to the following information:
 
 ## Available Tools
 
-- `read_presentation_content`: Extracts text from the presentation source.
+- `read_presentation_content`: Extracts structured text including titles, bullets, tables, notes and full text from the presentation source.
 
 ## Output Requirements
 
@@ -32,10 +37,15 @@ Save your result to the state key: `proposal_extraction_agent_context`
 {
   "status": "success",
   "data": {
-    "business_problem": "Detailed description of the problem",
-    "proposed_solution": "Detailed description of the solution",
-    "in_scope": ["Item 1", "Item 2"],
-    "out_of_scope": ["Item 1", "Item 2"]
+    "<<BUSINESS_PROBLEM>>": "Detailed description of the problem",
+    "<<PROPOSED_SOLUTION>>": "Detailed description of the solution",
+    "<<IN_SCOPE>>": "Item 1\nItem 2",
+    "<<OUT_OF_SCOPE>>": ["Item 1", "Item 2"],
+    "<<CUSTOMER_DEPENDENCIES>>": ["Item 1", "Item 2"],
+    "<<TECHNICAL_ASSUMPTIONS>>": ["Item 1", "Item 2"],
+    "<<DELIVERABLES>>": ["Item 1", "Item 2"],
+    "<<TITLE>>": "Title of the proposal",
+    "<<OPPORTUNITY>>": "Opportunity name"
   }
 }
 ```

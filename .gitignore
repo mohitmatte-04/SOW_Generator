@@ -12,6 +12,7 @@ __pycache__/
 env/
 venv/
 .venv/
+.adk/
 
 # Testing
 .pytest_cache/

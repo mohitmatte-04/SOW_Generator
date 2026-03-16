@@ -1,4 +1,4 @@
-"""Utils module for l1_support_agent."""
+"""Utils module for sow_generator."""
 
 import json
 import logging
@@ -17,7 +17,7 @@ class ServerEnv(BaseSettings):
 
     google_cloud_project: str = Field(..., alias="GOOGLE_CLOUD_PROJECT")
     google_cloud_location: str = Field("us-central1", alias="GOOGLE_CLOUD_LOCATION")
-    agent_name: str = Field("l1_support_agent", alias="AGENT_NAME")
+    agent_name: str = Field("sow_generator", alias="AGENT_NAME")
 
     agent_engine_uri: str | None = Field(None, alias="AGENT_ENGINE")
     artifact_service_uri: str | None = Field(None, alias="ARTIFACT_SERVICE_URI")

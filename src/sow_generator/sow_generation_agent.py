@@ -6,7 +6,7 @@ from .config import REASONING_MODEL, PRODUCTION_CONFIG
 from .tools import generate_sow_document
 
 # Load prompt
-PROMPT_FILE = Path(__file__).parent / "prompts" / "sow_generation_agent_v1.txt"
+PROMPT_FILE = Path(__file__).parent / "prompts" / "sow_generation_agent_v1.md"
 with open(PROMPT_FILE, encoding="utf-8") as f:
     PROMPT = f.read()
 

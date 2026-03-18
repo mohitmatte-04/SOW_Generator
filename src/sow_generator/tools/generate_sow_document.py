@@ -522,6 +522,8 @@ def _replace_text_with_list(paragraph, key, items, parent_element, font_name=Non
         flattened_items.extend(_flatten_nested_item(item))
 
     new_paras = []
+    from docx.shared import Inches
+
     for i, (text, indent_level) in enumerate(flattened_items):
         if i == 0:
             # Update the original paragraph
@@ -557,6 +559,13 @@ def _replace_text_with_list(paragraph, key, items, parent_element, font_name=Non
                 if ilvl_elem is not None:
                     ilvl_elem.set('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val', str(indent_level))
 
+            # Reset paragraph indentation to ensure consistency across all sections
+            # The template may have different indents for different placeholders
+            paragraph.paragraph_format.left_indent = None
+            paragraph.paragraph_format.first_line_indent = None
+
+            # The ilvl (indent level) now handles all bullet positioning automatically
+
             new_paras.append(paragraph)
         else:
             # Insert new paragraph with appropriate indent level
@@ -571,6 +580,13 @@ def _replace_text_with_list(paragraph, key, items, parent_element, font_name=Non
                 ilvl_elem = new_numPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}ilvl')
                 if ilvl_elem is not None:
                     ilvl_elem.set('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val', str(indent_level))
+
+            # Reset paragraph indentation to ensure consistency across all sections
+            # The template may have different indents for different placeholders
+            new_para.paragraph_format.left_indent = None
+            new_para.paragraph_format.first_line_indent = None
+
+            # The ilvl (indent level) now handles all bullet positioning automatically
 
             new_paras.append(new_para)
 

@@ -204,11 +204,53 @@ If content for a schema field appears across multiple slides:
 2. Identify all matching sections
 3. Append/combine content for that field
 
+### Category Identification
+
+**After mapping all content to schema fields, identify the proposal category.**
+
+Choose ONE category from this list based on the extracted content:
+
+**Available Categories:**
+1. `snowflake_migration` - Projects involving migration to Snowflake data platform
+2. `eagle_assessment_eagle_modernization` - Eagle system assessment or modernization projects
+3. `datawarehouse_modernization` - General data warehouse modernization (not platform-specific)
+4. `teradata_migration` - Teradata migration projects (general, without ETL/BI focus)
+5. `teradata_migration_etl` - Teradata migration with focus on ETL (Extract, Transform, Load)
+6. `teradata_migration_etl_bi` - Teradata migration including both ETL and BI components
+
+**Category Selection Process:**
+
+1. **Check Technology Keywords:**
+   - "Snowflake" mentioned → `snowflake_migration`
+   - "Teradata" mentioned → one of the teradata categories (continue to next step)
+   - "Eagle" system mentioned → `eagle_assessment_eagle_modernization`
+   - "Data warehouse" or "DW" without specific platform → `datawarehouse_modernization`
+
+2. **For Teradata Projects, Check Scope:**
+   - Mentions "ETL" or "data transformation" or "data pipelines"? → Has ETL component
+   - Mentions "BI" or "Business Intelligence" or "reporting" or "dashboards"? → Has BI component
+   - Decision tree:
+     * ETL + BI both present → `teradata_migration_etl_bi` (most specific)
+     * Only ETL present → `teradata_migration_etl`
+     * Neither emphasized → `teradata_migration` (general)
+
+3. **Examples:**
+   - "Teradata to BigQuery migration with ETL pipeline development and Looker dashboards" → `teradata_migration_etl_bi`
+   - "Snowflake implementation for enterprise data warehouse" → `snowflake_migration`
+   - "Data warehouse modernization strategy assessment" → `datawarehouse_modernization`
+   - "Teradata to GCP migration with focus on data transformation" → `teradata_migration_etl`
+   - "Eagle system performance assessment and optimization" → `eagle_assessment_eagle_modernization`
+
+4. **Default Fallback:**
+   - If uncertain but Teradata is mentioned → `teradata_migration`
+   - If uncertain and no specific platform → `datawarehouse_modernization`
+
 ### Critical Rules
 
 1. **No duplication:** Each piece of information appears in ONLY ONE field (the most appropriate one)
 2. **Missing data:** If no data found for a field -> Set to `"NA"`
 3. **Preserve structure:** Keep the nested array/string structure from extraction phase
+4. **Category is required:** Every proposal must be assigned to ONE category based on the rules above
 
 ---
 
@@ -295,6 +337,7 @@ Always use: `["Header", [items]]` NOT `["Header", "item1", "item2"]`
     "customer_name": "Full legal name of the client organization",
     "msa_date": "Effective date of the Master Services Agreement"
   },
+  "category": "One of: snowflake_migration | eagle_assessment_eagle_modernization | datawarehouse_modernization | teradata_migration | teradata_migration_etl | teradata_migration_etl_bi",
   "sow_content": {
     "opportunity": "Business problem, current situation, and project justification (string or array)",
     "solution_overview": "High-level technical solution and approach summary (string or array)",

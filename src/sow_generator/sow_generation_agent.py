@@ -23,15 +23,15 @@ class SowPlaceHolderOutput(BaseModel):
     provision_date: str
     enter_msa_date: str
     opportunity: str
-    solution_overview: str
-    activities: str | list
-    deliverables: str | list
-    out_of_scope: str | list
-    limitations: str | list
-    success_criteria: str | list
-    technical_assumptions: str | list
-    payment_schedule: str | list
-    add_appendix_details: str
+    solution_overview: str | list[dict]
+    activities: str | list[dict]
+    deliverables: str | list[dict]
+    out_of_scope: str | list[dict]
+    limitations: str | list[dict]
+    success_criteria: str | list[dict]
+    technical_assumptions: str | list[dict]
+    payment_schedule: str | list[dict]
+    add_appendix_details: str | list[dict]
 
 class SowGenerationSchema(BaseModel):
     status: Literal['success', 'failed']

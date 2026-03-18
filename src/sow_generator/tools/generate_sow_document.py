@@ -27,17 +27,19 @@ logger = logging.getLogger(__name__)
 # -------------------------
 
 def _parse_value(value):
-    """Parse a value that might be a string or list."""
-    if isinstance(value, list):
+    """Parse a value that might be a string, list, or dict."""
+    if isinstance(value, (list, dict)):
         return value
-    # Check if it's a JSON array string
-    if isinstance(value, str) and value.strip().startswith('['):
-        try:
-            parsed = json.loads(value)
-            if isinstance(parsed, list):
-                return parsed
-        except (json.JSONDecodeError, ValueError):
-            pass
+    # Check if it's a JSON array or object string
+    if isinstance(value, str):
+        stripped_value = value.strip()
+        if stripped_value.startswith('[') or stripped_value.startswith('{'):
+            try:
+                parsed = json.loads(stripped_value)
+                if isinstance(parsed, (list, dict)):
+                    return parsed
+            except (json.JSONDecodeError, ValueError):
+                pass
     return str(value)
 
 
@@ -467,12 +469,14 @@ def _insert_paragraph_after(reference_para, value, parent_element, prefix="", su
 
 def _flatten_nested_item(item, level=0):
     """
-    Flatten a potentially nested array item into a list of (text, indent_level) tuples.
+    Flatten a potentially nested array or dictionary item into a list of (text, indent_level) tuples.
 
-    Handles nested structure: [main_point, [sub_point_1, sub_point_2]]
+    Handles nested structure:
+    - Lists: [main_point, [sub_point_1, sub_point_2]]
+    - Dicts: {"Section 1": ["Point 1", {"Sub-section": ["Sub-point"]}]}
 
     Args:
-        item: Either a string or a nested array [main_text, [sub_items...]]
+        item: Either a string, a dictionary, or a nested array
         level: Current indentation level (0 for main bullets, 1 for sub-bullets, etc.)
 
     Returns:
@@ -481,18 +485,29 @@ def _flatten_nested_item(item, level=0):
     if isinstance(item, str):
         # Simple string item
         return [(item.strip(), level)]
+    elif isinstance(item, dict):
+        result = []
+        for key, value in item.items():
+            # Add the key as a point at current level
+            result.append((str(key).strip(), level))
+            # Process the values at the next indent level
+            result.extend(_flatten_nested_item(value, level + 1))
+        return result
     elif isinstance(item, list):
         if len(item) == 0:
             return []
         elif len(item) == 1:
             # Single element array - treat as simple item
             return _flatten_nested_item(item[0], level)
-        elif len(item) == 2 and isinstance(item[0], str) and isinstance(item[1], list):
-            # Nested structure: [main_point, [sub_points]]
+        elif len(item) == 2 and isinstance(item[0], str) and isinstance(item[1], (list, dict)):
+            # Nested structure: [main_point, [sub_points]] or [main_point, {sub_points}]
             result = [(item[0].strip(), level)]
             # Recursively flatten sub-items at increased indent level
-            for sub_item in item[1]:
-                result.extend(_flatten_nested_item(sub_item, level + 1))
+            if isinstance(item[1], list):
+                for sub_item in item[1]:
+                    result.extend(_flatten_nested_item(sub_item, level + 1))
+            else:
+                result.extend(_flatten_nested_item(item[1], level + 1))
             return result
         else:
             # Array of items at same level
@@ -507,6 +522,8 @@ def _flatten_nested_item(item, level=0):
 
 def _replace_text_with_list(paragraph, key, items, parent_element, font_name=None, font_size=None, use_custom_fonts=True):
     """Replace placeholder with multiple bullet points, supporting nested sub-bullets."""
+    from docx.shared import Inches, Pt
+    
     if key not in paragraph.text:
         return []
 
@@ -544,7 +561,7 @@ def _replace_text_with_list(paragraph, key, items, parent_element, font_name=Non
 
                     numPr_xml = f'''
                     <w:numPr {nsdecls('w')}>
-                        <w:ilvl w:val="{indent_level}"/>
+                        <w:ilvl w:val="0"/>
                         <w:numId w:val="1"/>
                     </w:numPr>
                     '''
@@ -554,7 +571,7 @@ def _replace_text_with_list(paragraph, key, items, parent_element, font_name=Non
                         para_pPr.remove(existing)
                     para_pPr.append(numPr)
             else:
-                # Update indent level for existing numbering
+                # Force ilvl to 0 so the bullet style is identical for all items
                 ilvl_elem = para_numPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}ilvl')
                 if ilvl_elem is not None:
                     ilvl_elem.set('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val', str(indent_level))
@@ -564,22 +581,22 @@ def _replace_text_with_list(paragraph, key, items, parent_element, font_name=Non
             paragraph.paragraph_format.left_indent = None
             paragraph.paragraph_format.first_line_indent = None
 
+
             # The ilvl (indent level) now handles all bullet positioning automatically
 
             new_paras.append(paragraph)
         else:
-            # Insert new paragraph with appropriate indent level
+            # Insert new paragraph with formatting copied from prior paragraph
             new_para = _insert_paragraph_after(new_paras[-1], text, parent_element, prefix, suffix, font_name, font_size, use_custom_fonts)
 
-            # Set the indent level for sub-bullets
+            # Enforce same bullet type by keeping level 0
             new_pPr = new_para._element.get_or_add_pPr()
             new_numPr = new_pPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr')
 
             if new_numPr is not None:
-                # Update indent level
                 ilvl_elem = new_numPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}ilvl')
                 if ilvl_elem is not None:
-                    ilvl_elem.set('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val', str(indent_level))
+                    ilvl_elem.set('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val',  str(indent_level))
 
             # Reset paragraph indentation to ensure consistency across all sections
             # The template may have different indents for different placeholders
@@ -622,11 +639,12 @@ def _replace_placeholders_in_paragraphs(paragraphs, parent_element, placeholders
                 if key in para.text:
                     logger.info(f"Found placeholder {repr(key)} in paragraph: {para.text[:100]}...")
 
-                if isinstance(parsed_value, list) and len(parsed_value) > 0:
-                    # Handle list values
-                    new_paras = _replace_text_with_list(para, key, parsed_value, parent_element, font_name, font_size, use_fonts_for_para)
+                if isinstance(parsed_value, (list, dict)) and len(parsed_value) > 0:
+                    # Handle list and dict values
+                    items_to_process = parsed_value if isinstance(parsed_value, list) else [parsed_value]
+                    new_paras = _replace_text_with_list(para, key, items_to_process, parent_element, font_name, font_size, use_fonts_for_para)
                     if len(new_paras) > 0:
-                        logger.info(f"Replaced {repr(key)} with list of {len(parsed_value)} items")
+                        logger.info(f"Replaced {repr(key)} with structured items")
                     for p in new_paras:
                         processed_ids.add(id(p))
                 else:

@@ -1,0 +1,453 @@
+{
+  "Golden_Template_Snowflake_Migration_SOW": {
+    "1.0 Executive Summary": {
+      "1.1 Opportunity": {
+        "Migration_Intent": [
+          "The Customer intends to migrate their existing [Source DWH] data warehouse, currently hosted on [Source Cloud Environment], to the [Target Cloud] data platform.",
+          "The Customer is planning to migrate its current [Source DWH] environment along with its associated workloads to a cost-effective unified modern data warehouse in the [Target Cloud] Platform with no changes in the data model and is seeking subject matter experts to help fulfill its objectives."
+        ],
+        "Application_Repointing": [
+          "Along with the migration, the Customer intends to repoint (change the configuration to work with the target platform) dependent up- and down-stream applications to the [Target Cloud] data platform.",
+          "Specifically, this includes [ETL/ELT Tool] (source as [Data Lake/Storage]) and [Reporting/BI Tool]."
+        ],
+        "Cloud_Initiatives": [
+          "The Customer is currently building their Cloud infrastructure and data and AI/BI platform foundation as part of their broader Cloud Shift Initiative."
+        ],
+        "Business_Value_and_Strategic_Alignment": [
+          "Define measurable Total Cost of Ownership (TCO) reduction targets post-migration.",
+          "Establish baseline metrics for query performance improvements and concurrency scaling.",
+          "Link the migration objectives directly to the broader enterprise data strategy (e.g., enabling advanced AI/ML capabilities, real-time analytics, data mesh architecture)."
+        ]
+      },
+      "1.2 Solution Overview": {
+        "Current_Landscape_Capabilities": {
+          "Source_Systems": [
+            "[File Transfer Protocol / 3rd Party File Based System]",
+            "[Enterprise Data Integration Service / Message Broker]"
+          ],
+          "Data_Lake_and_Warehouse": [
+            "Built on [Source DWH] on [Source Cloud]",
+            "[Enterprise Data Mart / Core DWH]"
+          ],
+          "Data_Ingestion": [
+            "[Streaming Ingestion Tool / Kafka]",
+            "[Batch Ingestion Tool / Snowpipes]"
+          ],
+          "Data_Quality": [
+            "[Data Quality Tool]"
+          ],
+          "Data_Transformation": [
+            "[Source DWH Transformation Engine]"
+          ],
+          "Orchestrator_and_Scheduling": [
+            "[Orchestration Tool]"
+          ],
+          "Reporting_Tools": [
+            "[BI Tool 1]",
+            "[BI Tool 2]",
+            "[Ad-hoc SQL Interface]"
+          ],
+          "Data_Integration_and_Protection": [
+            "File Export: [Data Sharing Mechanism]",
+            "Data Access: [Data Virtualization Tool]",
+            "Data Protection: [Data Security/Tokenization Tool]"
+          ]
+        },
+        "Migration_Strategy": [
+          "Provide guidance on establishing a foundational and Enterprise Data Warehouse (EDWH)-specific [Target Cloud] data platform architecture.",
+          "Encompass crucial aspects such as controls, networking, access, security, and deployment artifacts, to create a tailored EDWH-fit cloud environment.",
+          "Facilitate the migration of the existing [Source DWH] enterprise data warehouse to [Target DWH].",
+          "The solution is 'lift-and-shift', preserving the logical structure of the current environment.",
+          "Specifically cover: (i) fully migrated [Source DWH] data warehouse to [Target Cloud]; (ii) [Reporting Tool] consumption layer pointing to a defined target Cloud; (iii) Revised downstream interface with the [Target Cloud] data warehouse; (iv) Requirements for dependent technical and infrastructure components; (v) Reference mapping between [Source DWH] artifacts and relevant [Target Cloud] equivalents."
+        ]
+      }
+    },
+    "2.0 Scope": {
+      "2.1 Scope & Deliverables": {
+        "2.1.1 Scope": {
+          "Discovery_Analysis_and_Design": [
+            "Current state understanding of: Business Overview (Key Business Areas/ Domains/ Line of Business), Current Technical and Data Architecture, Source Systems.",
+            "Assess Data Ingestion Pipelines/ Patterns/ Volumetrics, Data Quality rules, Data flow between different data layers.",
+            "Assess Data Tokenization rules/ process flow, Data Transformation Pipelines/ Patterns/ Volumetrics, Peripheral systems Integration, BI tools.",
+            "Assess Data Consumptions Process/ Patterns/ Feeds, Current challenges, gaps & future expectations, Current Testing Strategy/ Infrastructure.",
+            "Assess the [Source DWH] ecosystem, in-scope and dependent workloads.",
+            "Assess the [ETL Tool] workloads for: Repointing of workloads where the source is [Data Storage] and/or [Source DWH].",
+            "Assess the scope, implementation and complexity of [Reporting Tool] model and reports for migration planning.",
+            "Identify source data warehouse artifacts where no identical and/or equivalent functionality exists in [Target Cloud] and propose solutions implementing similar functionality.",
+            "Future state design: Solution Architecture, Technical Architecture, Orchestration & Scheduling Patterns.",
+            "Recommendations: Modernization strategy (Milestone and Approach), Modernization plan, Testing Strategy, Provide guidance on a high-level design for a clean room in [Target Cloud]."
+          ],
+          "Modernization_and_Data_Ingestion": [
+            "Setup a metadata & configuration-driven data ingestion framework to support ingestion from a variety of source systems, and formats into target platform.",
+            "Ingest data from [Message Broker] topics to [Target Cloud] (refined).",
+            "Integration with existing tokenization/ encryption tool for PII data handling.",
+            "Convert/ rewrite the existing transformation (e.g., flattening of XML/ JSON, non-BOD shell scripts) to Data Ingestion Framework (DIF).",
+            "Ensure the existing data quality rules are embedded into the Data Ingestion Framework.",
+            "Setup monitoring and auditing.",
+            "Ingest file from [Cloud Storage] to [Target Cloud] for 3rd party file-based systems.",
+            "Post modernization, perform legacy change management: Understand changes in Legacy system, identify impacts on BODS/Pipelines/Database objects, design solution architecture, implement/replicate changes, and perform UAT."
+          ],
+          "Core_EDM_Migration_to_Target_Cloud": [
+            "Conversion of current Tables and Views Data Definition Languages (DDLs) leveraging automated IP migration tools.",
+            "Conversion of Data Transformation Jobs ([Source DWH] SQL, Stored Procedures, Scripts) to [Target Cloud] Dataflow, [Target Cloud] SQL, and [Target Cloud] Stored Procedures.",
+            "Setup Orchestration and Scheduling of converted workloads using in-scope orchestration tools.",
+            "Build Historical Data pipeline to load one-time historical data from [Source DWH]/[Source Cloud] to [Target Cloud].",
+            "Continuous deployment to lower (non-prod) environment using existing CI/CD pipelines.",
+            "Rewrite and/or transform aspects of [ETL Tool] functionality and/or jobs in cases where [Source DWH] SQL is being used and needs to be translated to equivalent [Target Cloud] statements.",
+            "Repoint [ETL Tool] to [Target Cloud] for cases where [Source DWH] SQL is not being used."
+          ],
+          "Peripheral_System_Integration_and_Reporting": [
+            "Collaborate to provide Cloud level access details needed for establishing connectivity between peripheral systems ([Integration Tool 1], [Integration Tool 2], [Data Catalog], [Security Tool]) and [Target DWH].",
+            "Data Extracts (Flat file) from [Target Cloud] to existing SFTP server for downstream database consumptions.",
+            "Analysis of [In-Scope BI Tools] Reports platform.",
+            "Report Repointing to [Target Cloud].",
+            "Make Required changes in report SQL’s for source/target change/repointing.",
+            "Benchmark Report Performance for Business Critical Reports against the source system and perform optimizations if required."
+          ],
+          "Testing_Parallel_Run_and_Handover": [
+            "Data Pipeline Testing and Data validation using automated data validation tool.",
+            "System testing in the QA environment with production-grade data.",
+            "Historical data validation of a set period.",
+            "Pipeline Validation of the converted workflow.",
+            "Incremental Data validation Approach of data pipelines at consumption layer.",
+            "Data validation of Outbound feeds.",
+            "Performance testing: all the converted code/ pipeline will have better performance or will be at par with the existing.",
+            "Parallel Run: Data validation between [Source DWH] and [Target Cloud] environment for [X]-week successful run conducted in Production.",
+            "UAT Support.",
+            "Provide Helpdesk services for [Reporting Tool] users during working days for [X] months following UAT."
+          ],
+          "Platform_Foundations_and_Managed_Services": [
+            "Implement Data Platform Foundations: Establish Organization, projects, folder hierarchy, Configure IAM roles and policies, Set up and link billing accounts.",
+            "Security & Compliance: Apply organization policies, Integrate DLP, Configure security manager, Enable Workload Identity, Apply for Private Cloud Access.",
+            "Cost Visibility: Configure billing alerts and budget controls.",
+            "Monitoring & Logging: Configure logging, Set up Cloud Monitoring dashboards.",
+            "Hypercare Warranty Support: [X] weeks of warranty support (post-deployment).",
+            "Managed Support Services (24 X 7): End-to-end pipeline jobs monitoring, Root cause analysis, Bug Fixing, Performance issues monitoring, Standard service requests, Minor Development/ enhancements.",
+            "Conversion Service for ad-hoc user queries leveraging automated IP tooling."
+          ],
+          "Security_Compliance_and_FinOps_Best_Practices": [
+            "Data Obfuscation & Masking Policy Implementation: Implement data cleaning and masking capabilities for production PII/PHI data when moved to lower/QA environments.",
+            "Disaster Recovery (DR) & Business Continuity Planning (BCP): Create a validated DR architecture document and a tested failover runbook for the new DWH.",
+            "Rollback Strategy Document: Clearly define triggers and procedures to revert to [Source DWH] if critical failures occur during phased cut-over.",
+            "FinOps Continuous Tracking Dashboard: Beyond a one-off report, implement automated dashboards mapping converted workloads to billing dimensions."
+          ]
+        },
+        "2.1.2 Deliverables": {
+          "Advisory_and_Design_Deliverables": [
+            "Data Architecture Document (Solution Architecture, Technical Architecture, Data Pipeline design, Orchestration & Scheduling patterns, Reporting/ Visualization, Peripheral system Integration design).",
+            "Data Model Mapping Document ([Source DWH] to [Target Cloud] platform Tables mapping).",
+            "Design Specification - Platform Frameworks.",
+            "Roll-out/ Release Plan.",
+            "Program Management Deliverables (Integrated Project Plan, Sprint Roadmap, Status Reports).",
+            "Pre-Migration Migration Plan (Workstreams, commitments, estimates, first mover candidate, Cutover Plan including rollback procedures).",
+            "Pre-Migration Post-migration Solution Design Document."
+          ],
+          "Implementation_and_Migration_Deliverables": [
+            "Incremental Data pipeline from existing [Message Broker] to [Target Cloud] Platform using Data Ingestion Framework.",
+            "Transformation code converted to Data Ingestion Framework.",
+            "Data Quality rules embedded into Data Ingestion Framework.",
+            "Historical Data Migrated to [Target Cloud].",
+            "Converted Workloads to Cloud native stack.",
+            "Orchestrated and scheduled jobs.",
+            "Peripheral system integrated with [Target Cloud].",
+            "Data Extracts (Flat file) from [Target Cloud] to existing SFTP server.",
+            "Repointed Reports ([In-Scope BI Tools]) running against [Target Cloud]."
+          ],
+          "Testing_Validation_and_Reporting_Deliverables": [
+            "Test Plan, Test cases for unit testing, Test cases for System Integration testing.",
+            "Data Validation - automated tool reports.",
+            "User Acceptance Test (UAT) plan, UAT Support, UAT Sign-off.",
+            "Parallel run test reports (Higher environment).",
+            "Migration Deployment Report.",
+            "Migration Data Validation Report.",
+            "Migration Test Report for Business Relevant [Reporting Tool] Reports.",
+            "Migration Test and Benchmarking Report for Business Critical [Reporting Tool] Reports."
+          ],
+          "Handover_and_Support_Deliverables": [
+            "Knowledge transfer sessions.",
+            "Runbooks and technical design documentation.",
+            "Bug-fixing of identified issues.",
+            "Minor Development/ enhancements capped at [X] hours/month.",
+            "Code Conversion IP installed on the Customer environment along with required access for the conversion of ad-hoc user queries."
+          ],
+          "Strategic_and_Compliance_Deliverables": [
+            "Disaster Recovery Architecture Document.",
+            "Disaster Recovery / Failover Runbook.",
+            "Rollback Strategy Document.",
+            "Automated FinOps Continuous Tracking Dashboard.",
+            "Post-Migration FinOps Report."
+          ]
+        }
+      },
+      "2.2 Out of Scope & Limitations": {
+        "Cloud_and_Infrastructure": [
+          "[Target Cloud] platform foundation creation (beyond providing advice on resource management preferences).",
+          "Design complex or custom IAM conditions, especially if combined with other access control features.",
+          "Directly execute IaC modules on Customer's productive Organization.",
+          "Maintain, enable, or operate any code or tool provided past the completion of the pre-production environment build.",
+          "Decommissioning of any existing environment.",
+          "Operations of the DWH/Cloud environments post-handover."
+        ],
+        "Development_and_Integration": [
+          "Development / Enhancement of any AI/ ML models.",
+          "Any customization/ modification to the Data Ingestion framework after completion of this statement of work.",
+          "Any analysis and enhancement/ development to determine Legacy code issues during the data validation process.",
+          "Any software upgrades/ patching/ enhancements.",
+          "Integration support for any 3rd party applications other than those specifically mentioned in Scope.",
+          "Develop any interfaces to third-party software.",
+          "The replatforming and/or modernization of downstream infrastructure (e.g., [ETL Tool]) is excluded beyond what is specifically covered."
+        ],
+        "Testing_and_Validation": [
+          "Functional validation for the reports.",
+          "Report comparison between legacy and [Target Cloud] - capped at [X] reports in a combined total.",
+          "Production Deployment/ testing and UAT testing (Customer responsibility)."
+        ],
+        "Compliance_and_Governance": [
+          "Act as a qualified security assessor or any form of official auditor regarding any regulatory compliance.",
+          "Provide data governance (metadata management, data lineage, data quality) assessments, recommendations, or leading practices outside of the migration scope.",
+          "Provide any assessments, recommendations or leading practices about continuous integration and deployment (CI/CD).",
+          "Any extra security or compliance implementations beyond the Customer’s existing standards.",
+          "Encryption or decryption of data is not included beyond publicly available [Source DWH] and [Target Cloud] encryption/decryption functionality."
+        ],
+        "User_and_Data_Limitations": [
+          "User Onboarding.",
+          "Deliver any training to the Customer.",
+          "Provide guidance directly with the Customer’s enterprise architecture review boards to gain support or approval for a proposed design.",
+          "Any queries, scripts, workloads developed by Customer’s end users will not be converted and/or transferred to the target data warehouse (unless utilizing the ad-hoc conversion service).",
+          "Any data not captured in volumetrics or in non-production environments is excluded as migration to avoid costs in ingress, egress scenarios."
+        ]
+      }
+    },
+    "3.0 Success Criteria": {
+      "Acceptance_Criteria_Framework": [
+        "Services and Deliverables under this SOW will be subject to acceptance testing by Customer to verify that they satisfy the acceptance criteria mutually agreed by the parties.",
+        "Conformance of the Deliverables to the specifications (or similarly prepared design document, features list or product documentation) and conformance of the Services with the warranties.",
+        "Software components adhere to the quality standards set out for software development.",
+        "Downstream systems are able to connect to the target Data Warehouse and consume the Consumption Layer.",
+        "Pipelines are tested and produce the expected results.",
+        "Sprint Summary confirms that all [Source DWH] objects and associated pipelines that were part of the active sprint contents are migrated to target with schema and data integrity.",
+        "All downstream jobs have been transformed to match the target environment.",
+        "Converted code passes unit tests where applicable and is checked into the Customer’s codebase."
+      ],
+      "Performance_Objectives": [
+        "Reporting Performance Objective: Benchmark jointly and deliver within the definition of 'Reporting Performance' (timely & precise) in the target state system.",
+        "Precision: Report KPI accuracy must not deviate by more than [X]% from target/reference values.",
+        "Timely: Report call-up times in the target state must be equal to or faster than reference times in the source system. (For a defined subset of reports, the customer accepts a slower query response time of [X]% duration up to max [X] seconds per report).",
+        "Backend Performance Objective: For [X]% of all relevant backend data loads, the average backend performance per month meets the defined delivery objectives up to and until the cutover takes place.",
+        "Max execution time for standard reports: [X] seconds."
+      ],
+      "Defect_Categories_and_Resolution": [
+        "P 1 - Critical: Preventing or severely limiting the use of important functionalities or essential part thereof. There is no workaround.",
+        "P 2 - Major: Considerably limiting the use of important functionalities or essential parts thereof. Example: Inaccurate Data Transformation leading to temporary corrective action; Partial functionality in the Consumption Layer lacking full data field and security access. There is a workaround.",
+        "P 3 - Minor: The use of the Work result is impaired only insignificantly or not at all. Example: Typing errors, formatting errors, incomplete in-line code documentation. There is a workaround.",
+        "Non-Material Defects (Category P3 and up to a specific number of P2 defects) do not entitle Customer to refuse Acceptance."
+      ],
+      "Security_Compliance_and_Lineage_Parity": [
+        "Target environment matches or exceeds the legacy [Source DWH] environment's Role-Based Access Control (RBAC), Row-Level, and Column-Level security policies.",
+        "Data tracking and lineage features successfully map 100% of critical data elements post-migration to tools like [Data Catalog Tool]."
+      ]
+    },
+    "4.0 Assumptions and Customer Dependencies": {
+      "4.1 Project Assumptions": [
+        "Migration strategy will be lift and shift migration with minimal or no data model changes.",
+        "Due to the current health/geography-related restrictions, a remote delivery model is assumed to deliver the project.",
+        "For this project code exchange will occur through the Customer's version control repository (e.g., GIT).",
+        "Deployment into the Production environment will be done by the Customer team.",
+        "All documents and communication related to the project, agreement and business will be in English.",
+        "Contractor will align all Customer communication with Professional Services beforehand.",
+        "Contractor is not responsible for any infrastructure-related costs, such as egress charges associated with data movement via ETL processes.",
+        "Any changes to the codebase and Jobs of the peripheral systems will be handled by the Customer team.",
+        "The current estimate is the extent of the services provided. Any change requests resulting in changes in scope and/or timeline due to delays will be estimated separately.",
+        "Mutually agreed working hours and timezone overlap established for offshore/onshore coordination."
+      ],
+      "4.2 Technical Assumptions": [
+        "The Cloud foundation and projects are already in place and any gaps identified by the Contractor team during project execution will be filled by Customer Team.",
+        "Any upgrades/ patching/ changes of [Message Broker] and other source systems will not require changes in the Data/ file format and interfaces.",
+        "No change in the structures of existing elements/ tags in XML/ JSON.",
+        "Customer team will freeze the code for a mutually agreed period of [Source DWH]/[Source Cloud] Production codes covering all end-to-end Pipelines before the start of the migration sprints.",
+        "The complete list of peripheral systems included as part of the scope is defined.",
+        "All the peripheral systems will be running on their existing infrastructure.",
+        "The frequency and timing of outbound feeds will be similar to the legacy environment.",
+        "Encryption or decryption of data is not included beyond publicly available [Source DWH] and [Target Cloud] encryption/decryption functionality.",
+        "Any data not captured in volumetrics or in non-production environments is excluded as migration to avoid costs in ingress, egress scenarios.",
+        "The scope of [ETL Tool] is limited to specific pre-defined pipelines.",
+        "API rate limits on peripheral systems will not throttle the target DWH extraction/loading processes beyond modeled thresholds.",
+        "Source systems will support Change Data Capture (CDC) tracking without exceeding mutually agreed latency SLAs during incremental validation phases."
+      ],
+      "4.3 Customer Dependencies": [
+        "Customer will establish the Cloud Foundation (Organization, parent folder structure, Billing Accounts, Cloud Identity Provider, IAM roles).",
+        "Customer to provide Contractor with necessary access within a mutually agreed timeframe after a written request (Administrative access, Network Topology, Security).",
+        "Customer relies on a dedicated Interconnect between legacy cloud, on-prem, and target cloud. This configuration shall be performed by the Customer.",
+        "Acknowledge and accept possible implications on data latency, extra computational capacity, and networking charges resulting from cross-cloud interconnects.",
+        "Customer will perform the Re-Hosting of relevant upstream/downstream components (e.g., [ETL Tool] Data Plane) before the specified project month.",
+        "Provide 3rd party files in the [Cloud Storage] bucket as per agreed planned dates.",
+        "Setup connectivity and configuration between the in-scope Reporting tools to [Target Cloud] [X] days before applicable sprint development starts."
+      ]
+    },
+    "5.0 Customer Roles and Responsibilities": {
+      "5.1 Customer Project Roles": [
+        "Dedicated Project Manager: Guides the contractor team, handles project management and change management duties between contractor and end customer.",
+        "Subject Matter Experts (SMEs): Provide skills and information regarding the current data warehouse, technical infrastructure, and target foundation. Participate in workshop and information exchange meetings.",
+        "Dedicated UAT Team: Tests and validates the output in the production parallel stage for all workstreams. Nominated prior to a UAT sprint.",
+        "Enterprise Architecture Review Board / Security Approvers: Respond to requests for approval regarding design, architecture, firewalls, and infrastructure components within a defined SLA.",
+        "Data Stewards / Governance Lead: Customer role required to sign off on PII/PHI handling and data quality taxonomy before production deployment.",
+        "FinOps Lead: Customer role responsible for monitoring the newly established billing alarms and ensuring budget alignments during parallel runs."
+      ],
+      "5.2 Customer Responsibilities": [
+        "Provide access to the [Source Cloud] and [Source DWH] environment, source systems, Peripheral systems, [Target Cloud] environment, SFTP, Ticketing systems, Documents portal, VPN/VDI, and Dedicated Interconnect.",
+        "Provide all in-scope Codes, Scripts, DDLs, and any other applicable piece of software.",
+        "Provide IAM Permission for Cloud services and Existing Code deployment tools.",
+        "Provide necessary Security approval and access rights for Contractor resources and IP Accelerators.",
+        "Provide Infrastructure for the IP Tool Installation.",
+        "Share the timeline and plan for upcoming/ ongoing changes on the upstream system and its impact on Business Objects/Pipelines for 'change management handling'.",
+        "Provide a workshop on how to identify dependent tables/tasks in [Source DWH].",
+        "Provide a list of [Reporting Tool] reports for validation of the data model(s): up to defined volumetric cap with a priority label for the top, critical reports.",
+        "Provide technical capability to benchmark report performance of the current system.",
+        "Perform the User Acceptance Testing and provide sign-off within agreed business days. Run existing [Source DWH] code on the same datasets in the UAT environment for Data validation purposes.",
+        "Business change management (Communication, Coordination, Identification & Execution).",
+        "Lead any troubleshooting activity for any application code related issues on legacy/upstream systems.",
+        "Provide relevant Cloud Foundation capabilities as outlined in the Technical Design Document and perform deployments of components."
+      ]
+    },
+    "6.0 Project Governance": {
+      "6.1 Location": [
+        "A remote delivery model is assumed to deliver the project. Resourcing Model: Onshore - Offshore.",
+        "Personnel will not be provisioned with target cloud provider systems or badged facility access (unless explicitly negotiated).",
+        "Contractor will provide the Services from Contractor's own facilities and any other locations approved in writing."
+      ],
+      "6.2 Risk, Action, Issue, and Decision Management": [
+        "Create a RACI matrix and RAID log for program management purposes.",
+        "Project Governance - Operational: Daily scrum & weekly status tracking.",
+        "Project Governance - Tactical & Strategic levels of governance with defined RACI assignments.",
+        "Project Escalation Management: Provide high-level updates on migration activities and timelines, maintain Stakeholder Matrix.",
+        "Set up regular governance sessions with stakeholders throughout the engagement.",
+        "Provide weekly progress reports on the Program’s incremental progress.",
+        "Formalize SLA response times for severity-based escalations within the governance framework.",
+        "Establish steering committee review boards monthly for financial and timeline adherence tracking."
+      ],
+      "6.3 Change Control Management": [
+        "Either party may request a material modification to the Services by submitting a Change Request. Upon receipt, Contractor may propose additional Fees and adjustments to delivery dates.",
+        "The parties will have a set number of business days after the Change Request is submitted to agree to amend the SOW; otherwise, the Change Request will be considered withdrawn.",
+        "Any changes/amendments to the established Services, in-scope volumetrics (e.g., ±[X]% variation), out-of-scope, assumptions, or dependencies will require a Change Request.",
+        "Delays longer than a mutually agreed threshold caused due to dependencies on Customer stakeholders or inability to meet prerequisites will qualify for a Change Request.",
+        "Changes post design sign-off, or changes in the code/scripts of the legacy environment post agreed code freeze dates, will result in a Change Order."
+      ]
+    },
+    "7.0 Project Closure": {
+      "7.1 Knowledge Transfer": [
+        "Project Handover (Train the Trainer): Conduct knowledge transfer sessions for technical and business teams.",
+        "Provide Runbooks and technical design documentation explaining the scope of work performed for workloads promoted to production.",
+        "Runbooks to include: Starting, stopping, or restarting data pipelines; Monitoring data quality and handling anomalies; Backing up and restoring data stores; Troubleshooting failed jobs; Scaling data processing resources.",
+        "Handover to Managed Support Services team: After the specified hypercare period, support of the completed work will transition to the Managed Services Team.",
+        "Provide Release notes and lessons learned documentation.",
+        "Formal sign-off procedures documented and stored in a centralized project repository.",
+        "Provide an infrastructure decommissioning recommendation report for the legacy [Source DWH] and [Source Cloud] footprint to assist the customer in realizing cost savings immediately post-cutover."
+      ]
+    },
+    "8.0 Primary Project Contacts": {
+      "8.1 Contractor Escalation Contacts": [
+        "Project Manager Name: [Contractor PM Name]",
+        "Project Manager Telephone: [Contractor PM Phone]",
+        "Project Manager Email: [Contractor PM Email]",
+        "Executive Sponsor: [Contractor Executive Name / Title]"
+      ],
+      "8.2 Primary CUSTOMER Contacts": [
+        "Cloud Provider/Partner Project Manager Name: [Partner PM Name]",
+        "Cloud Provider/Partner Project Manager Telephone: [Partner PM Phone]",
+        "Cloud Provider/Partner Project Manager Email: [Partner PM Email]",
+        "Customer Executive Sponsor: [Customer Executive Name / Title]"
+      ]
+    },
+    "9.0 Fees and Expenses": {
+      "9.1 Professional Services": [
+        "Contractor will provide consulting services based on the estimated project duration calculated on the basis of inputs provided by the Customer.",
+        "Pricing is structured by Tracks/Phases (e.g., Track 1 - Discovery, Track 2 - Core Migration, Track 3 - Peripheral Integration, Track 4 - Reporting Repointing, Track 5 - Managed Services).",
+        "Tooling costs for IP migration products are separated from professional services fees.",
+        "Tooling actuals are billed based on usage and/or private offer agreements on the Cloud Marketplace.",
+        "Managed Services billed month-to-month based on actual hours used, not to exceed specified amounts without prior written approval."
+      ],
+      "9.2 Expenses": [
+        "Travel and related incidental expenses will be pre-approved by Customer in writing prior to being incurred.",
+        "Contractor shall be compensated for reasonable and necessary travel and living expenses actually incurred up to an amount not to exceed a mutually agreed percentage of total Services fees.",
+        "Alternatively, Contractor’s expenses are included in the overall fees and no other expenses will be reimbursed (dependent on final contract selection)."
+      ],
+      "9.3 Fees and Expense Summary": [
+        "The total amount payable under this Agreement shall not exceed the Contract Sum / Maximum Total Cost of [Total Contract Value].",
+        "Pricing excludes any 3rd party software license costs.",
+        "Handling of applicable local and state taxes explicitly outside of the baseline professional services fees.",
+        "Includes a currency fluctuation clause if the delivery model utilizes offshore resources spanning multiple economic regions over a multi-year term."
+      ],
+      "9.4 Milestone Payment Schedule": [
+        "Invoicing will be raised as per the payment schedule based on deliverables or percentages of completion.",
+        "Example Milestones: Deal Sign-off/Project Kickoff; Completion of Discovery and Analysis Phase; Completion of Solution Design Document; Established and configured Cloud Data Foundations; Incremental percentages ([X]%, [X]%) of tables/reports delivered for UAT; Delivery of FinOps report and project completion.",
+        "IP Tooling Payments scheduled monthly or based on usage tiers."
+      ],
+      "9.5 Payment": [
+        "Invoices must be submitted in accordance with the Exhibit B of the Agreement. Customer will provide a Purchase Order or contract control number.",
+        "Each invoice shall separate out Services and other project-based fees from travel and related living expense fees.",
+        "Upon completion and Acceptance of the Deliverables/Milestones, Customer will pay the Contractor in accordance with the schedule."
+      ]
+    },
+    "10.0 Signatures": {
+      "Execution_Block": {
+        "Statement": "IN WITNESS WHEREOF, the authorized representatives of the parties have executed this SOW to become effective as of the SOW Effective Date.",
+        "Contractor_Signatory": [
+          "Entity: [Contractor Entity Name]",
+          "Signee: (Authorized Signature)",
+          "Name: (Name)",
+          "Title: (Title)",
+          "Date: (Date)"
+        ],
+        "Customer_Signatory": [
+          "Entity: [Customer Entity Name]",
+          "Signee: (Authorized Signature)",
+          "Name: (Name)",
+          "Title: (Title)",
+          "Date: (Date)"
+        ]
+      }
+    },
+    "Appendix A": {
+      "Volumetrics": {
+        "General_Storage_and_Capacity": [
+          "Historical data size: [X] TB."
+        ],
+        "Database_Objects": [
+          "Tables: [X].",
+          "Views + Materialized Views: [X]."
+        ],
+        "ETL_Scripts_and_Orchestration": [
+          "[Source DWH] Stored procedures: [X].",
+          "Data Ingestion Pipelines/Snowpipes: [X].",
+          "Scheduling/Orchestration jobs: [X].",
+          "UDFs (User Defined Functions): [X]."
+        ],
+        "Reporting_and_Downstream": [
+          "In-Scope BI reports (e.g., Power BI, Crystal, Tableau): up to [X].",
+          "[Reporting Tool] Reports Repointing: [X].",
+          "Business Relevant Reports: [X].",
+          "Business Critical Reports: [X]."
+        ],
+        "Data_Ingestion_and_Producers": [
+          "Business Object Documents (BODs) Count: [X].",
+          "Producer Count (e.g., Kafka, CDC, Files, API, MQ): [X].",
+          "Consumer Count (e.g., EDM Kafka, Message Queue): [X].",
+          "EDM Jobs Data Inbound (e.g., ADF, DataStage, Axway): [X]."
+        ],
+        "Downstream_ETL_Job_Definitions": [
+          "[ETL Tool] Job Definitions: [X]."
+        ],
+        "Data_Export_Interfaces": [
+          "Defined schedules for data export to peripheral systems with specific delivery time objectives: [X] Interfaces."
+        ],
+        "Volumetrics_Change_Clause": [
+          "IMPORTANT: Any increase beyond [X]% as of the Effective Date of this Statement of Work in the defined in-scope volumetrics during project execution will require a Change Request for implementation."
+        ],
+        "Data_Mapping_and_Security": [
+          "Preliminary Data Classification Matrix: Identifying High/Medium/Low PII tables to align on security requirements early in the migration.",
+          "Data Mapping Dictionary: Detailing the source-to-target data type conversions expected between [Source DWH] and the target Cloud Data Warehouse."
+        ]
+      }
+    }
+  }
+}

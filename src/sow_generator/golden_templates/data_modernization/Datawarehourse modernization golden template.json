@@ -1,0 +1,284 @@
+{
+  "1.0 Executive Summary": {
+    "1.1 Opportunity": [
+      "[Insert Customer Name] is embarking on a strategic modernization initiative to transition its [Insert Legacy Data Platform] ecosystem to a cloud-native architecture on [Insert Target Cloud Platform].",
+      "The modernization will establish a scalable, secure foundation for AI/ML innovation and enable rapid access to business insights via a unified retail data model.",
+      "It aims to democratize analytics through [Insert Target BI Tool] and conversational AI, establishing enhanced velocity from data to decision."
+    ],
+    "1.2 Solution Overview": [
+      "This SOW outlines Data and AI Modernization services to build a secure, scalable, and cost-optimized cloud-native Unified AI-Ready Lakehouse platform using [Insert Target Cloud Data Warehouse], [Insert Target Big Data Processing Engine], and [Insert Target AI/ML Platform].",
+      "The project includes migrating ML models, creating new models, developing self-service [Insert Target BI Tool] reports, and developing a custom Retail Data Model and semantic layer to standardize analytics across domains.",
+      "Consultant will serve as a strategic partner, bringing proven IPs such as Pelican (Data Validation), Eagle (Metadata Mapping), Raven (Code Conversion), customized Data Models, and other domain-specific accelerators."
+    ]
+  },
+  "2.0 Scope": {
+    "2.1 Scope & Deliverables": {
+      "Scope": {
+        "Workstream 1 - Migration & Modernization": [
+          "Project Setup & Organization: Establish [Insert Target Cloud Platform] Organization, projects, and folder hierarchy; Configure IAM roles and policies; Set up and link billing accounts; Develop Infra as a code auto deployment using [Insert IaC Tool].",
+          "Data Platform Foundation: Provision [Insert Target Cloud Data Warehouse] datasets; Set up [Insert Target Cloud Object Storage] buckets and lifecycle policies; Enable [Insert Target Big Data Processing Engine], [Insert Target Stream Processing Service], and [Insert Target Orchestration Tool]; Setup Best practices and naming conventions.",
+          "MLOps Foundation: Build an MLOps foundation environment that supports targeted use cases; Develop Infra as a code auto deployment; Explore [Insert Target ML Orchestration Tool] for deployment.",
+          "Development & Deployment Environment: Enable [Insert Target CI/CD Service] for automated pipelines; [Insert Version Control System] Repo enablement.",
+          "Monitoring & Logging: Configure logging and monitoring for critical components; Set up [Insert Target Cloud Monitoring Service] Reports and alerts.",
+          "Security & Compliance: Apply organization policies for compliance standards; Integrate [Insert Target Data Loss Prevention Service] to identify sensitive data.",
+          "Cost Visibility Set up: Configure billing alerts and budget controls; Set up continuous FinOps capabilities for post-migration cost optimization.",
+          "Perform Eagle Assessment on current data systems to generate the Metadata Map, including automated metadata scanning and data lineage tracking.",
+          "Historical Data Copy: Define copy patterns (batch, streaming); Use [Insert Target Cloud Data Transfer Service] and [Insert Target Cloud Storage Transfer Service] to load [Insert Target Data Format] to [Insert Target Cloud Data Warehouse] via [Insert Target Big Data Processing Engine].",
+          "Pipeline Development: Convert current [Insert Legacy Data Platform] DB Objects, Tables, Views, DDLs, and transformation jobs to [Insert Target Cloud Platform] native; Orchestrate using [Insert Target Orchestration Tool].",
+          "Testing: Unit testing, SIT, Bug-fixes, Parallel runs and data validation using Pelican tool ([Insert Number] successful runs), and UAT support. Integrate Data Quality as Code frameworks during ELT processing.",
+          "Deployment and Support: Technical Handover with Runbooks, knowledge transfer sessions ([Insert Number] sessions of [Insert Number] hour each), Parallel run in Production, Formulate detailed Cutover Execution Strategy, and [Insert Duration] post-production warranty support.",
+          "Domain-specific data model creation: Utilize Consultant IP to develop Metadata Mapping and gap identification iteratively for [Insert Number] key domains.",
+          "Develop Associated Pipelines: Develop pipelines for new Domain model, build and backfill historical data, and validate data end-to-end on [Insert Target Cloud Platform].",
+          "Develop and Deploy Business Glossary for the new Data Model in English and machine-readable JSON.",
+          "Migration of [Insert Number] ML Models: Discovery & Assessment via [Insert Target Model Registry] inventory; Code Conversion (Refactor Notebooks to [Insert Target ML Workbench] & Run [Insert Data Processing Framework] in [Insert Target Big Data Processing Engine]); MLOps Pipeline Creation via CI/CD and [Insert IaC Tool].",
+          "Testing & Validation & Release: Output Parity Validation, Production Release, A/B Testing, Monitoring, and UAT support.",
+          "Data Governance: Reconfigure [Insert Target Data Quality Tool] to repoint to [Insert Target Cloud Data Warehouse]; Reconfigure [Insert Target MDM Tool] to repoint to [Insert Target Cloud Data Warehouse]; Integrate [Insert Target Cloud Data Governance Service] with [Insert Enterprise Data Catalog] for metadata sync-up.",
+          "BI Migration: Assess [Insert Number] existing [Insert Legacy BI Tool] reports and finalize [Insert Number] prioritized reports; Map and repoint reports to [Insert Target Cloud Data Warehouse] sources; Provide user training and detailed technical documentation.",
+          "DataOps: Configure Logging and Monitoring metrics ([Insert Number] metrics max) for [Insert Target Cloud Platform] Pipeline failures, converted codes, orchestration failures, connectivity issues, and BI Report Issues."
+        ],
+        "Workstream 2 - Business Value Track": [
+          "Setup and Configuration of [Insert Target BI Tool] as per Customer security requirements.",
+          "Creation of [Insert Number] new reports in [Insert Target BI Tool]: Requirement gathering, Data Source Integration, KPI and Metric Modelling (up to [Insert Number] KPIs and [Insert Number] [Insert Target BI Semantic Model] models per report), Report Design, Unit Testing, UAT support, and Handover.",
+          "Enable the Conversational AI (Natural Language Query) feature on [Insert Target BI Tool] for curated, self-service datasets.",
+          "Model Modernization (Use Case 1): Set up [Insert Target AI/ML Platform] Feature Store; Migrate [Insert Data Processing Framework] feature engineering to [Insert Target Big Data Processing Engine]; Deploy to [Insert Target AI/ML Platform] Endpoints with canary deployment strategy; Implement Automated Retraining Triggers.",
+          "Model Modernization (Use Case 2): Setup custom data model feature store; Migrate [Insert Target ML Frameworks] models to [Insert Target AI/ML Platform]; Provide accuracy metrics using WAPE model; Set up batch prediction infrastructure.",
+          "Challenger models: Create challenger models workflow and deploy to [Insert Target AI/ML Platform] endpoints."
+        ]
+      },
+      "Deliverables": [
+        "List of [Insert Target Cloud Platform] Services to be Enabled (Resource hierarchy, IAM, Networking, Batch Compute, Data Warehouse/Lake, Logging, Security, Metadata Management, Cost Management, AI Foundation).",
+        "Technical Design Document for Cloud Foundation and [Insert IaC Tool] code & CI/CD Infrastructure Pipeline.",
+        "Assessment Deep-Dive Report including Target Data Model Recommendations and FinOps Initial Optimization Assessment.",
+        "Historical data migrated to [Insert Target Cloud Platform], functionally equivalent to current state ([Insert Number] successful validation runs).",
+        "[Insert Legacy Data Platform] assets, workloads, tables, and DDLs migrated and converted to [Insert Target Big Data Processing Engine]/[Insert Target Cloud Data Warehouse].",
+        "SIT and UAT handoff completion, closure of all Critical or High severity defects.",
+        "Customized data model for [Insert Number] domains and associated Data Pipelines orchestrated in [Insert Target Orchestration Tool].",
+        "A fully enabled semantic layer in [Insert Target Cloud Data Warehouse] for consumption.",
+        "Refactored notebooks to [Insert Target ML Workbench] and migrated [Insert Data Processing Framework] workflows to [Insert Target Big Data Processing Engine].",
+        "Migration of the feature store and Serving of models using [Insert Target AI/ML Platform] endpoints.",
+        "Build and deploy CI/CD pipelines and automate infrastructure with [Insert IaC Tool].",
+        "Integrated data quality rules, reconfigured MDM transformations for [Insert Target Cloud Data Warehouse], and synced metadata from [Insert Target Cloud Data Governance Service] to [Insert Enterprise Data Catalog].",
+        "[Insert Number] repointed BI reports connected to [Insert Target Cloud Data Warehouse] with validated schema.",
+        "DataOps support provided for a duration of [Insert Duration].",
+        "Comprehensive Business Glossary in English (multiple formats) and Machine readable (JSON) with integration to [Insert Target Cloud Data Governance Service].",
+        "[Insert Number] new published [Insert Target BI Tool] reports, User manuals, and Self-service documentation for Conversational AI.",
+        "Migrated models delivered to [Insert Target AI/ML Platform] with Technical Design Documents and Model Testing Reports.",
+        "Cutover Runbook, Rollback mechanism playbook, and Go-Live Operational Guide."
+      ]
+    },
+    "2.2 Out of Scope & Limitations": [
+      "Anything not mentioned in the scope activities.",
+      "Decommissioning and cutover of any existing systems/environment.",
+      "Any new data masking/encryption/tokenization implementation.",
+      "Infrastructure resource-level or application-level activities outside the targeted cloud environment.",
+      "Implementation, configuration, or integration of third-party appliances, applications, or services not explicitly mentioned.",
+      "Design and implementation of Disaster Recovery (DR), Business Continuity (BC), backup solutions, or SIEM.",
+      "Penetration testing and any security compliance audits.",
+      "Real-time data model updates post-migration, new source additions, or Legacy change handling/modification.",
+      "Performance enhancements beyond ensuring parity with the current system; Performance fine-tuning of [Insert Target Cloud Data Warehouse] and slot optimization.",
+      "Remediation of existing Data Quality issues identified or setup of new data quality rules.",
+      "BI Migration: Rewriting complex semantic formulas beyond schema alignment, setup of on-premises gateways, new complex RLS models, or development of new wireframes.",
+      "DataOps: Long-term production support or ongoing DataOps post warranty.",
+      "Business Glossary: Automated updates.",
+      "Target BI Tool: Migration/development of reports beyond the agreed [Insert Number], real-time streaming reports, external LLM integration, or custom APIs for Conversational AI.",
+      "AI/ML: Changes to Model design, business logic, feature set, or refactoring beyond Lift & Shift.",
+      "Hardware procurement and maintenance for legacy source environments.",
+      "Manual refactoring of legacy proprietary SQL code that cannot be systematically converted via standard transpilers without formal Change Request approvals."
+    ]
+  },
+  "3.0 Success Criteria": [
+    "Reduced data-to-decision latency across the value chain.",
+    "Empowered business teams with governed self-service insights.",
+    "AI/ML models running at scale with real-time prediction capability.",
+    "A modern data foundation ready to support next-gen growth.",
+    "Successful execution of Secure Cloud Foundation and Technical Design Document Signoff.",
+    "Historical data migration validated with [Insert Number] successful validation runs.",
+    "Migrated data and workloads are functionally equivalent to the current state, confirmed by closure of Critical/High defects and UAT Signoff.",
+    "Validation of data quality rules, end-to-end transformation, and consistency of metadata across governance tools.",
+    "Successful execution of migrated [Insert Target AI/ML Platform] models, production release signoff, and parity documentation.",
+    "Confirmation of optimized query processing utilizing compute capacity or on-demand model as per target FinOps metrics.",
+    "Achievement of mutually agreed SLAs for data ingestion freshness and pipeline throughput."
+  ],
+  "4.0 Assumptions and Customer Dependencies": {
+    "4.1 Project Assumptions": [
+      "The project is executed on a fixed price basis for USD [Insert Total Fixed Price], which is not inclusive of all consultant fees, travel and relocation costs.",
+      "Travel will be approved beforehand in writing based on travel policies.",
+      "Base location for the project will be Customer offices and Consultant remote locations.",
+      "Substantial change in the defined volumetrics (e.g., [Insert Data Size] TB data, [Insert Number] Tables, [Insert Number] ML models) will be handled through the Change Management process.",
+      "Consultant relies upon the data and information provided by Customer and is not responsible for independently verifying its accuracy.",
+      "Remote Work Protocols apply for off-site personnel connecting to environments.",
+      "Minor approved changes taking no more than [Insert Number] person days effort will become part of the project work; Major changes require formal written approval.",
+      "The migration will follow a phased, domain-by-domain rollout strategy to minimize disruption to critical business operations.",
+      "System freeze and code freeze windows will be adhered to strictly by both parties during targeted cutover cycles."
+    ],
+    "4.2 Technical Assumptions": [
+      "Infrastructure resources will be limited to [Insert Number] environments (e.g., Dev, UAT, Prod).",
+      "Cross-cloud connectivity and Cloud DNS configuration changes will be handled only within the target cloud by the Consultant; external changes are customer responsibility.",
+      "Silver layer is enabled for a specific threshold of existing domains/workloads; Gold layer will be created for workloads.",
+      "No major data quality issues exist in the current legacy pipeline; as-is pipeline migration will be carried out.",
+      "Performance will be equivalent to the existing system (baseline shared by Customer).",
+      "Raw layer data history is not required; history load will be done only for defined layers.",
+      "All training data sources for ML Models are accessible; models can be containerized without significant refactoring.",
+      "Required data sources for reporting tools will be available in target warehouse with similar schema structures.",
+      "Reporting tools will use native cloud connectors without the need for custom or on-premises gateways; Existing RLS rules are reusable with minimal adjustments.",
+      "Semantic model structure will be approved before development; Field-level metadata (labels, descriptions) are available.",
+      "Legacy source systems possess the computational bandwidth to support parallel data extraction processes without degrading their primary operations.",
+      "Target cloud's built-in partitioning and clustering mechanisms align closely with current analytical querying patterns to ensure target performance levels."
+    ]
+  },
+  "5.0 Customer Roles and Responsibilities": {
+    "5.1 Customer Project Roles": [
+      "Customer Executive Sponsor: Provides mutual written agreement for changing Completion Dates and structural modifications.",
+      "Customer Project Manager / Lead: Responsible for initial escalations with a [Insert Number] business days time frame.",
+      "Customer Vice President: Responsible for higher-level escalations within a [Insert Number] business days time frame.",
+      "Customer SMEs / Business Users: Provide support for requirement clarification, approach discussions, joint workshops, source system details, and UAT validation.",
+      "Data Steward: Owns data governance definitions, metadata standards, and final approval for data catalog sync activities.",
+      "Cloud FinOps Analyst: Reviews and enforces FinOps optimization recommendations for cloud expenditures.",
+      "Change Management Champion: Facilitates organizational training, user enablement, and drives adoption for the conversational AI and self-service capabilities."
+    ],
+    "5.2 Customer Responsibilities": [
+      "Provide a response to project communication and information requests within [Insert Number] business days.",
+      "Identify key stakeholders, coordinate meetings with business users, and manage internal communication of project status.",
+      "Manage internal processes such as ITIL, change controls, and internal audits.",
+      "Escalate any outstanding issues in a timely manner to Consultant management.",
+      "Provide sign-off on business requirements before the start of the Build phase.",
+      "Provide sign-off/approvals on deliverables and UAT requests within [Insert Number] business days, after which deliverables are deemed accepted.",
+      "Perform User Acceptance Testing (UAT) execution in a timely manner per sprint.",
+      "Provide access to the development and test environment and supply production-grade test data for unit, system, and integration testing.",
+      "Provide necessary access for tools/systems and grant timely security approvals, ensuring complete access to all cloud resources within [Insert Number] days of request.",
+      "Procure required cloud services and Support Services timely, including Compute for Consultant IPs.",
+      "Procure required Data Modeling tool licenses and reporting licenses upfront.",
+      "Resolve application, software, or hardware problems that impede Consultant's services.",
+      "Establish baseline performance metrics and data quality SLAs prior to migration to enable accurate A/B validation during parallel runs.",
+      "Define target RBAC (Role-Based Access Control) user personas for the data warehouse to enforce strict data governance.",
+      "Actively participate in Rollback and Business Continuity simulation tests prior to production cutovers."
+    ]
+  },
+  "6.0 Project Governance": {
+    "6.1 Location": [
+      "The base location for the project will be Customer offices and Consultant delivery centers/remote locations."
+    ],
+    "6.2 Risk, Action, Issue, and Decision Management": [
+      "Escalate any outstanding issues to Customer management for expedited resolution. Timeframes: Customer Project Manager / Lead within [Insert Number] business days; Customer Vice President within [Insert Number] business days.",
+      "Escalate any outstanding issues to Consultant management for expedited resolution. Timeframes: Project Manager / Lead within [Insert Number] business day; Delivery Executive within [Insert Number] business days.",
+      "The Customer agrees to make a best effort to remediate risks, resolve issues, complete actions and finalize decisions.",
+      "A detailed RACI will be created during the time of project kick-off to define accountability across all activities."
+    ],
+    "6.3 Change Control Management": [
+      "A project change request will be generated by the Consultant when a change proposed by either party impacts the project plan and/or work effort.",
+      "Reasons for change requests include: requirement changes, design changes post sign-off, schedule changes, delays in fulfilling responsibilities, additional documentation, tool changes, out-of-scope additions, or volumetric changes.",
+      "The Consultant will maintain all change requests in a change request log detailing the request number, description, impact, status, key dates, and requestor.",
+      "A detailed analysis will measure the impact in terms of project timeline and cost, based on required staffing and hours.",
+      "Minor Customer approved changes taking no more than [Insert Number] person days effort will become part of the project work.",
+      "Major changes require formal written approval by the Customer, including any increase or decrease in cost.",
+      "Change requests based on Customer's failure to perform require Consultant to provide prior written notice detailing the impact and cost estimate, allowing a reasonable amount of time to cure the failure."
+    ],
+    "6.4 Program Management Ceremonies": [
+      "Weekly Status Reports: Outlining tasks completed, upcoming tasks, blocked items, and budget consumption tracking.",
+      "Monthly Executive Steering Committee: High-level alignment meeting focusing on milestone achievement, strategic roadmaps, and major risk mitigation."
+    ]
+  },
+  "7.0 Project Closure": {
+    "7.1 Knowledge Transfer": [
+      "Conduct formal knowledge transfer sessions ([Insert Number] sessions of [Insert Number] hour each).",
+      "Provide Handover documentation including Runbooks and technical design documents explaining the scope of work performed.",
+      "Execute Code handover including the base documentation and code artifacts for the Data Model and ML Models.",
+      "Provide post-production support after the completion of each milestone (ongoing support).",
+      "Provide a [Insert Duration] warranty covering bugs/errors related to pipelines, data mismatches, converted codes, scripts, and orchestration failures.",
+      "Enable the Customer team for the Business Glossary update/refresh and remaining reporting documentation.",
+      "Conduct focused training sessions and deliver user manuals covering changes, refresh schedules, and self-service AI components."
+    ]
+  },
+  "8.0 Primary Project Contacts": {
+    "8.1 Consultant Escalation Contacts": [
+      "Project Manager / Lead: [Insert Name]",
+      "Delivery Executive: [Insert Name]"
+    ],
+    "8.2 Primary CUSTOMER Contacts": [
+      "Customer Executive Sponsor (Required for changing Completion Dates)",
+      "Customer Project Manager / Lead",
+      "Customer Vice President"
+    ]
+  },
+  "9.0 Fees and Expenses": {
+    "9.1 Professional Services": [
+      "The consultant will execute the project on a fixed price basis.",
+      "The fixed fee for the Services and Deliverables under this SOW will be USD [Insert Total Fixed Fee]."
+    ],
+    "9.2 Expenses": [
+      "The fixed price for this SOW is not inclusive of all consultant fees, travel and relocation costs.",
+      "Travel will be approved beforehand in writing with the Customer based on the travel policies."
+    ],
+    "9.3 Fees and Expense Summary": [
+      "Subtotal Workstream 1 (Migration & Modernization): [Insert Amount]",
+      "Subtotal Workstream 2 (Business Value Acceleration): [Insert Amount]",
+      "Total Pre-Discount: [Insert Amount]",
+      "Investment in strategic partnership (Discount): [Insert Amount]",
+      "Final Price to Customer: [Insert Amount]"
+    ],
+    "9.4 Milestone Payment Schedule": [
+      "[Insert Milestone/Month]: [Insert Deliverable 1 Description] - [Insert Amount]",
+      "[Insert Milestone/Month]: [Insert Deliverable 2 Description] - [Insert Amount]",
+      "[Insert Milestone/Month]: [Insert Deliverable 3 Description] - [Insert Amount]",
+      "[Insert Milestone/Month]: [Insert Deliverable 4 Description] - [Insert Amount]"
+    ],
+    "9.5 Payment": [
+      "The consultant will submit invoices as per the payment milestone schedule.",
+      "All Customer payment obligations are conditioned upon acceptance of completed Deliverables that meet requirements and receipt of a timely, accurate invoice.",
+      "Customer will pay undisputed invoices upon acceptance and as per the terms agreed to in the Agreement.",
+      "Customer may, in its sole discretion, accept and pay for Deliverables completed after the Payment Milestone Date; if Customer uses any Deliverable in its business operation, it will pay for it as provided in the SOW."
+    ]
+  },
+  "10.0 Signatures": {
+    "Signatories": [
+      "CONSULTANT: Signature, Name (Print or Type), Title, Date",
+      "CUSTOMER: Signature, Name (Print or Type), Title, Date"
+    ]
+  },
+  "Appendix A": {
+    "Remote Work Protocols": {
+      "Workstations": [
+        "Only Consultant managed devices should be used in connection with service delivery/receipt.",
+        "Hard drives for all workstations/laptops must be encrypted.",
+        "Software agents must manage overall compliance, provide protection against malicious software, and capture local system events (including data loss/misuse monitoring).",
+        "Software agents should report at least monthly to a Consultant monitored server.",
+        "Patching processes must ensure workstations are current on patches and anti-virus definitions.",
+        "Non-approved software is prohibited from being installed.",
+        "Internet access by the device is controlled or monitored even when not connected to Consultant or Customer systems."
+      ],
+      "Mobile Devices": [
+        "Limited to Consultant managed devices that can be remotely disabled and data erased.",
+        "Usage includes Customer provided multifactor authentication apps.",
+        "Usage includes enterprise collaboration tools, browsing the internet, and Consultant's email."
+      ],
+      "Access Control": [
+        "Two-factor authentication is used for any access to either Customer or Consultant networks.",
+        "Authentication credentials will be deactivated if not used for a specific period, or within [Insert Number] business day upon notification that access is no longer needed.",
+        "In the event of involuntary termination, Consultant will immediately revoke all login IDs, passwords, and authentication elements, and notify Customer.",
+        "Customer reserves the right to revoke authentication elements without prior notification if suspected abuse or security policy violation occurs."
+      ],
+      "Connectivity & Physical Controls": [
+        "Consultant standard technical and organizational security controls apply to Consultant networks.",
+        "Customer standard controls apply when accessing the Customer network via VDI using provided desktops/laptops.",
+        "No use of Customer provided systems for personal use outside the scope of engagement.",
+        "Only VPN or TLS-secured services will be used if the wireless network cannot be confirmed as protected with agreed security standards.",
+        "All file transfers between Consultant and Customer must be encrypted using standard platforms.",
+        "Contractual requirements for specific physical/environmental security controls at the remote work location do not apply; however, Consultant personnel will abide by applicable Customer policies where reasonably possible."
+      ]
+    }
+  },
+  "Appendix B": {
+    "Data Security, Privacy, and Compliance": [
+      "Data Masking and Encryption Strategy: Definition and implementation of rules for handling sensitive data such as Personally Identifiable Information (PII) utilizing dynamic data masking and column-level encryption.",
+      "Role-Based Access Control (RBAC): Creation of a comprehensive RBAC matrix mapping exact organizational roles to target datasets, enabling least-privilege principles.",
+      "Regulatory Compliance Guardrails: Ensuring the target data architecture strictly complies with data residency policies, retention schedules, and applicable privacy regulations."
+    ]
+  },
+  "Appendix C": {
+    "Service Level Agreements (SLAs) and Support Guidelines": [
+      "Defect Resolution SLAs: Defined target response times and resolution times for Critical, High, Medium, and Low severity defects discovered during Parallel Runs and the post-production warranty phase.",
+      "Platform Availability Metrics: Target uptime objective for the core data warehouse infrastructure and pipeline orchestration.",
+      "Disaster Recovery & High Availability: Established Recovery Point Objective (RPO) and Recovery Time Objective (RTO) metrics mapped against target Lakehouse topology."
+    ]
+  }
+}

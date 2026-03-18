@@ -12,9 +12,9 @@ The agent operates as an independent module in a SequentialAgent pipeline.
 
 
 from pathlib import Path
-from typing import List
+from typing import List, Literal
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from google.adk.agents import LlmAgent
 
 from .config import PRODUCTION_CONFIG, REASONING_MODEL
@@ -44,6 +44,22 @@ class SowContent(BaseModel):
 class ExtractorSchema(BaseModel):
     project_metadata: ProjectMetadata
     sow_content: SowContent
+    category: Literal[
+        "snowflake_migration",
+        "eagle_assessment_eagle_modernization",
+        "datawarehouse_modernization",
+        "teradata_migration",
+        "teradata_migration_etl",
+        "teradata_migration_etl_bi"
+    ] = Field(
+        description=(
+            "The category that best describes this proposal based on the content, "
+            "technologies mentioned, and scope of work. Analyze the proposal to determine "
+            "if it involves: Snowflake migration, Eagle assessment/modernization, "
+            "Data warehouse modernization, Teradata migration (general), "
+            "Teradata migration with ETL focus, or Teradata migration with ETL and BI components."
+        )
+    )
 
 # Load promp
 

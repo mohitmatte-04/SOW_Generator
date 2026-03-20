@@ -1,0 +1,403 @@
+{
+  "1.0 SOW Summary Table": {
+    "Vendor_Information": {
+      "Supplier_Full_Legal_Name": "[Vendor]",
+      "Prime_Point_of_Contact": "XXXXX",
+      "Telephone": "XXXXX",
+      "Email": "XXXXX"
+    },
+    "Customer_Information": {
+      "Customer_Full_Legal_Name": "[Client]",
+      "Prime_Point_of_Contact": "XXXXX",
+      "Telephone": "XXXXX",
+      "Email": "XXXXX"
+    },
+    "Project_Details": {
+      "SOW_Start_Date": "XXXXX",
+      "SOW_End_Date": "XXXXX",
+      "SOW_Duration": "XXXXX months (including XXXXX months of warranty)",
+      "Project_Price": "XXXXX XXXXX"
+    }
+  },
+  "2.0 Executive Summary": {
+    "Objective": "[Client] intends to transition the [Legacy Environment] Teradata environment to BigQuery on Google Cloud, enabling a more scalable and cost-efficient data platform.",
+    "Scope_Overview": [
+      "All workloads and end-to-end pipelines for identified datasets will be migrated to GCP.",
+      "Move groups will be identified based on dataset lineage dependencies.",
+      "Migrate Archive/Cold Storage/Legal hold from legacy online and Tape to GCP.",
+      "Switchover the views from previous phases to point to the direct sourced tables."
+    ]
+  },
+  "3.0 Scope of Work": {
+    "Track_1: Consumption Layer Replication and Switch-over": {
+      "a. Consumption Replication": [
+        {
+          "i. Table and View Copy": "Copy identified consumption tables and views from Teradata to GCP BigQuery.",
+          "ii. Schema Structure": "Leverage existing Teradata data models to create the same schema structure for the BigQuery consumption layer."
+        }
+      ],
+      "b. Continuous Sync Pipelines": [
+        {
+          "i. Pipeline Development": "Develop data pipeline for continuous data sync from Teradata.",
+          "ii. Incremental Population": "Incremental data through a continuous sync pipeline to populate the consumption layer.",
+          "iii. Solution Patterns": "Establish solution patterns to refresh on the BigQuery target tables (refresh frequency finalized during discovery)."
+        }
+      ],
+      "c. Testing and Validation": [
+        {
+          "i. Sync Testing": "Test the Data Sync pipeline.",
+          "ii. Production Grade Testing": "Test schemas with production-grade data in UAT and deploy to production.",
+          "iii. Sign-off": "UAT sign-off provided by [Client].",
+          "iv. Automated Validation": "Data Validation between legacy and GCP using [Vendor] IP Validation Tool.",
+          "v. Validation Standard": "XXXXX consecutive full validation runs and thereafter count match."
+        }
+      ]
+    },
+    "Track_2: Core Pipeline Migration to GCP": {
+      "a. Historical Data Migration": [
+        {
+          "i. Extraction": "[Vendor] will use historical data pipelines available from [Client] to extract data from Teradata Source Schema to new BigQuery model.",
+          "ii. UAT Loading": "Load historical data (production grade) in UAT environment from GCS to BigQuery for testing.",
+          "iii. Production Loading": "Load production historical data from GCS bucket to BigQuery working with [Client] production support team."
+        }
+      ],
+      "b. Incremental Data Pipelines": [
+        {
+          "i. Pipeline Setup": "Set Up Incremental Data Movement and Pipelines.",
+          "ii. Framework Compliance": "Follow [Client] set [Internal Framework] processes to bring data into GCP.",
+          "iii. Security Integration": "Data tokenization and encryption solutions will be integral part of [Internal Framework] and leveraged in the pipeline.",
+          "iv. Component Testing": "Perform current sprint components testing with upgraded version of software (AbInitio/[Internal Framework]/Teradata)."
+        }
+      ],
+      "c. Code Conversion": [
+        {
+          "i. Logic Equivalence": "Conversion of Teradata code pipeline to functionally equivalent code pipeline on BigQuery.",
+          "ii. DDL Conversion": "Conversion of Teradata tables and views DDLs to equivalent BigQuery objects.",
+          "iii. Native Script Conversion": "Conversion of Teradata native scripts (SQL, Stored Procedures, Bteqs, Macros) to GCP native.",
+          "iv. Quality Assurance": "Conversion process will not result in loss of existing business functionality or data.",
+          "v. Catalog Setup": "Data Catalog setup for tables and fields adhering to [Internal Framework] solutions.",
+          "vi. Integration Limits": "Changes to ETL tools are limited to forking data into the future state GCP."
+        }
+      ],
+      "d. Orchestration and Scheduling": [
+        {
+          "i. DAG Development": "Cloud Composer DAGs development.",
+          "ii. Workflow Scheduling": "Compose and schedule cloud workflow through DAGs wrapping translated BigQuery SQLs."
+        }
+      ],
+      "e. Testing and Validation": [
+        {
+          "i. Unit Testing": [
+            "1. Unit testing for converted code.",
+            "2. Create test scripts to ensure features work with test data.",
+            "3. Bug identification, tracking, definition, and priority setup.",
+            "4. Defect logging, bug-fixing, and retest."
+          ]
+        }
+      ],
+      "f. User Acceptance Testing (UAT)": [
+        {
+          "i. System Testing": "Conduct system testing in QA/UAT with production-grade data provided by [Client].",
+          "ii. Pre-Validation Runs": "Run incremental pipelines on Teradata and BigQuery before automated validation.",
+          "iii. Success Criteria": "XXXXX parallel runs/data validation reports for historical and incremental load."
+        }
+      ],
+      "g. Production Release": [
+        {
+          "i. Deployment Support": "Provide build and release for production deployment and support issues.",
+          "ii. Framework Adoption": "Adopt existing CI/CD framework to deploy code to production.",
+          "iii. Governance": "Submit Change requests, upload templates/documents, and follow up for approvals."
+        }
+      ],
+      "h. Production Parallel Period": [
+        {
+          "i. Validation Reports": "Generate Data validation reports on production for historical and incremental data.",
+          "ii. Post-Signoff Support": "Provide bug fixes during parallel run period within agreed SLA per severity."
+        }
+      ],
+      "i. Documentation and Handover": [
+        {
+          "i. Transition Planning": "Transition plan development.",
+          "ii. Knowledge Transfer": "Conduct XXXXX sessions of XXXXX hour each iteratively for each move group.",
+          "iii. Runbooks": "Operational runbooks as per [Client] standards.",
+          "iv. Technical Specs": "Update technical specification documents to add GCP-specific details."
+        }
+      ],
+      "j. Warranty": [
+        {
+          "i. Duration": "XXXXX months of warranty covering data pipeline failures, mismatch, and orchestration failures.",
+          "ii. Monitoring": "[Vendor] monitors first XXXXX runs; [Client] monitors from XXXXX run onwards."
+        }
+      ],
+      "k. ETL Complexity and Mapping": [
+        {
+          "i. Job Complexity Breakdown": "Total ETL jobs will be categorized into Simple (1-1 mapping), Medium (standard joins/filters), and Complex (aggregations and custom logic) to define effort.",
+          "ii. STTM Ownership": "[Client] SMEs will provide business rules; [Vendor] will document the Source-to-Target Mapping (STTM); [Client] formal sign-off is required prior to development."
+        }
+      ],
+      "l. Operational Framework": [
+        {
+          "i. Error Handling & Alerting": "Design and implement a centralized error handling, exception logging, and alerting framework within GCP Cloud Composer."
+        }
+      ]
+    },
+    "Track_3: Consumption Acceleration Service (CAS)": {
+      "Activities": [
+        "Address requests and queries of Application teams via ticketing system (HelpDesk/JIRA).",
+        "SQL Query Conversion (Reports, ETL Scripts, SAS, etc.).",
+        "Converted query testing against GCP-BQ.",
+        "Assisted query conversion for BI Users or ad-hoc SQLs.",
+        "Consultation for legacy SQL functionality in GCP."
+      ],
+      "Tracking_Mechanism": [
+        "Request Category and Execution life cycle tracking.",
+        "Efforts by category and exception management.",
+        "Baseline throughput established within XXXXX-XXXXX weeks of start."
+      ]
+    }
+  },
+  "4.0 In-Scope Volumetrics": {
+    "Consumption_Layer": {
+      "Tables": "XXXXX",
+      "Views": "XXXXX"
+    },
+    "Core_Pipeline": {
+      "Base_Tables": "XXXXX",
+      "Enabling_Tables": "XXXXX",
+      "Static_Tables": "XXXXX",
+      "Archive_Tables": "XXXXX",
+      "Cold_Storage_Tables": "XXXXX",
+      "Legal_Hold_Tables": "XXXXX",
+      "Total_Views": "XXXXX",
+      "Total_Data_Size": "XXXXX TB"
+    },
+    "Acceleration_Service": {
+      "Total_SQL_Queries": "XXXXX"
+    },
+    "Technical_Environment_Details": {
+      "Source_Teradata_Version": "Version XXXXX (e.g., 16.20/17.10)",
+      "Total_Schema_Count": "XXXXX distinct schemas"
+    }
+  },
+  "5.0 Project Timelines": {
+    "Phase_Schedule": {
+      "M1_to_M2": "Consumption Layer Replication and Continuous sync pipeline development/testing.",
+      "M2_to_M4": "Core pipeline migration and Data Migration.",
+      "M4_to_M6": "XXXXX months warranty.",
+      "Ongoing": "Consumption Acceleration Service."
+    }
+  },
+  "6.0 Future State Representation": {
+    "Technology_Mapping": {
+      "Data_Warehouse": "Teradata to BigQuery",
+      "Ingestion": "ETL Tool to ETL Tool -> GCS -> BigQuery",
+      "Processing": "Stored Procedures to BigQuery SQLSPs",
+      "Orchestration": "Scheduler to Cloud Composer"
+    }
+  },
+  "7.0 Deliverables & Acceptance Criteria": {
+    "Deliverable_List": [
+      {
+        "Item": "Consumption Tables/Views",
+        "Acceptance": "Inventory report provided; Testing completed; XXXXX consecutive validation runs."
+      },
+      {
+        "Item": "Converted Code (DDLs, BTEQs, Functions)",
+        "Acceptance": "Inventory reports match; Closure of Sev-XXXXX or Sev-XXXXX defects."
+      },
+      {
+        "Item": "Parallel Run Reports",
+        "Acceptance": "History and XXXXX parallel runs validation reports; Sign-off by [Client]."
+      },
+      {
+        "Item": "Handover Materials",
+        "Acceptance": "Runbook published; Completion of closure checklist."
+      }
+    ],
+    "Review_SLA": "[Client] feedback/signoff required within XXXXX business days of submission; otherwise deemed accepted."
+  },
+  "8.0 Out of Scope": {
+    "Exclusions": [
+      "Volumetrics not explicitly listed in-scope.",
+      "GCP Foundation setup and infrastructure-related setups.",
+      "Business Logic changes or modification of functionality.",
+      "Enhancements to [Client] internal frameworks.",
+      "Software upgrades for non-[Vendor] products.",
+      "Report repointing or new report development.",
+      "User onboarding and decommissioning of legacy systems.",
+      "Lifecycle management, BCP, DR, and Data Quality implementation.",
+      "PII Data Handling beyond existing automated solutions.",
+      "Source system schema changes or DDL modifications during the migration period.",
+      "Business rule modifications requested after STTM sign-off."
+    ]
+  },
+  "9.0 Project Assumptions": {
+    "Assumptions": [
+      "Lift & shift approach with no changes to data model or business rules.",
+      "Environments: Development, UAT/QA, and Production.",
+      "Validation tools provided under separate agreement.",
+      "Deployments adhere to [Client] enterprise SDLC requirements.",
+      "Historical data pipelines available from [Client] will be utilized.",
+      "Source systems support the required Change Data Capture (CDC) method (e.g., timestamp columns or log-based access)."
+    ]
+  },
+  "10.0 [Client] Dependencies": {
+    "Access_and_Infrastructure": [
+      "Application system access within XXXXX week of request.",
+      "Infrastructure and windows for historical data extraction.",
+      "Production-grade data or source files.",
+      "JIRA or project tracking tools.",
+      "Infrastructure for validation tool installation.",
+      "Access to [Client] frameworks ([Internal Framework], Cloud pipeline, etc.)."
+    ],
+    "Support_and_Sign-off": [
+      "Sign-offs on deliverables within XXXXX days.",
+      "UAT assistance and review of test results.",
+      "Staffing a team for production operations post-warranty.",
+      "Resolution of network bottlenecks impacting performance."
+    ]
+  },
+  "11.0 Change Control Management": {
+    "Triggers": [
+      "Scope modifications or in-scope volumetric changes.",
+      "Assumptions deviations or responsibility changes.",
+      "Dependency delays or infrastructure disruptions.",
+      "Changes in code post-code freeze.",
+      "Warranty extensions."
+    ],
+    "Freeze_Windows": "Adherence to scheduled freeze windows (XXXXX dates)."
+  },
+  "12.0 Project Closure": {
+    "Process": "Completion of knowledge transfer, closure meeting, and Project Closure Checklist. [Client] signs Project Acceptance Form within XXXXX business days."
+  },
+  "13.0 Commercials": {
+    "Pricing_Model": "Fixed Bid",
+    "Location": "Onshore/Offshore",
+    "Pricing_Table": {
+      "Migration_Workloads": "XXXXX XXXXX",
+      "Funding_Credits": "XXXXX XXXXX",
+      "Total_Net_Cost": "XXXXX XXXXX"
+    }
+  },
+  "14.0 Payment Milestones": {
+    "Schedule": [
+      {
+        "Milestone": "Discovery and Planning",
+        "Criteria": "Solution design sign-off",
+        "Amount": "XXXXX"
+      },
+      {
+        "Milestone": "Month XXXXX - Consumption Replication",
+        "Criteria": "Tables/Views replicated and sync testing complete",
+        "Amount": "XXXXX"
+      },
+      {
+        "Milestone": "Month XXXXX - Core Pipeline UAT",
+        "Criteria": "Cumulative XXXXX base tables in UAT",
+        "Amount": "XXXXX"
+      },
+      {
+        "Milestone": "Warranty Period",
+        "Criteria": "Closure of Sev-XXXXX/XXXXX defects",
+        "Amount": "XXXXX"
+      }
+    ]
+  },
+  "15.0 Governance & Resource Allocation": {
+    "RAID_Management": "Weekly status report tracking Risks, Actions, Issues, and Decisions with resolution aimed within XXXXX business days.",
+    "Resource_Plan": {
+      "Onshore": "Program Manager, TPM, Architect, Data/Test Engineer (Min XXXXX / Max XXXXX resources).",
+      "Offshore": "Delivery Manager, Lead, Data/Test Engineer, CAS Resources (Min XXXXX / Max XXXXX resources)."
+    }
+  },
+  "15.1 Roles and Responsibilities (RACI Matrix)": {
+    "Activity_Matrix": [
+      {
+        "Activity": "Source Data Profiling",
+        "Vendor": "Responsible",
+        "Customer": "Accountable / Consulted",
+        "Notes": "Customer provides DB access"
+      },
+      {
+        "Activity": "STTM Creation",
+        "Vendor": "Responsible",
+        "Customer": "Consulted",
+        "Notes": "Vendor documents transformation logic"
+      },
+      {
+        "Activity": "STTM Sign-off",
+        "Vendor": "Informed",
+        "Customer": "Accountable / Responsible",
+        "Notes": "Customer approves logic before development"
+      },
+      {
+        "Activity": "ETL Development",
+        "Vendor": "Responsible",
+        "Customer": "Informed",
+        "Notes": "Vendor builds GCP native pipelines"
+      },
+      {
+        "Activity": "UAT Execution",
+        "Vendor": "Consulted",
+        "Customer": "Responsible",
+        "Notes": "Customer validates business parity"
+      },
+      {
+        "Activity": "Cutover Decision",
+        "Vendor": "Informed",
+        "Customer": "Accountable / Responsible",
+        "Notes": "Customer formal Go/No-Go sign-off"
+      }
+    ]
+  },
+  "16.0 Signatures": {
+    "Authorized_Signatories": "[Client] Bank Representative and [Vendor] Representative.",
+    "Effective_Date": "XXXXX"
+  },
+  "17.0 Risks and Mitigations": {
+    "Risk_Log": [
+      {
+        "Risk": "Delays in source system access",
+        "Mitigation": "Onboarding and access requests to begin 2 weeks prior to M1 kickoff."
+      },
+      {
+        "Risk": "Source data quality issues impacting validation",
+        "Mitigation": "Automated profiling reports shared early for [Client] remediation."
+      },
+      {
+        "Risk": "Network bandwidth for historical load",
+        "Mitigation": "Early upload speed testing and provisioning of dedicated GCS transfer pipe."
+      }
+    ]
+  },
+  "18.0 Escalation Matrix": {
+    "Escalation_Path": [
+      {
+        "Level": "L1 (Project)",
+        "Vendor_Contact": "Project Manager",
+        "Customer_Contact": "Project Manager",
+        "Timeline": "24 Hours"
+      },
+      {
+        "Level": "L2 (Management)",
+        "Vendor_Contact": "Delivery Director",
+        "Customer_Contact": "IT Director",
+        "Timeline": "48 Hours"
+      },
+      {
+        "Level": "L3 (Executive)",
+        "Vendor_Contact": "VP / SVP",
+        "Customer_Contact": "CIO / Sponsor",
+        "Timeline": "> 48 Hours"
+      }
+    ]
+  },
+  "19.0 Glossary / Definitions": {
+    "Terms": [
+      "CDC: Change Data Capture (Incremental sync mechanism)",
+      "STTM: Source-to-Target Mapping (Logical transformation document)",
+      "DAG: Directed Acyclic Graph (Cloud Composer/Airflow workflow orchestration)",
+      "Parity: 100% data match between source and target systems"
+    ]
+  }
+}

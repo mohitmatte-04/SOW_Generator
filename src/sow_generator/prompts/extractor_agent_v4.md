@@ -33,54 +33,65 @@ Extract ALL content from the PDF **exactly as it appears** character-for-charact
 - Detect hierarchy by analyzing font size, bold, color, indentation, bullet styles
 - **Exclude:** logos, decorative text, page numbers, slide numbers, footer text, "Thank You" slides
 
-### Content Structure Rules
+### JSON Extraction Format
 
-**1. Lists/Bullets** : Array with nested sub-arrays for hierarchy
+**CRITICAL:** Use this exact JSON structure **consistently every time** for all extractions. This structure is deterministic and supports seamless mapping and structuring in later phases.
+
+#### **Structure Overview**
+
+Use slide headings as top-level JSON keys. Each slide's content is an object with a `type` field indicating the content format.
+
+#### **Three Content Types**
+
+**Type 1: `list`** - For bulleted or numbered points
 ```json
 {
-	"Scope of work" : [
-		[
-			"Discovery",
-			[
-				"Discovery and analysis",
-				[
-					"Understanding technical and functional requirements",
-					[
-						"what are existing functionalties",
-						"para1\npara2"
-						..
-					]
-				],
-				"Understanding current state architecture",
-				...
-			]
-		],
-		[
-			"Development",
-			[
-				"development work",
-				...
-			]
-		]
-	],
+  "type": "list",
+  "items": [
+    {
+      "text": "Point text here",
+      "children": [
+        {
+          "text": "Sub-point text",
+          "children": []
+        }
+      ]
+    }
+  ]
 }
 ```
-In the above example: -
-Scope of work -> slide heading
-Discovery/Development -> Sub-heading
-Discovery and analysis / Understanding technical and functional requirements -> Sub-points under Discovery
-"what are existing functionalties" -> sub-point of "Understanding technical and functional requirements" point
+- Use recursive `{text, children}` structure
+- `children` is ALWAYS an array (empty `[]` if no sub-points)
+- Supports unlimited depth through recursion
+- Preserve ALL hierarchical levels - never flatten
 
-**2. Paragraphs** : String with `\n` for line breaks
+**Type 2: `paragraph`** - For text content
 ```json
-"First paragraph text.\n\nSecond paragraph text."
+{
+  "type": "paragraph",
+  "text": "First paragraph text.\n\nSecond paragraph text."
+}
 ```
+- Simple string with `\n` for paragraph breaks
 
-**3. Mixed content** -> Use dominant type:
-- If bullets are primary : Array
-- If paragraphs are primary : String
+**Type 3: `table`** - For tabular data
+```json
+{
+  "type": "table",
+  "rows": [
+    {
+      "column1": "Value 1",
+      "column2": "Value 2",
+      "column3": "Value 3"
+    }
+  ]
+}
+```
+- Array of row objects
+- Use `column1`, `column2`, `column3`, etc. as keys
+- Values can consists of lists, in that case follow the same structure as mentioned for lists above
 
-### Identifying Visual Hierarchy
+#### **Identifying Visual Hierarchy**
 
 **CRITICAL:** Preserve ALL hierarchical levels during extraction and throughout all phases. Never flatten.
 
@@ -96,64 +107,132 @@ Analyze visual cues to determine structure:
 1. Identify the highest-level headers (largest font, most prominent)
 2. Within each top-level section, identify next-level sub-headers
 3. Continue detecting nested levels until reaching individual items
-4. Preserve ALL levels throughout all phases - never flatten
+4. Create nested `children` arrays for each level
+5. Preserve ALL levels throughout all phases - never flatten
 
-**Decision:**
-- Visual distinction exists : Create nested structure: `["Header", [items]]`
-- No visual distinction : Flat array: `["Item 1", "Item 2"]`
+#### **Handling Different Content Types**
 
+**Mixed Content:**
+- If bullets/points are dominant → Use `type: "list"`
+- If paragraphs are dominant → Use `type: "paragraph"`
+- Cannot mix types in same slide
 
-### Handling Tabular Data
+**Duplicate Slide Headings:**
+- If multiple slides have the same heading, append suffix
+- Example: `"Deliverables"`, `"Deliverables_2"`, `"Deliverables_3"`
 
-When slide contains a table instead of standard bullets:
+**Tabular Data:**
+- When slide contains a table, use `type: "table"`
+- Extract all rows and columns
+- Use consistent column naming (`column1`, `column2`, etc.)
 
-1. **Check for column headings** : Determine which column best represents sub-headings
-2. **No heading row?** : Use leftmost column as sub-headings
-3. **Nesting in table**: If in a column, there are sections/sub-headings follow the heirarchical apprach to extract the data that we disussed above.
-3. **Extract structure:**
-   ```json
-   [
-     ["Column1 Row1", ["Column2 Row1", "Column3 Row1"]],
-     ["Column1 Row2", ["Column2 Row2", "Column3 Row2"]]
-   ]
-   ```
+#### **Complete Extraction Example**
 
-### Handling Text in Shapes/Text Boxes
+**Source Slide "Scope of Work":**
+```
+Scope of Work                            <-- Slide heading
 
-Apply same visual hierarchy rules:
-- Look for bold, font size, color, indentation differences
-- Structure accordingly with nesting
+Discovery, Design & Analysis             <-- Bold/larger font (main point)
+  • Discovery and analysis               <-- Regular bullet
+  • Understanding technical requirements <-- Regular bullet
+    - Existing functionalities           <-- Sub-bullet (indented)
+    - Gap analysis                       <-- Sub-bullet (indented)
+  • Understanding current state architecture  <-- Regular bullet
 
-### Extraction Format
+Development                              <-- Bold/larger font (main point)
+  • Development work                     <-- Regular bullet
+  • Testing activities                   <-- Regular bullet
+```
 
-Create a JSON object with slide headings as keys:
-
+**Extracted JSON:**
 ```json
 {
-  "Scope of Work": [
-    ["Discovery", [
-      "Discovery and analysis",
-      ["Understanding technical and functional requirements", [
-        "What are existing functionalities",
-        "Para1\n\nPara2"
-      ]],
-      "Understanding current state architecture"
-    ]],
-    ["Development", [
-      "Development work",
-      "Testing activities"
-    ]]
-  ],
-  "Deliverables": [
-    ["Discovery", [
-      "Volumetrics - Metadata and logs (active)",
-      "Workload distribution dashboard"
-    ]],
-    ["Data Flow Lineage", [
-      "End-to-end lineage at object/table/view level",
-      "View to Base tables lineage"
-    ]]
-  ]
+  "Scope of Work": {
+    "type": "list",
+    "items": [
+      {
+        "text": "Discovery, Design & Analysis",
+        "children": [
+          {
+            "text": "Discovery and analysis",
+            "children": []
+          },
+          {
+            "text": "Understanding technical requirements",
+            "children": [
+              {
+                "text": "Existing functionalities",
+                "children": []
+              },
+              {
+                "text": "Gap analysis",
+                "children": []
+              }
+            ]
+          },
+          {
+            "text": "Understanding current state architecture",
+            "children": []
+          }
+        ]
+      },
+      {
+        "text": "Development",
+        "children": [
+          {
+            "text": "Development work",
+            "children": []
+          },
+          {
+            "text": "Testing activities",
+            "children": []
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Another Example - Multiple Content Types:**
+
+**Source Slides:**
+```
+Slide 1: "Background"
+The customer is currently operating a legacy Teradata system that has been in
+production for over 10 years.
+
+Performance degradation and increasing maintenance costs have made it necessary
+to migrate to a modern cloud platform.
+
+Slide 2: "Deliverables"
+Phase         | Deliverable           | Timeline
+Discovery     | Architecture Document | Week 4
+Design        | Migration Plan        | Week 8
+```
+
+**Extracted JSON:**
+```json
+{
+  "Background": {
+    "type": "paragraph",
+    "text": "The customer is currently operating a legacy Teradata system that has been in production for over 10 years.\n\nPerformance degradation and increasing maintenance costs have made it necessary to migrate to a modern cloud platform."
+  },
+  "Deliverables": {
+    "type": "table",
+    "rows": [
+      {
+        "column1": "Discovery",
+        "column2": "Architecture Document",
+        "column3": "Week 4"
+      },
+      {
+        "column1": "Design",
+        "column2": "Migration Plan",
+        "column3": "Week 8"
+      }
+    ]
+  }
 }
 ```
 
@@ -217,12 +296,14 @@ Choose ONE category from this list based on the extracted content:
 4. `teradata_migration` - Teradata migration projects (general, without ETL/BI focus)
 5. `teradata_migration_etl` - Teradata migration with focus on ETL (Extract, Transform, Load)
 6. `teradata_migration_etl_bi` - Teradata migration including both ETL and BI components
+7. `hadoop_migration` - Hadoop migration or modernization projects
 
 **Category Selection Process:**
 
 1. **Check Technology Keywords:**
    - "Snowflake" mentioned → `snowflake_migration`
    - "Teradata" mentioned → one of the teradata categories (continue to next step)
+   - "Hadoop" or "HDFS" or "MapReduce" or "Hive" mentioned → `hadoop_migration`
    - "Eagle" system mentioned → `eagle_assessment_eagle_modernization`
    - "Data warehouse" or "DW" without specific platform → `datawarehouse_modernization`
 
@@ -249,18 +330,18 @@ Choose ONE category from this list based on the extracted content:
 
 1. **No duplication:** Each piece of information appears in ONLY ONE field (the most appropriate one)
 2. **Missing data:** If no data found for a field -> Set to `"NA"`
-3. **Preserve structure:** Keep the nested array/string structure from extraction phase
+3. **Preserve structure:** Keep the structure from extraction phase.
 4. **Category is required:** Every proposal must be assigned to ONE category based on the rules above
 
 ---
 
 ## PHASE 3: STRUCTURE
 
-Clean and format the mapped data according to output requirements.
+Transform the mapped data according to output schema requirements while removing formatting symbols.
 
 ### Cleaning Rules
 
-**1. Remove ALL Formatting Symbols:**
+**Remove ALL Formatting Symbols from text:**
 
 Remove from all text content:
 - Bullet symbols: bullet dot, hyphen, asterisk, angle bracket, hollow bullet, filled bullet, square bullet
@@ -271,60 +352,227 @@ Remove from all text content:
 - Source: `"1.1 Incremental Data pipeline"`
 - Output: `"Incremental Data pipeline"`
 
-**2. Preserve Hierarchical Structure:**
+---
 
-**CRITICAL:** Keep the complete nested hierarchy extracted in Phase 1. Do NOT flatten any levels.
+### Structure Transformation Rules
 
-**Example (preserve all levels):**
+**CRITICAL:** Transform the extracted JSON based on the output schema field type. Check the schema for each field and apply the appropriate transformation.
+
+---
+
+#### **Rule 1: Field Type is `string`**
+
+Convert ANY content type to a paragraph-style string with `\n` for line breaks.
+
+**Case 1.1: Source is `type: "paragraph"`**
 ```json
+// Extracted & Mapped:
 {
-  "activities": [
-    ["Phase 1: Eagle Assessment", [
-      ["Discovery, Analysis & Design", [
-        "Discovery and analysis",
-        "Understanding technical and functional requirements",
-        "Understanding current state architecture"
-      ]],
-      ["Design and Recommendation", [
-        "Future state technical and solution architecture",
-        "Migration scope and strategy"
-      ]]
-    ]],
-    ["Phase 2: Migration", [
-      ["Source System Integration", [
-        "Set up incremental ingestion from source systems to GCP"
-      ]],
-      ["Code Conversion & Refactoring", [
-        "Convert in-scope Oracle objects to BigQuery",
-        "Conversion of Dataproc jobs to GCP"
-      ]]
-    ]]
+  "type": "paragraph",
+  "text": "First paragraph.\n\nSecond paragraph."
+}
+
+// Structured Output:
+"First paragraph.\n\nSecond paragraph."
+```
+
+**Case 1.2: Source is `type: "list"`**
+Flatten all points into a flowing paragraph with `\n` breaks:
+```json
+// Extracted & Mapped:
+{
+  "type": "list",
+  "items": [
+    {
+      "text": "Discovery and analysis",
+      "children": []
+    },
+    {
+      "text": "Design architecture",
+      "children": []
+    }
   ]
 }
+
+// Structured Output:
+"Discovery and analysis\n\nDesign architecture"
 ```
 
-**Array Structure Rules:**
-
-**WRONG FORMAT (flat array):**
+For nested lists, flatten recursively:
 ```json
-["Phase 1: Assessment", "Discovery (...)", "Design (...)"]
-```
-This is INCORRECT - all items are at the same level.
+// Extracted & Mapped:
+{
+  "type": "list",
+  "items": [
+    {
+      "text": "Discovery",
+      "children": [
+        {
+          "text": "Analysis",
+          "children": []
+        },
+        {
+          "text": "Requirements",
+          "children": []
+        }
+      ]
+    }
+  ]
+}
 
-**CORRECT FORMAT (nested array):**
+// Structured Output:
+"Discovery\n\nAnalysis\n\nRequirements"
+```
+
+---
+
+#### **Rule 2: Field Type is `string | list[dict]`**
+
+Choose the output format based on the source content and nesting level.
+
+---
+
+**Case 2.1: Source is `type: "paragraph"`**
+
+Output as **string** with `\n` for paragraph breaks:
 ```json
-["Phase 1: Assessment", [
-  "Discovery (...)",
-  "Design (...)"
-]]
+// Extracted & Mapped:
+{
+  "type": "paragraph",
+  "text": "Text content here.\n\nMore text."
+}
+
+// Structured Output:
+"Text content here.\n\nMore text."
 ```
-Always use: `["Header", [items]]` NOT `["Header", "item1", "item2"]`
 
-**3. Preserve Data Types:**
+---
 
-- **Lists remain lists** (nested arrays where appropriate)
-- **Paragraphs remain strings** (with `\n` preserved)
-- Do NOT convert between types
+**Case 2.2: Source is `type: "list"` with NO children (flat list)**
+
+Output as **simple array of strings**:
+```json
+// Extracted & Mapped:
+{
+  "type": "list",
+  "items": [
+    {"text": "Item 1", "children": []},
+    {"text": "Item 2", "children": []},
+    {"text": "Item 3", "children": []}
+  ]
+}
+
+// Structured Output:
+["Item 1", "Item 2", "Item 3"]
+```
+
+---
+
+**Case 2.3: Source is `type: "list"` with children (nested up to level 2)**
+
+Output as **array of objects with `point` and `subpoint` keys**:
+
+- Items WITHOUT children → plain string in array
+- Items WITH children → object with `{"point": "...", "subpoint": [...]}`
+- `subpoint` is ALWAYS an array (empty `[]` if no sub-points)
+
+```json
+// Extracted & Mapped:
+{
+  "type": "list",
+  "items": [
+    {
+      "text": "Discovery, Design & Analysis",
+      "children": [
+        {"text": "Discovery and analysis", "children": []},
+        {"text": "Design architecture", "children": []}
+      ]
+    },
+    {
+      "text": "Development",
+      "children": []
+    },
+    {
+      "text": "Testing",
+      "children": [
+        {"text": "Unit testing", "children": []},
+        {"text": "Integration testing", "children": []}
+      ]
+    }
+  ]
+}
+
+// Structured Output:
+[
+  {
+    "point": "Discovery, Design & Analysis",
+    "subpoint": ["Discovery and analysis", "Design architecture"]
+  },
+  {
+    "point": "Development",
+    "subpoint": []
+  },
+  {
+    "point": "Testing",
+    "subpoint": ["Unit testing", "Integration testing"]
+  }
+]
+```
+
+---
+
+**Case 2.4: Source is `type: "list"` with nesting BEYOND level 2 (level 3+)**
+
+**Flatten to maximum level 2** by combining deeper levels into parentheses:
+
+```json
+// Extracted & Mapped (has level 3 nesting):
+{
+  "type": "list",
+  "items": [
+    {
+      "text": "Discovery, Design & Analysis",
+      "children": [
+        {
+          "text": "Discovery of requirements",
+          "children": [
+            {"text": "Identifying pain points", "children": []},
+            {"text": "Understanding customer needs", "children": []}
+          ]
+        },
+        {
+          "text": "Design architecture",
+          "children": []
+        }
+      ]
+    },
+    {
+      "text": "Development",
+      "children": []
+    }
+  ]
+}
+
+// Structured Output (flattened to level 2):
+[
+  {
+    "point": "Discovery, Design & Analysis",
+    "subpoint": [
+      "Discovery of requirements (Identifying pain points, Understanding customer needs)",
+      "Design architecture"
+    ]
+  },
+  {
+    "point": "Development",
+    "subpoint": []
+  }
+]
+```
+
+**Flattening Rule:**
+- If a `subpoint` item has its own `children`, combine them into parentheses
+- Format: `"Parent text (child1, child2, child3)"`
+- Preserve the hierarchy information but limit depth to 2 levels
 
 ---
 
@@ -337,10 +585,11 @@ Always use: `["Header", [items]]` NOT `["Header", "item1", "item2"]`
     "customer_name": "Full legal name of the client organization",
     "msa_date": "Effective date of the Master Services Agreement"
   },
-  "category": "One of: snowflake_migration | eagle_assessment_eagle_modernization | datawarehouse_modernization | teradata_migration | teradata_migration_etl | teradata_migration_etl_bi",
+  "category": "One of: snowflake_migration | eagle_assessment_eagle_modernization | datawarehouse_modernization | teradata_migration | teradata_migration_etl | teradata_migration_etl_bi | hadoop_migration",
   "sow_content": {
-    "opportunity": "Business problem, current situation, and project justification (string or array)",
+    "opportunity": "Business problem, current situation, and project justification (string",
     "solution_overview": "High-level technical solution and approach summary (string or array)",
+    "strategy/architecture": "High-level technical solution and approach summary (string or array)",
     "activities": "Detailed list of tasks and work steps Onix will perform (string or array)",
     "deliverables": "Tangible outputs - reports, code, diagrams, etc. (string or array)",
     "out_of_scope": "Tasks explicitly NOT included (string or array)",
@@ -376,25 +625,27 @@ Always use: `["Header", [items]]` NOT `["Header", "item1", "item2"]`
 Before returning final JSON, verify:
 
 1. **All three phases completed?**
-   - Phase 1: Extracted all content exactly as-is WITH COMPLETE HIERARCHY (unlimited depth)
-   - Phase 2: Mapped extracted content to schema fields
-   - Phase 3: Removed formatting symbols while preserving hierarchical structure
+   - Phase 1: Extracted all content exactly as-is using consistent `{type, items/text/rows}` structure
+   - Phase 2: Mapped extracted content to schema fields semantically
+   - Phase 3: Transformed based on schema field types and removed formatting symbols
 
 2. **No duplicated content** across fields?
 
 3. **No added/rephrased text** (exact copying only)?
 
-4. **All formatting symbols removed** (`1.`, `1.1`, `"`, etc.)?
+4. **All formatting symbols removed** (`1.`, `1.1`, bullets, etc.)?
 
-5. **Hierarchical nesting preserved** with correct format:
-   - Section with sub-items: `["Header", ["Sub1", "Sub2"]]` (CORRECT)
-   - NOT: `["Header", "Sub1", "Sub2"]` (WRONG - this is a flat array, not nested)
-   - The second element after a header must ALWAYS be an array: `["Header", [items]]`
-   - Preserve unlimited depth - do NOT flatten any levels
+5. **Correct structure transformation applied:**
+   - `string` fields → paragraph format with `\n`
+   - `string | list[dict]` with flat list → simple string array
+   - `string | list[dict]` with nesting → array of `{point, subpoint}` objects
+   - Nesting beyond level 2 → flattened to level 2 with parentheses
 
 6. **Valid parseable JSON**?
 
 7. **Missing fields set to `"NA"`**?
+
+8. **Category correctly identified** based on content analysis?
 
 ---
 
@@ -404,9 +655,11 @@ Before returning final JSON, verify:
 
 **Source slide "Scope of Work":**
 ```
+Scope of Work                        <-- Slide heading
+
 Discovery, Analysis & Design         <-- Bold header
-  " Discovery and analysis           <-- Regular bullet
-  " Understanding requirements       <-- Regular bullet
+  • Discovery and analysis           <-- Regular bullet
+  • Understanding requirements       <-- Regular bullet
     - Existing functionalities       <-- Sub-bullet
     - Gap analysis                   <-- Sub-bullet
 ```
@@ -414,15 +667,33 @@ Discovery, Analysis & Design         <-- Bold header
 **Extracted JSON:**
 ```json
 {
-  "Scope of Work": [
-    ["Discovery, Analysis & Design", [
-      "Discovery and analysis",
-      ["Understanding requirements", [
-        "Existing functionalities",
-        "Gap analysis"
-      ]]
-    ]]
-  ]
+  "Scope of Work": {
+    "type": "list",
+    "items": [
+      {
+        "text": "Discovery, Analysis & Design",
+        "children": [
+          {
+            "text": "Discovery and analysis",
+            "children": []
+          },
+          {
+            "text": "Understanding requirements",
+            "children": [
+              {
+                "text": "Existing functionalities",
+                "children": []
+              },
+              {
+                "text": "Gap analysis",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
@@ -433,34 +704,54 @@ Discovery, Analysis & Design         <-- Bold header
 **Mapped:**
 ```json
 {
-  "activities": [
-    ["Discovery, Analysis & Design", [
-      "Discovery and analysis",
-      ["Understanding requirements", [
-        "Existing functionalities",
-        "Gap analysis"
-      ]]
-    ]]
-  ]
+  "activities": {
+    "type": "list",
+    "items": [
+      {
+        "text": "Discovery, Analysis & Design",
+        "children": [
+          {
+            "text": "Discovery and analysis",
+            "children": []
+          },
+          {
+            "text": "Understanding requirements",
+            "children": [
+              {
+                "text": "Existing functionalities",
+                "children": []
+              },
+              {
+                "text": "Gap analysis",
+                "children": []
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
 ### Phase 3: Structure
 
-1. Remove formatting symbols (bullet symbols, `-`, numbering)
-2. Preserve hierarchical structure (keep all 3 levels)
+1. Check schema: `activities` field type is `string | list[dict]`
+2. Check extracted structure: Has nested children (level 3)
+3. Apply Case 2.4: Flatten to level 2 using parentheses
+4. Remove formatting symbols (bullet symbols, `-`, numbering)
 
 **Final structured output:**
 ```json
 {
   "activities": [
-    ["Discovery, Analysis & Design", [
-      "Discovery and analysis",
-      ["Understanding requirements", [
-        "Existing functionalities",
-        "Gap analysis"
-      ]]
-    ]]
+    {
+      "point": "Discovery, Analysis & Design",
+      "subpoint": [
+        "Discovery and analysis",
+        "Understanding requirements (Existing functionalities, Gap analysis)"
+      ]
+    }
   ]
 }
 ```

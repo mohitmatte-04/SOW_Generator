@@ -70,9 +70,72 @@ The document generator handles formatting automatically. Follow these rules:
 
 Read extracted data from session state:
 
-`{extractor_agent_context}`
+`{enrichment_agent_result}`
 
-This returns JSON where each field can be either a **string** or **array** depending on the source content structure:
+**IMPORTANT:** The input comes from the **enrichment agent** (not the extractor agent). The enrichment agent uses three possible formats for array fields:
+
+### Format 1: String with `\n\n` separators
+```json
+"opportunity": "First paragraph.\n\nSecond paragraph."
+```
+**Your Action:** Keep as-is (preserve the string with `\n`)
+
+### Format 2: Array of {point, subpoint} objects
+```json
+"activities": [
+  {"point": "Phase 1: Assessment", "subpoint": ["Discovery", "Analysis"]},
+  {"point": "Phase 2: Implementation", "subpoint": []}
+]
+```
+**Your Action:** Convert to nested array format (document generator requirement):
+```python
+"activities": [
+  ["Phase 1: Assessment", ["Discovery", "Analysis"]],
+  "Phase 2: Implementation"  # Empty subpoint becomes plain string
+]
+```
+
+### Format 3: Simple array of strings
+```json
+"deliverables": ["Architecture Document", "Migration Plan"]
+```
+**Your Action:** Keep as-is (already in correct format)
+
+### Conversion Rules for Format 2
+
+When you encounter Format 2 ({point, subpoint} objects):
+
+1. **If `subpoint` is empty (`[]`)**: Use only the `point` value as a plain string
+2. **If `subpoint` has items**: Create nested array `[point, [subpoint items]]`
+3. **Process all items** in the array this way
+
+**Example Conversion:**
+
+Input from enrichment agent:
+```json
+{
+  "technical_assumptions": [
+    {"point": "Client will provide production access", "subpoint": []},
+    {"point": "Environment Prerequisites", "subpoint": ["GCP project provisioned", "Network configured"]},
+    {"point": "Target platform is accessible", "subpoint": []}
+  ]
+}
+```
+
+Your converted output:
+```json
+{
+  "technical_assumptions": [
+    "Client will provide production access",
+    ["Environment Prerequisites", ["GCP project provisioned", "Network configured"]],
+    "Target platform is accessible"
+  ]
+}
+```
+
+---
+
+The enrichment agent JSON structure:
 ```json
 {
   "project_metadata": {
@@ -81,17 +144,18 @@ This returns JSON where each field can be either a **string** or **array** depen
     "msa_date": "string"
   },
   "sow_content": {
-    "opportunity": "string",
-    "solution_overview": "string",
-    "activities": "string or array",
-    "deliverables": "string or array",
-    "out_of_scope": "string or array",
-    "limitations": "string or array",
-    "success_criteria": "string or array",
-    "technical_assumptions": "string or array",
-    "payment_schedule": "string or array",
-    "add_appendix_details": "string or array"
-  }
+    "opportunity": "string (always Format 1)",
+    "solution_overview": "Format 1 | Format 2 | Format 3",
+    "activities": "Format 1 | Format 2 | Format 3",
+    "deliverables": "Format 1 | Format 2 | Format 3",
+    "out_of_scope": "Format 1 | Format 2 | Format 3",
+    "limitations": "Format 1 | Format 2 | Format 3",
+    "success_criteria": "Format 1 | Format 2 | Format 3",
+    "technical_assumptions": "Format 1 | Format 2 | Format 3",
+    "payment_schedule": "Format 1 | Format 2 | Format 3",
+    "add_appendix_details": "Format 1 | Format 2 | Format 3"
+  },
+  "category": "string"
 }
 ```
 
@@ -185,26 +249,34 @@ Skip any appendix that is "NA". If all are "NA", use: `"Not specified in source 
 ## Execution Steps
 
 ### Step 1: Read Input
-Access the extracted JSON from `{extractor_agent_context}`.
+Access the enriched JSON from `{enrichment_agent_result}`.
 
-### Step 2: Extract Values
+### Step 2: Convert Format 2 to Nested Arrays
+For each array field in `sow_content`:
+- **Check if array contains {point, subpoint} objects** (Format 2)
+- If YES, convert each object:
+  - Empty subpoint `[]` → Use only `point` as string
+  - Non-empty subpoint → Create `[point, [subpoint items]]`
+- If NO (Format 1 or Format 3), keep as-is
+
+### Step 3: Extract Values
 For each output field, extract from the corresponding source path.
 
-### Step 3: Handle Special Cases
+### Step 4: Handle Special Cases
 - `provision_date` → Use today's date
 - `customer_short_name` → Derive from customer_name
 - `customer_name_bold` → Format with bold
 - `solution_overview` → Synthesize if "NA"
 - `success_criteria` → Infer if "NA"
 
-### Step 4: Expand Content
+### Step 5: Expand Content
 For each field:
 - If value is "NA" and not a special case → "Not specified in source data."
 - If value exists → Expand into professional SOW language
 - **Preserve data structure** (arrays stay arrays, strings stay strings)
 - Include ALL details from JSON
 
-### Step 5: Return Structured Output
+### Step 6: Return Structured Output
 Return a JSON object with all 16 fields populated.
 
 ---
@@ -306,6 +378,7 @@ Before returning, verify:
 - ✅ All 16 fields present?
 - ✅ `provision_date` uses TODAY'S date?
 - ✅ `customer_short_name` derived (not from JSON)?
+- ✅ **Format 2 ({point, subpoint}) converted to nested arrays?**
 - ✅ Arrays preserved (not converted to strings)?
 - ✅ No bullet symbols added manually?
 - ✅ ALL JSON details included (no compression)?

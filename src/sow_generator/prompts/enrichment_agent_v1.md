@@ -213,7 +213,7 @@ Return ONLY the enriched JSON object with this exact structure:
   },
   "sow_content": {
     "opportunity": "...",
-    "solution_overview": "..." or [...],
+    "solution_overview": "...",
     "activities": "..." or [...],
     "deliverables": "..." or [...],
     "out_of_scope": "..." or [...],

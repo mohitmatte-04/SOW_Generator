@@ -42,6 +42,7 @@ async def before_enrichment_model_callback(
     """
     try:
         # Get the extractor agent output from state
+        logger.info("Before enrichment model callback")
         extractor_context = callback_context.state.get("extractor_agent_context")
 
         if not extractor_context:

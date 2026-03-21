@@ -261,11 +261,13 @@ async def after_agent_callback(callback_context: CallbackContext) -> Optional[ge
             "<<ADD_APPENDIX_DETAILS>>": convert_format2_to_nested_arrays(agent_result.get("add_appendix_details", "Not specified.")),
         }
         
+        import os
         from .tools.generate_sow_document import generate_sow_document
         
-        # Fixed template URI and generated output directory - could be parameterized if needed
-        TEMPLATE_GCS_URI = "gs://agent_engine_depoly/sow-generator/sow-template/SOW Template.docx"
-        OUTPUT_GCS_URI = "gs://agent_engine_depoly/sow-generator/generated-sows"
+        # Configuration for Google Docs generation
+        TEMPLATE_DRIVE_ID = os.getenv("sow_template_drive_id", "YOUR_GOOGLE_DOC_TEMPLATE_ID")
+        DRIVE_FOLDER_ID = os.getenv("sow_drive_folder_id", None)
+        CREDENTIALS = os.getenv("sow-generator-sa", "service_account.json")
         
         customer_name = agent_result.get("customer_name", "Generated")
         # Sanitize customer name for filename
@@ -276,30 +278,32 @@ async def after_agent_callback(callback_context: CallbackContext) -> Optional[ge
         
         # Invoke document generation
         doc_result = await generate_sow_document(
-            template_gcs_uri=TEMPLATE_GCS_URI,
+            template_drive_id=TEMPLATE_DRIVE_ID,
             placeholders=placeholders,
             document_title=document_title,
-            output_gcs_uri=OUTPUT_GCS_URI,
-            font_name="Plus Jakarta Sans",
-            font_size=10
+            credentials=CREDENTIALS,
+            drive_folder_id=DRIVE_FOLDER_ID,
+            share_with_emails=None,
+            make_public=False
         )
         
         callback_context.state["is_pdf_generated"] = False
         callback_context.state["sow_generation_agent_result"] = None
         
         if doc_result.get("status") == "success":
-            gcs_uri = doc_result["data"]["gcs_uri"]
-            success_msg = f"The Statement of Work document has been generated successfully.\n\nGCS Location: {gcs_uri}\n\nThe document has been saved to the GCS bucket and is ready for download or review."
-            logger.info(f"[Callback] Document generated successfully at {gcs_uri}")
+            web_view_link = doc_result["data"]["web_view_link"]
+            file_id = doc_result["data"]["file_id"]
+            success_msg = f"The Statement of Work document has been generated successfully.\n\nGoogle Docs Location: {web_view_link}\n\nThe document has been saved to Google Drive and is ready for download or review."
+            logger.info(f"[Callback] Document generated successfully at {web_view_link}")
             
             # Update state with success info if needed
             current_state["sow_generation_schema"] = {
                 "status": "success",
-                "sow_output_path": gcs_uri
+                "sow_output_path": web_view_link
             }
 
             return genai_types.Content(
-                parts=[genai_types.Part(text='{"status": "success", "sow_output_path": "'+ gcs_uri + '"}')],
+                parts=[genai_types.Part(text='{"status": "success", "sow_output_path": "'+ web_view_link + '"}')],
                 role="model"
             )
         else:

@@ -1,368 +1,259 @@
-"""Tool to generate a SOW document in DOCX format.
+"""Tool to generate a SOW document in Google Docs format directly via Google Docs API.
 Placeholders in the template should use << >> format (e.g., <<PROJECT_NAME>>).
 """
 
 import logging
 import os
 import json
-import copy
-import re
-from typing import Any, Dict, List, Union, Tuple, Optional
+from pathlib import Path
+from typing import Any, Dict, List, Union, Optional
 from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseDownload, MediaFileUpload, MediaInMemoryUpload
-from google.cloud import storage
-import google.auth
-from google.auth.transport.requests import Request
 from google.oauth2 import service_account
-import io
-from docx import Document
-from docx.shared import Pt, RGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
-
+load_dotenv()
 # -------------------------
-# Helper functions for document processing
+# Helper functions
 # -------------------------
 
-def _parse_value(value):
-    Flatten a potentially nested array item into a list of (text, indent_level) tuples.
-
-    Handles nested structure: [main_point, [sub_point_1, sub_point_2]]
-
-    Args:
-        item: Either a string or a nested array [main_text, [sub_items...]]
-        level: Current indentation level (0 for main bullets, 1 for sub-bullets, etc.)
-
-    Returns:
-        List of (text, indent_level) tuples
-    """
-    if isinstance(item, str):
-        # Simple string item
-        return [(item.strip(), level)]
-    elif isinstance(item, list):
-        if len(item) == 0:
-            return []
-        elif len(item) == 1:
-            # Single element array - treat as simple item
-            return _flatten_nested_item(item[0], level)
-        elif len(item) == 2 and isinstance(item[0], str) and isinstance(item[1], list):
-            # Nested structure: [main_point, [sub_points]]
-            result = [(item[0].strip(), level)]
-            # Recursively flatten sub-items at increased indent level
-            for sub_item in item[1]:
-                result.extend(_flatten_nested_item(sub_item, level + 1))
-            return result
-        else:
-            # Array of items at same level
-            result = []
-            for sub_item in item:
-                result.extend(_flatten_nested_item(sub_item, level))
-            return result
-    else:
-        # Fallback: convert to string
-        return [(str(item).strip(), level)]
-
-
-def _replace_text_with_list(paragraph, key, items, parent_element, font_name=None, font_size=None, use_custom_fonts=True):
-    """Replace placeholder with multiple bullet points, supporting nested sub-bullets."""
-    if key not in paragraph.text:
-        return []
-
-    full_text = paragraph.text
-    placeholder_index = full_text.find(key)
-    prefix = full_text[:placeholder_index]
-    suffix = full_text[placeholder_index + len(key):]
-
-    # Flatten the items list to handle nested arrays
-    # This converts nested structures to (text, indent_level) tuples
-    flattened_items = []
+def _flatten_list_to_string_lines(items, indent=0):
+    lines = []
+    prefix = "    " * indent + "• "
+    
     for item in items:
-        flattened_items.extend(_flatten_nested_item(item))
-
-    new_paras = []
-    for i, (text, indent_level) in enumerate(flattened_items):
-        if i == 0:
-            # Update the original paragraph
-            _replace_text_simple(paragraph, key, text, font_name, font_size, use_custom_fonts)
-
-            # Ensure the first item has bullets too
-            para_pPr = paragraph._element.get_or_add_pPr()
-            para_numPr = para_pPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr')
-
-            if para_numPr is None:
-                # No bullets, apply them
-                try:
-                    paragraph.style = 'List Bullet'
-                except KeyError:
-                    # Create bullet using numbering
-                    from docx.oxml import parse_xml
-                    from docx.oxml.ns import nsdecls
-
-                    numPr_xml = f'''
-                    <w:numPr {nsdecls('w')}>
-                        <w:ilvl w:val="{indent_level}"/>
-                        <w:numId w:val="1"/>
-                    </w:numPr>
-                    '''
-                    numPr = parse_xml(numPr_xml)
-                    existing = para_pPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr')
-                    if existing is not None:
-                        para_pPr.remove(existing)
-                    para_pPr.append(numPr)
+        if isinstance(item, str):
+            lines.append(prefix + item)
+        elif isinstance(item, list):
+            if len(item) == 0:
+                continue
+            elif len(item) == 2 and isinstance(item[0], str) and isinstance(item[1], list):
+                lines.append(prefix + item[0])
+                lines.extend(_flatten_list_to_string_lines(item[1], indent + 1))
             else:
-                # Update indent level for existing numbering
-                ilvl_elem = para_numPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}ilvl')
-                if ilvl_elem is not None:
-                    ilvl_elem.set('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val', str(indent_level))
-
-            new_paras.append(paragraph)
+                lines.extend(_flatten_list_to_string_lines(item, indent))
         else:
-            # Insert new paragraph with appropriate indent level
-            new_para = _insert_paragraph_after(new_paras[-1], text, parent_element, prefix, suffix, font_name, font_size, use_custom_fonts)
+            lines.append(prefix + str(item))
+    return lines
 
-            # Set the indent level for sub-bullets
-            new_pPr = new_para._element.get_or_add_pPr()
-            new_numPr = new_pPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}numPr')
+def format_list_as_bullets(items):
+    return "\n".join(_flatten_list_to_string_lines(items, 0))
 
-            if new_numPr is not None:
-                # Update indent level
-                ilvl_elem = new_numPr.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}ilvl')
-                if ilvl_elem is not None:
-                    ilvl_elem.set('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}val', str(indent_level))
+def _extract_drive_file_id(url_or_id: str) -> str:
+    import re
+    if not url_or_id:
+        return ""
+    # Matches typical /d/FILE_ID or id=FILE_ID patterns
+    match = re.search(r'/d/([a-zA-Z0-9-_]+)', url_or_id)
+    if match:
+        return match.group(1)
+    match = re.search(r'[?&]id=([a-zA-Z0-9-_]+)', url_or_id)
+    if match:
+        return match.group(1)
+    return url_or_id
 
-            new_paras.append(new_para)
-
-    return new_paras
-
-
-def _replace_placeholders_in_paragraphs(paragraphs, parent_element, placeholders, font_name=None, font_size=None, use_custom_fonts=True):
-    """Replace all placeholders in paragraphs."""
-    processed_ids = set()
-    i = 0
-
-    while i < len(paragraphs):
-        para = paragraphs[i]
-        para_id = id(para)
-
-        if para_id not in processed_ids:
-            processed_ids.add(para_id)
-
-            # Check if this paragraph is the document title - preserve its fonts
-            para_is_title = False
-            if hasattr(para, 'style') and para.style and hasattr(para.style, 'name'):
-                # Only preserve fonts for the main Title style
-                if para.style.name == 'Title':
-                    para_is_title = True
-
-            # Determine whether to use custom fonts for this paragraph
-            use_fonts_for_para = use_custom_fonts and not para_is_title
-
-            for key, value in placeholders.items():
-                parsed_value = _parse_value(value)
-
-                if isinstance(parsed_value, list) and len(parsed_value) > 0:
-                    # Handle list values
-                    new_paras = _replace_text_with_list(para, key, parsed_value, parent_element, font_name, font_size, use_fonts_for_para)
-                    for p in new_paras:
-                        processed_ids.add(id(p))
-                else:
-                    # Handle simple string replacement
-                    _replace_text_simple(para, key, str(parsed_value), font_name, font_size, use_fonts_for_para)
-
-        i += 1
-
-
-def _process_document_placeholders(document, placeholders, font_name=None, font_size=None):
+async def read_google_drive_file(
+    file_id: str,
+    credentials: Union[str, Path, Dict]
+) -> Dict[str, Any]:
     """
-    Process all placeholders in a Document object (main content, tables, headers, footers).
-
-    Images (such as logos in headers) are automatically preserved during text replacement.
-
+    Reads the text content of a Google Drive file.
+    
     Args:
-        document: python-docx Document object
-        placeholders: Dictionary mapping placeholder names to values
-        font_name: Optional font name override
-        font_size: Optional font size override
+        file_id: Google Drive File ID
+        credentials: Path to service account JSON, JSON string, or parsed dict
+        
+    Returns:
+        Dictionary containing status and text content.
     """
-    # Replace in main document
-    _replace_placeholders_in_paragraphs(document.paragraphs, document, placeholders, font_name, font_size)
+    import io
+    from googleapiclient.http import MediaIoBaseDownload
+    
+    file_id = _extract_drive_file_id(file_id)
+    logger.info(f"Reading file from Google Drive: {file_id}")
+    try:
+        scopes = ['https://www.googleapis.com/auth/drive.readonly']
 
-    # Replace in tables
-    for table in document.tables:
-        for row in table.rows:
-            for cell in row.cells:
-                _replace_placeholders_in_paragraphs(cell.paragraphs, cell, placeholders, font_name, font_size)
+        # Handle different credential formats
+        if isinstance(credentials, dict):
+            creds = service_account.Credentials.from_service_account_info(
+                credentials, scopes=scopes
+            )
+        elif isinstance(credentials, (str, Path)):
+            credentials_path = Path(credentials) if isinstance(credentials, str) else credentials
+            if credentials_path.exists() and credentials_path.is_file():
+                creds = service_account.Credentials.from_service_account_file(
+                    str(credentials), scopes=scopes
+                )
+            else:
+                try:
+                    credentials_dict = json.loads(str(credentials))
+                    creds = service_account.Credentials.from_service_account_info(
+                        credentials_dict, scopes=scopes
+                    )
+                except json.JSONDecodeError as e:
+                    raise ValueError(f"Invalid credentials: {e}") from e
+        else:
+            raise TypeError(f"credentials must be str, Path, or dict, got {type(credentials)}")
 
-    # Replace in headers and footers
-    for section in document.sections:
-        # Replace in header (default/primary header)
-        header = section.header
-        _replace_placeholders_in_paragraphs(header.paragraphs, header, placeholders, font_name, font_size, use_custom_fonts=False)
-
-        # Replace in header tables
-        for table in header.tables:
-            for row in table.rows:
-                for cell in row.cells:
-                    _replace_placeholders_in_paragraphs(cell.paragraphs, cell, placeholders, font_name, font_size, use_custom_fonts=False)
-
-        # Replace in footer (default/primary footer)
-        footer = section.footer
-        _replace_placeholders_in_paragraphs(footer.paragraphs, footer, placeholders, font_name, font_size, use_custom_fonts=False)
-
-        # Replace in footer tables
-        for table in footer.tables:
-            for row in table.rows:
-                for cell in row.cells:
-                    _replace_placeholders_in_paragraphs(cell.paragraphs, cell, placeholders, font_name, font_size, use_custom_fonts=False)
-
-        # Replace in first page header (if different)
-        if section.first_page_header:
-            first_header = section.first_page_header
-            _replace_placeholders_in_paragraphs(first_header.paragraphs, first_header, placeholders, font_name, font_size, use_custom_fonts=False)
-            for table in first_header.tables:
-                for row in table.rows:
-                    for cell in row.cells:
-                        _replace_placeholders_in_paragraphs(cell.paragraphs, cell, placeholders, font_name, font_size, use_custom_fonts=False)
-
-        # Replace in first page footer (if different)
-        if section.first_page_footer:
-            first_footer = section.first_page_footer
-            _replace_placeholders_in_paragraphs(first_footer.paragraphs, first_footer, placeholders, font_name, font_size, use_custom_fonts=False)
-            for table in first_footer.tables:
-                for row in table.rows:
-                    for cell in row.cells:
-                        _replace_placeholders_in_paragraphs(cell.paragraphs, cell, placeholders, font_name, font_size, use_custom_fonts=False)
-
-        # Replace in even page header (if different)
-        if section.even_page_header:
-            even_header = section.even_page_header
-            _replace_placeholders_in_paragraphs(even_header.paragraphs, even_header, placeholders, font_name, font_size, use_custom_fonts=False)
-            for table in even_header.tables:
-                for row in table.rows:
-                    for cell in row.cells:
-                        _replace_placeholders_in_paragraphs(cell.paragraphs, cell, placeholders, font_name, font_size, use_custom_fonts=False)
-
-        # Replace in even page footer (if different)
-        if section.even_page_footer:
-            even_footer = section.even_page_footer
-            _replace_placeholders_in_paragraphs(even_footer.paragraphs, even_footer, placeholders, font_name, font_size, use_custom_fonts=False)
-            for table in even_footer.tables:
-                for row in table.rows:
-                    for cell in row.cells:
-                        _replace_placeholders_in_paragraphs(cell.paragraphs, cell, placeholders, font_name, font_size, use_custom_fonts=False)
-
+        drive_service = build('drive', 'v3', credentials=creds)
+        file_metadata = drive_service.files().get(fileId=file_id, fields='mimeType', supportsAllDrives=True).execute()
+        mime_type = file_metadata.get('mimeType', '')
+        
+        # Google Workspace documents must be exported, others can be downloaded
+        if mime_type.startswith('application/vnd.google-apps.'):
+            # Export Google Docs as plain text
+            request = drive_service.files().export_media(fileId=file_id, mimeType='text/plain')
+        else:
+            # Download regular files directly
+            request = drive_service.files().get_media(fileId=file_id)
+            
+        fh = io.BytesIO()
+        downloader = MediaIoBaseDownload(fh, request)
+        done = False
+        while done is False:
+            status, done = downloader.next_chunk()
+            
+        text_content = fh.getvalue().decode('utf-8')
+        
+        return {
+            "status": "success",
+            "text": text_content
+        }
+        
+    except Exception as e:
+        logger.error(f"Failed to read file from Google Drive: {e}", exc_info=True)
+        return {
+            "status": "error",
+            "error": str(e)
+        }
 
 # -------------------------
 # Main functions
 # -------------------------
 
-async def upload_to_google_drive(
-    document_stream: io.BytesIO,
+async def generate_sow_document(
+    template_drive_id: str,
+    placeholders: Dict[str, Any],
     document_title: str,
-    service_account_key_path: str,
+    credentials: Union[str, Path, Dict],
     drive_folder_id: Optional[str] = None,
     share_with_emails: Optional[List[str]] = None,
     make_public: bool = False
 ) -> Dict[str, Any]:
     """
-    Uploads a document to Google Drive using service account credentials.
+    Generates a Statement of Work (SOW) by copying a Google Docs template
+    and replacing placeholders using the Google Docs API.
 
     Args:
-        document_stream: BytesIO stream containing the document data
-        document_title: Name of the document (should include .docx extension)
-        service_account_key_path: Path to the service account JSON key file
-        drive_folder_id: Optional Google Drive folder ID to upload to. If None, uploads to root.
-        share_with_emails: Optional list of email addresses to share the document with (as editors)
-        make_public: If True, makes the document publicly readable (anyone with link can view)
+        template_drive_id: Google Drive File ID of the Google Docs template
+        placeholders: Dictionary mapping placeholder names to replacement values.
+                     Keys should include delimiters (e.g., {"<<NAME>>": "Acme Corp"}).
+                     Values can be strings or lists (for multiple bullet points).
+        document_title: Name of the generated document
+        credentials: Path to service account JSON, JSON string, or parsed dict
+        drive_folder_id: Optional Google Drive folder ID to place the new doc
+        share_with_emails: Optional list of emails to share with (as editors)
+        make_public: If True, makes the document publicly readable
 
     Returns:
-        Dictionary containing:
-            - status: 'success' or 'error'
-            - data: Dict with file_id, web_view_link, web_content_link (if success)
-            - error: Error message (if error)
-
-    Example:
-        result = await upload_to_google_drive(
-            document_stream=output_stream,
-            document_title="SOW_Acme_2026.docx",
-            credentials="/path/to/service-account-key.json or key json",
-            drive_folder_id="1abc123def456",
-            share_with_emails=["user@example.com"],
-            make_public=False
-        )
+        Dictionary containing status and Google Drive file info.
     """
+    logger.info("=" * 80)
+    template_drive_id = _extract_drive_file_id(template_drive_id)
+    logger.info("generate_sow_document called (Docs API version)")
+    logger.info(f"template_drive_id: {template_drive_id}")
+    logger.info(f"document_title: {document_title}")
+    logger.info(f"Number of placeholders: {len(placeholders)}")
+    logger.info("=" * 80)
+
     try:
-        scopes=['https://www.googleapis.com/auth/drive']
-        # Reset stream position
-        document_stream.seek(0)
+        scopes = [
+            'https://www.googleapis.com/auth/drive',
+            'https://www.googleapis.com/auth/documents'
+        ]
+
         # Handle different credential formats
         if isinstance(credentials, dict):
-            # Already a parsed JSON dict
             creds = service_account.Credentials.from_service_account_info(
-                credentials,
-                scopes=scopes
+                credentials, scopes=scopes
             )
         elif isinstance(credentials, (str, Path)):
-            # Check if it's a file path or JSON string
             credentials_path = Path(credentials) if isinstance(credentials, str) else credentials
-
             if credentials_path.exists() and credentials_path.is_file():
-                # It's a file path
                 creds = service_account.Credentials.from_service_account_file(
-                    str(credentials),
-                    scopes=scopes
+                    str(credentials), scopes=scopes
                 )
             else:
-                # Assume it's a JSON string
                 try:
                     credentials_dict = json.loads(str(credentials))
                     creds = service_account.Credentials.from_service_account_info(
-                        credentials_dict,
-                        scopes=scopes
+                        credentials_dict, scopes=scopes
                     )
                 except json.JSONDecodeError as e:
                     raise ValueError(
                         f"Invalid credentials: not a valid file path or JSON string: {e}"
                     ) from e
         else:
-            raise TypeError(
-                f"credentials must be str, Path, or dict, got {type(credentials)}"
-            )
+            raise TypeError(f"credentials must be str, Path, or dict, got {type(credentials)}")
 
-        # Build Drive API service
+        # Build APIs
         drive_service = build('drive', 'v3', credentials=creds)
+        docs_service = build('docs', 'v1', credentials=creds)
 
-        # Prepare file metadata
-        file_metadata = {
-            'name': document_title,
-            'mimeType': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        }
-
-        # Add parent folder if specified
+        # -------------------------
+        # 1. Copy the template document
+        # -------------------------
+        logger.info(f"Copying template document {template_drive_id}...")
+        body = {'name': document_title}
         if drive_folder_id:
-            file_metadata['parents'] = [drive_folder_id]
+            body['parents'] = [drive_folder_id]
 
-        # Create media upload from stream
-        media = MediaInMemoryUpload(
-            document_stream.read(),
-            mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            resumable=True
-        )
-
-        # Upload file
-        logger.info(f"Uploading document '{document_title}' to Google Drive...")
-        file = drive_service.files().create(
-            body=file_metadata,
-            media_body=media,
-            fields='id, name, webViewLink, webContentLink'
+        copied_file = drive_service.files().copy(
+            fileId=template_drive_id,
+            body=body,
+            fields='id, name, webViewLink, webContentLink',
+            supportsAllDrives=True
         ).execute()
+        
+        new_doc_id = copied_file.get('id')
+        logger.info(f"Document copied successfully. New File ID: {new_doc_id}")
 
-        file_id = file.get('id')
-        logger.info(f"Document uploaded successfully. File ID: {file_id}")
+        # -------------------------
+        # 2. Batch replace placeholders
+        # -------------------------
+        logger.info("Preparing replace requests...")
+        requests = []
+        for key, value in placeholders.items():
+            replace_text = ""
+            if isinstance(value, list):
+                replace_text = format_list_as_bullets(value)
+            else:
+                # Handle nested dicts or non-string by converting to string
+                replace_text = str(value)
 
-        # Handle sharing permissions
+            requests.append({
+                'replaceAllText': {
+                    'containsText': {
+                        'text': key,
+                        'matchCase': True
+                    },
+                    'replaceText': replace_text
+                }
+            })
+
+        if requests:
+            logger.info("Executing batchUpdate...")
+            docs_service.documents().batchUpdate(
+                documentId=new_doc_id,
+                body={'requests': requests}
+            ).execute()
+            logger.info("Placeholders replaced successfully.")
+
+        # -------------------------
+        # 3. Handle sharing permissions
+        # -------------------------
         if share_with_emails:
             for email in share_with_emails:
                 try:
@@ -372,7 +263,7 @@ async def upload_to_google_drive(
                         'emailAddress': email
                     }
                     drive_service.permissions().create(
-                        fileId=file_id,
+                        fileId=new_doc_id,
                         body=permission,
                         sendNotificationEmail=True
                     ).execute()
@@ -380,7 +271,6 @@ async def upload_to_google_drive(
                 except Exception as e:
                     logger.warning(f"Failed to share with {email}: {e}")
 
-        # Make public if requested
         if make_public:
             try:
                 permission = {
@@ -388,7 +278,7 @@ async def upload_to_google_drive(
                     'role': 'reader'
                 }
                 drive_service.permissions().create(
-                    fileId=file_id,
+                    fileId=new_doc_id,
                     body=permission
                 ).execute()
                 logger.info("Document made publicly accessible")
@@ -398,255 +288,18 @@ async def upload_to_google_drive(
         return {
             "status": "success",
             "data": {
-                "file_id": file.get('id'),
-                "file_name": file.get('name'),
-                "web_view_link": file.get('webViewLink'),
-                "web_content_link": file.get('webContentLink')
-            }
-        }
-
-    except Exception as e:
-        logger.error(f"Failed to upload document to Google Drive: {e}", exc_info=True)
-        return {
-            "status": "error",
-            "error": str(e)
-        }
-
-
-async def generate_sow_document(
-    template_gcs_uri: str,
-    placeholders: Dict[str, str],
-    document_title: str,
-    output_gcs_uri: str,
-    font_name: str | None = None,
-    font_size: int | None = None
-) -> Dict[str, Any]:
-    """
-    Generates a Statement of Work (SOW) by reading a DOCX template from GCS,
-    replacing placeholders, and writing the final document back to GCS.
-
-    Placeholders in the template should use << >> format (e.g., <<PROJECT_NAME>>).
-
-    Args:
-        template_gcs_uri: GCS URI to the DOCX template (gs://bucket/template.docx)
-        placeholders: Dictionary mapping placeholder names to replacement values.
-                     Keys should include delimiters (e.g., {"<<NAME>>": "Acme Corp"}).
-                     Values can be strings or lists (for multiple bullet points).
-        document_title: Name of the generated document
-        output_gcs_uri: GCS URI where the final document should be saved
-        font_name: Optional font name to override template font (e.g., 'Calibri', 'Arial')
-        font_size: Optional font size in points to override template font size (e.g., 11, 12)
-
-    Returns:
-        Status and GCS URI of generated document
-
-    Example:
-        placeholders = {
-            "<<CLIENT_NAME>>": "**Acme Corp**",
-            "<<PROJECT>>": "Cloud Migration",
-            "<<DELIVERABLES>>": [
-                "Architecture Design",
-                "Implementation",
-                "Testing"
-            ]
-        }
-    """
-    logger.info("=" * 80)
-    logger.info("generate_sow_document called")
-    logger.info(f"template_gcs_uri: {template_gcs_uri}")
-    logger.info(f"document_title: {document_title}")
-    logger.info(f"output_gcs_uri: {output_gcs_uri}")
-    logger.info(f"font_name: {font_name}, font_size: {font_size}")
-    logger.info(f"Number of placeholders: {len(placeholders)}")
-    logger.info("Placeholders keys:")
-    for key in placeholders.keys():
-        logger.info(f"  - {repr(key)}")
-    logger.info("=" * 80)
-
-    try:
-        storage_client = storage.Client()
-
-        # -------------------------
-        # 1. Download template
-        # -------------------------
-
-        template_bucket = template_gcs_uri.split("/")[2]
-        template_blob_path = "/".join(template_gcs_uri.split("/")[3:])
-
-        bucket = storage_client.bucket(template_bucket)
-        blob = bucket.blob(template_blob_path)
-
-        template_stream = io.BytesIO()
-        blob.download_to_file(template_stream)
-        template_stream.seek(0)
-
-        # -------------------------
-        # 2. Load DOCX template
-        # -------------------------
-
-        document = Document(template_stream)
-        for style in document.styles:
-            print(f"style: {style.name}")
-
-        # -------------------------
-        # 3. Replace placeholders using helper functions
-        # -------------------------
-
-        _process_document_placeholders(document, placeholders, font_name, font_size)
-
-        # -------------------------
-        # 4. Save modified doc
-        # -------------------------
-
-        output_stream = io.BytesIO()
-        document.save(output_stream)
-        output_stream.seek(0)
-
-        # -------------------------
-        # 5. Upload generated doc to GCS
-        # -------------------------
-
-        output_bucket = output_gcs_uri.split("/")[2]
-        output_path_prefix = "/".join(output_gcs_uri.split("/")[3:])
-
-        output_bucket_obj = storage_client.bucket(output_bucket)
-
-        final_blob_path = f"{output_path_prefix}/{document_title}.docx"
-
-        output_blob = output_bucket_obj.blob(final_blob_path)
-
-        output_blob.upload_from_file(
-            output_stream,
-            content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        )
-
-        final_gcs_uri = f"gs://{output_bucket}/{final_blob_path}"
-
-        return {
-            "status": "success",
-            "data": {
-                "document_title": document_title,
-                "gcs_uri": final_gcs_uri
+                "document_title": copied_file.get('name'),
+                "file_id": new_doc_id,
+                "web_view_link": copied_file.get('webViewLink')
             }
         }
 
     except Exception as e:
         logger.error(f"Failed to generate SOW document: {e}", exc_info=True)
-
         return {
             "status": "error",
             "error": str(e)
         }
-
-
-async def generate_and_upload_sow_to_drive(
-    template_gcs_uri: str,
-    placeholders: Dict[str, str],
-    document_title: str,
-    service_account_key_path: str,
-    drive_folder_id: Optional[str] = None,
-    share_with_emails: Optional[List[str]] = None,
-    make_public: bool = False,
-    font_name: str | None = None,
-    font_size: int | None = None
-) -> Dict[str, Any]:
-    """
-    Generates a SOW document from a GCS template and uploads it directly to Google Drive.
-    This is a convenience function that combines document generation and Drive upload.
-
-    Args:
-        template_gcs_uri: GCS URI to the DOCX template (gs://bucket/template.docx)
-        placeholders: Dictionary mapping placeholder names to replacement values
-        document_title: Name of the generated document (without .docx extension)
-        service_account_key_path: Path to the service account JSON key file
-        drive_folder_id: Optional Google Drive folder ID to upload to
-        share_with_emails: Optional list of email addresses to share with (as editors)
-        make_public: If True, makes the document publicly readable
-        font_name: Optional font name to override template font
-        font_size: Optional font size in points to override template font size
-
-    Returns:
-        Dictionary containing:
-            - status: 'success' or 'error'
-            - data: Dict with Google Drive file info (if success)
-            - error: Error message (if error)
-
-    Example:
-        result = await generate_and_upload_sow_to_drive(
-            template_gcs_uri="gs://bucket/template.docx",
-            placeholders={"<<CLIENT_NAME>>": "Acme Corp"},
-            document_title="SOW_Acme_2026",
-            service_account_key_path="/path/to/key.json",
-            drive_folder_id="1abc123",
-            share_with_emails=["client@example.com"]
-        )
-    """
-    try:
-        # First, generate the document to GCS (temporary location)
-        temp_gcs_output = "gs://temp-bucket/temp-output"  # This won't actually be used
-
-        # Generate document in memory
-        storage_client = storage.Client()
-
-        template_bucket = template_gcs_uri.split("/")[2]
-        template_blob_path = "/".join(template_gcs_uri.split("/")[3:])
-
-        bucket = storage_client.bucket(template_bucket)
-        blob = bucket.blob(template_blob_path)
-
-        template_stream = io.BytesIO()
-        blob.download_to_file(template_stream)
-        template_stream.seek(0)
-
-        document = Document(template_stream)
-
-        # -------------------------
-        # 2. Replace placeholders using shared helper functions
-        # -------------------------
-        logger.info("Processing placeholders...")
-        _process_document_placeholders(document, placeholders, font_name, font_size)
-
-        # -------------------------
-        # 3. Save document to stream
-        # -------------------------
-        logger.info("Saving document to stream...")
-        output_stream = io.BytesIO()
-        document.save(output_stream)
-        output_stream.seek(0)
-
-        # -------------------------
-        # 4. Upload to Google Drive
-        # -------------------------
-        document_title_with_ext = f"{document_title}.docx" if not document_title.endswith('.docx') else document_title
-
-        logger.info("Uploading to Google Drive...")
-        drive_result = await upload_to_google_drive(
-            document_stream=output_stream,
-            document_title=document_title_with_ext,
-            credentials=os.getenv("sow-generator-sa"),
-            drive_folder_id=os.getenv("sow_drive_folder_id"),
-            share_with_emails=share_with_emails,
-            make_public=False
-        )
-
-        if drive_result["status"] == "error":
-            return drive_result
-
-        return {
-            "status": "success",
-            "data": {
-                "document_title": document_title_with_ext,
-                "google_drive": drive_result["data"]
-            }
-        }
-
-    except Exception as e:
-        logger.error(f"Failed to generate and upload SOW: {e}", exc_info=True)
-        return {
-            "status": "error",
-            "error": str(e)
-        }
-
 
 # -------------------------
 # Main test function
@@ -655,131 +308,69 @@ async def generate_and_upload_sow_to_drive(
 async def main():
     """
     Test function to demonstrate usage of generate_sow_document.
-
-    Before running:
-    1. Set up a GCS bucket with a DOCX template containing placeholders
-    2. Update the GCS URIs below with your actual bucket/paths
-    3. Ensure you have GCS credentials configured
     """
+    # Configure your Drive IDs
+    # Set to a valid Google Docs format FILE ID
+    TEMPLATE_DRIVE_ID = os.getenv("sow_template_drive_id")
+    
+    # Optional folder to put it in
+    DRIVE_FOLDER_ID = os.getenv("sow_drive_folder_id") 
+    
+    # Needs valid credentials in env var 'sow-generator-sa' or absolute path
+    CREDENTIALS = os.getenv("sow-generator-sa", "path/to/service_account.json")
 
-    # Configure your GCS paths
-    TEMPLATE_GCS_URI = "gs://agent_engine_depoly/sow-generator/sow-template/SOW Template.docx"
-    OUTPUT_GCS_URI = "gs://agent_engine_depoly/sow-generator/generated-sows/test.docx"
+    logger.info(f"credentials: {CREDENTIALS}")
 
-    # Sample placeholders matching your template
-    # Template should have placeholders like <<CLIENT_NAME>>, <<PROJECT_NAME>>, etc.
     sample_placeholders = {
-        # Simple text replacements
         "<<CUSTOMER_NAME>>": "Acme Corporation",
-        "<<CUSTOMER_SHORT_NAME>>": "Acme",
-        "<<CUSTOMER_NAME_BOLD>>": "**Acme**",
         "<<TITLE>>": "Cloud Migration Initiative",
         "<<PROVISION_DATE>>": "13 March 2026",
-
-        # Rich text examples
-        "<<OPPORTUNITY>>": "This project aims to **migrate** critical workloads to the cloud, enabling *greater scalability* and __improved performance__.",
-
-        "<<SOLUTION_OVERVIEW>>": "This is the solution overview.",
-
+        "<<OPPORTUNITY>>": "This project aims to migrate critical workloads.",
         "<<ACTIVITIES>>": ["This is activity 1", "This is activity 2", "This is activity 3"],
-
-        # List replacements (will create bullet points)
         "<<DELIVERABLES>>": [
-            "**Architecture Design Document** - Comprehensive cloud architecture blueprint",
-            "Implementation Plan - Detailed migration roadmap",
-            "Testing & Validation Report",
-            "*Training Materials* for IT staff",
-            "Post-Migration Support (90 days)"
-        ],
-        
-        "<<IN_SCOPE>>": "In Scope",
-
-        "<<IN_SCOPE_ACTIVITIES>>": [
-            "Migration of production databases to Cloud SQL",
-            "Implementation of Kubernetes clusters",
-            "Setup of CI/CD pipelines",
-            "Security hardening and compliance validation",
-            "Performance testing and optimization"
-        ],
-
-        "<<OUT_OF_SCOPE>>": [
-            "Legacy system decommissioning",
-            "Third-party software licensing",
-            "Hardware procurement",
-            "~~On-premises infrastructure maintenance~~"
-        ],
-        
-        "<<LIMITATIONS>>": "This is limitation",
-
-        "<<SUCCESS_CRITERIA>>": ["This is success criteria 1", "This is success criteria 2", "This is success criteria 3"],
-        
-
-        "<<MILESTONES>>": [
-            "**Phase 1**: Discovery & Assessment - Weeks 1-4",
-            "**Phase 2**: Architecture Design - Weeks 5-8",
-            "**Phase 3**: Implementation - Weeks 9-16",
-            "**Phase 4**: Testing & Validation - Weeks 17-20",
-            "**Phase 5**: Go-Live & Handover - Weeks 21-24"
-        ],
-
-        "<<ASSUMPTIONS>>": [
-            "Client will provide timely access to all systems",
-            "Necessary cloud credits are available",
-            "Key stakeholders are available for weekly reviews",
-            "Existing documentation is accurate and up-to-date"
-        ],
-
-        "<<RISKS>>": [
-            "**High**: Data migration complexity - *Mitigation: Phased approach with rollback plan*",
-            "**Medium**: Resource availability constraints",
-            "**Low**: Third-party API compatibility issues"
+            "Architecture Design Document",
+            "Implementation Plan",
+            "Testing & Validation Report"
         ]
     }
 
     print("=" * 70)
     print("SOW Document Generator - Test Execution")
     print("=" * 70)
-    print(f"\nTemplate: {TEMPLATE_GCS_URI}")
-    print(f"Output Location: {OUTPUT_GCS_URI}")
-    print(f"Number of placeholders: {len(sample_placeholders)}")
-    print("\nGenerating document...\n")
-
-    # Generate the document
+    print(f"\nTemplate ID: {TEMPLATE_DRIVE_ID}")
+    
     result = await generate_sow_document(
-        template_gcs_uri=TEMPLATE_GCS_URI,
+        template_drive_id=TEMPLATE_DRIVE_ID,
         placeholders=sample_placeholders,
         document_title="SOW_Acme_Cloud_Migration_2026",
-        output_gcs_uri=OUTPUT_GCS_URI,
-        font_name="Plus Jakarta Sans",  # Optional: override template font
-        font_size=10          # Optional: override template font size
+        credentials=CREDENTIALS,
+        drive_folder_id=DRIVE_FOLDER_ID,
+        share_with_emails=None,
+        make_public=False
     )
 
-    # Display results
+    # result = await read_google_drive_file(
+    #     file_id=TEMPLATE_DRIVE_ID,
+    #     credentials=CREDENTIALS
+    # )
+    
     print("=" * 70)
-    print("Generation Result")
+    print("Generation Result\n")
+    print(result)
     print("=" * 70)
 
     if result["status"] == "success":
         print("✅ SUCCESS!")
         print(f"\nDocument Title: {result['data']['document_title']}")
-        print(f"GCS URI: {result['data']['gcs_uri']}")
-        print("\nYou can download the document using:")
-        print(f"  gsutil cp {result['data']['gcs_uri']} ./")
+        print(f"File ID: {result['data']['file_id']}")
+        print(f"Web View Link: {result['data']['web_view_link']}")
     else:
         print("❌ FAILED!")
         print(f"Error: {result['error']}")
 
     print("\n" + "=" * 70)
 
-
 if __name__ == "__main__":
     import asyncio
-
-    # Set up logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-    )
-
-    # Run the async main function
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     asyncio.run(main())

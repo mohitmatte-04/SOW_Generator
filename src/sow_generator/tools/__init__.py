@@ -1,11 +1,9 @@
 """Tools module for SOW generator."""
 
 from .generate_sow_document import generate_sow_document
-from .read_gcs_json import read_gcs_json
 from .convert_slides_to_pdf import convert_slides_to_pdf
 
 __all__ = [
     "generate_sow_document",
-    "read_gcs_json",
     'convert_slides_to_pdf'
 ]

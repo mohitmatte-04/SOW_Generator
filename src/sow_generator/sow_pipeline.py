@@ -7,6 +7,7 @@ from google.adk.plugins.global_instruction_plugin import GlobalInstructionPlugin
 from google.adk.plugins.logging_plugin import LoggingPlugin
 from .input_parser_agent import input_parser_agent
 from .extractor_agent import extractor_agent
+from .enrichment_agent import enrichment_agent
 from .sow_generation_agent import sow_generation_agent
 
 logger = logging.getLogger(__name__)
@@ -15,12 +16,13 @@ logger.addHandler(logging.StreamHandler())
 sow_pipeline = SequentialAgent(
     name="sow_pipeline",
     description=(
-        "Orchestrates the extraction of proposal details "
+        "Orchestrates the extraction of proposal details, enrichment with golden templates, "
         "and generation of the Statement of Work."
     ),
     sub_agents=[
         input_parser_agent,
         extractor_agent,
+        enrichment_agent,  # NEW: Enriches extracted data with golden template
         sow_generation_agent,
     ],
 )

@@ -1,0 +1,179 @@
+{
+    "Scope": {
+        "Services Overview": [
+            "Customer is looking to migrate its existing Hadoop-based Data Lake (San Antonio environment) to Google Cloud Platform (GCP). The primary objective is to enable business units (Finance, Operations, and Analytics) with equal or enhanced capabilities for data-driven decision-making and self-service insights through BigQuery.",
+            "The project leverages Onix’s proprietary automated migration toolset to accelerate the transition. This includes automated code conversion for Hadoop-native objects, structured data ingestion pipeline configuration, orchestration via Cloud Composer (Airflow), and rigorous automated data validation using the Pelican framework.",
+            "The scope encompasses end-to-end delivery: from technical discovery and future-state architecture design to execution, testing, and a 30-day post-migration warranty support period."
+        ],
+        "Program Management and Governance": {
+            "Program Governance and Leadership": [
+                "Establish a Program Steering Committee (PSC) consisting of Customer stakeholders and Onix leadership to oversee strategic alignment and high-level escalations.",
+                "Conduct a formal Project Kick-off Meeting to finalize project charter, communication protocols, and RACI (Responsible, Accountable, Consulted, Informed) matrix.",
+                "Implement a tiered communication plan: Weekly Tactical Status Meetings, Bi-weekly Management Reviews, and Monthly Executive Briefings.",
+                "Establish a centralized Project Management Office (PMO) portal for real-time tracking of milestones, deliverables, and resource allocation.",
+                "Manage a formalized Risk, Action, Issue, and Decision (RAID) log with proactive mitigation strategies and clear ownership."
+            ],
+            "Change Management and Control": [
+                "Define and implement a Change Request (CR) process to manage deviations from the agreed SOW scope, timeline, or budget.",
+                "Conduct impact assessments for all proposed changes, ensuring technical and financial implications are documented and approved by the Steering Committee.",
+                "Provide organizational change management (OCM) guidance to assist Customer teams in transitioning from Hadoop-native workflows to GCP-native operations."
+            ],
+            "Program Planning and Execution": [
+                "Develop a Comprehensive Integrated Project Plan (IPP) including critical path analysis, resource leveling, and inter-dependency mapping.",
+                "Define 'Definition of Ready' (DoR) and 'Definition of Done' (DoD) for each migration sprint to ensure quality and consistency.",
+                "Monitor program success metrics (KPIs) including migration velocity, code conversion accuracy rates, and budget burn rates."
+            ]
+        },
+        "Assessment, Design, Planning and Migration for San Antonio (SA) Hadoop environment": {
+            "Discovery and Analysis": [
+                "Deep-dive assessment of the SA Hadoop ecosystem including HDFS storage patterns, Hive/Impala metadata, and Spark/MapReduce workload profiles.",
+                "Map technical requirements to functional business outcomes to ensure data lineage and logic integrity.",
+                "Analyze data volumetrics and growth patterns to optimize BigQuery partitioning and clustering strategies.",
+                "Identify and document all upstream/downstream dependencies, including third-party data feeds and consumer applications.",
+                "Conduct a Complexity Analysis for 200+ ETL pipelines to categorize migration paths (Automated vs. Manual remediation)."
+            ],
+            "Future State Architecture and Design": [
+                "Design a scalable GCP Technical Architecture incorporating BigQuery (Storage/Compute), Cloud Composer (Orchestration), and Cloud Logging/Monitoring.",
+                "Establish a Data Migration Strategy focusing on minimal downtime, utilizing Connexio for high-velocity historical data transfer.",
+                "Develop a Security Architecture including Identity and Access Management (IAM) roles, Service Account governance, and VPC-Service Controls (VPC-SC) alignment.",
+                "Formulate a Testing and Validation Strategy using Pelican to automate cell-level data parity checks between Hadoop and BigQuery.",
+                "Delivery of a Disaster Recovery (DR) and High Availability (HA) blueprint for the migrated workloads."
+            ],
+            "Data Ingestion and Pipeline Engineering": [
+                "Configure and optimize Connexio/FTAAS pipelines for up to 200 tables to support incremental and full-load patterns in GCP.",
+                "Refactor up to 50 complex ingestion scripts (Bash, Python, Java) into GCP-native equivalents (e.g., Cloud Functions, Dataflow, or Python-based Composer tasks).",
+                "Migrate and validate 750+ derived tables within the SA domain, ensuring transformation logic remains consistent with legacy outputs.",
+                "Implement robust error-handling, logging, and alerting frameworks within Cloud Composer for all migrated pipelines."
+            ],
+            "Code Conversion and Optimization": [
+                "Execute automated conversion of Hadoop DDLs, Views, and stored procedures to BigQuery-standard SQL (GoogleSQL).",
+                "Optimize converted SQL queries to leverage BigQuery-specific features such as nested and repeated fields (JSON/Structs) where beneficial.",
+                "Perform manual remediation for complex logic (up to 20% of the 200 pipelines) that cannot be fully translated by automated tools."
+            ],
+            "Security and Compliance Integration": [
+                "Ensure all data movement and storage adhere to Customer’s enterprise security standards, including Encryption at Rest and in Transit.",
+                "Implement Column-Level Security (CLS) and Row-Level Security (RLS) in BigQuery as defined during the design phase.",
+                "Align migration activities with regulatory requirements (e.g., GDPR, CCPA, or industry-specific audits) relevant to the San Antonio data domain."
+            ]
+        },
+        "Roles and Responsibilities (RACI)": {
+            "Onix Responsibilities": [
+                "Provision of migration experts, architects, and tool-specialists.",
+                "Technical execution of code conversion, pipeline setup, and Pelican testing.",
+                "Project management, status reporting, and deliverable quality assurance.",
+                "Handover documentation and 30-day post-migration hypercare support."
+            ],
+            "Customer Responsibilities": [
+                "Provision of timely access to source Hadoop environments, GCP projects, and required network/VPN connectivity.",
+                "Subject Matter Expert (SME) availability for functional logic validation and requirement clarifications.",
+                "Final User Acceptance Testing (UAT) execution and sign-off.",
+                "Ownership of third-party software licensing (excluding Onix tools) and GCP consumption costs."
+            ]
+        }
+    },
+    "Out of Scope": {
+        "General Out of Scope": [
+            "GCP Landing Zone setup (Folders, Projects, Organization-level IAM, Shared VPC) is assumed to be pre-configured by the Customer.",
+            "Physical decommissioning or hardware disposal of legacy Hadoop clusters.",
+            "Upgrading or patching legacy Hadoop source software versions.",
+            "End-user training or broad organizational data literacy programs.",
+            "Data cleansing or remediation of pre-existing data quality issues in the source Hadoop system.",
+            "Migration of any workloads, tables, or scripts exceeding the specific volumetrics (200 pipelines, 50 scripts, 750 SA tables) defined in this SOW.",
+            "Development of new Business Intelligence (BI) dashboards, PowerBI/Looker reports, or ML models not explicitly listed.",
+            "Historical Data Migration beyond the technical configuration of Connexio (Execution of the actual data transfer remains Customer's responsibility).",
+            "Third-party license fees for GCP, Connexio, or other software unless explicitly bundled.",
+            "Redesigning downstream application logic to consume BigQuery, except for providing the connection endpoint/credentials."
+        ]
+    },
+    "Deliverables": {
+        "Program Management": [
+            {
+                "Item": "Project Kick-off Deck & RACI",
+                "Description": "Finalized project roadmap, stakeholder list, and responsibility matrix.",
+                "Acceptance": "Signed approval by Customer Project Sponsor."
+            },
+            {
+                "Item": "Integrated Project Plan (IPP)",
+                "Description": "Detailed MS Project or equivalent plan with milestones and dependencies.",
+                "Acceptance": "Verification of milestone alignment."
+            },
+            {
+                "Item": "Weekly Executive Status Reports",
+                "Description": "Weekly summary of progress, budget burn, and RAID log updates.",
+                "Acceptance": "Receipt and acknowledgement in weekly review."
+            }
+        ],
+        "Architecture & Design": [
+            {
+                "Item": "Current State Assessment & Gap Analysis",
+                "Description": "Technical audit of Hadoop SA environment and identified migration risks.",
+                "Acceptance": "Technical sign-off by Customer Lead Architect."
+            },
+            {
+                "Item": "Future State GCP Architecture Document",
+                "Description": "Detailed design of BigQuery schema, Composer DAGs, and Security controls.",
+                "Acceptance": "Review and approval by Customer Security and Data teams."
+            },
+            {
+                "Item": "Migration & Validation Strategy",
+                "Description": "Documented approach for Connexio setup and Pelican testing thresholds.",
+                "Acceptance": "Approval of testing methodology."
+            }
+        ],
+        "Migration & Implementation": [
+            {
+                "Item": "Converted Code & BigQuery Assets",
+                "Description": "All SQL, DDL, and scripts deployed into GCP development/production environments.",
+                "Acceptance": "Successful execution of code in GCP environment."
+            },
+            {
+                "Item": "Orchestration Layer (Cloud Composer)",
+                "Description": "Fully configured Airflow DAGs for end-to-end pipeline automation.",
+                "Acceptance": "Validation of scheduled job execution."
+            },
+            {
+                "Item": "Pelican Data Validation Reports",
+                "Description": "Automated reports confirming data parity between Hadoop and GCP.",
+                "Acceptance": "Zero critical discrepancies or approved variance."
+            }
+        ],
+        "Handover & Closure": [
+            {
+                "Item": "Operational Runbooks & SOPs",
+                "Description": "Detailed documentation for day-to-day management and troubleshooting.",
+                "Acceptance": "Confirmation of knowledge transfer to Customer ops team."
+            },
+            {
+                "Item": "Final Project Closure Report",
+                "Description": "Summary of project outcomes vs. goals and formal sign-off.",
+                "Acceptance": "Executive signature and final invoice release."
+            }
+        ]
+    },
+    "Success Criteria": {
+        "Criteria": [
+            "Technical Parity: 100% of in-scope Database objects and Pipelines successfully migrated and functional in GCP BigQuery.",
+            "Data Integrity: Pelican validation reports show >99.9% data match (or within Customer-agreed tolerance) for all migrated tables.",
+            "Performance: Migrated BigQuery workloads meet or exceed the execution performance of legacy Hadoop counterparts.",
+            "Operational Readiness: Successful completion of 30 days of post-production support (Hypercare) with zero P1 issues unresolved.",
+            "Knowledge Transfer: Documented sign-off from Customer’s technical team confirming they are equipped to maintain the solution.",
+            "Stakeholder Approval: Formal UAT sign-off from Finance and Business stakeholders for self-service reporting capabilities."
+        ]
+    },
+    "Fees and Expenses": {
+        "Maximum Total Cost": "US$ 835,342 (Excluding report repointing and travel expenses)",
+        "Pricing Structure": [
+            "Fixed-Fee Milestone Model: Payments are triggered upon formal acceptance of deliverables by Customer and Google Cloud representatives.",
+            "Milestone 1: Project Kick-off and IPP Approval (10%)",
+            "Milestone 2: Design and Architecture Sign-off (20%)",
+            "Milestone 3: Data Ingestion & Code Conversion Completion (40%)",
+            "Milestone 4: Testing, Pelican Validation, and UAT Sign-off (20%)",
+            "Milestone 5: Final Handover and Project Closure (10%)"
+        ],
+        "Expenses and Reimbursements": [
+            "All travel and lodging expenses must be pre-approved in writing by the Customer Program Manager.",
+            "Expense reimbursement follows Google’s standard T&E policy guidelines.",
+            "GCP Infrastructure consumption costs are billed directly to the Customer and are not included in this SOW."
+        ]
+    }
+}

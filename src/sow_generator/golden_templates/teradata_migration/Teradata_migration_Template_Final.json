@@ -1,0 +1,262 @@
+{
+  "1.0 Executive Summary": {
+    "Summary": "The project involves migrating a legacy Teradata environment and its associated workloads to a modern, robust, and scalable data warehouse on the Google Cloud Platform. The objective is to maintain the same data model and business logic while leveraging automation tools and expert professional services.",
+    "Major_Tracks": [
+      "Track 1: Teradata Migration to Google Cloud Platform",
+      "Track 2: Eagle Refresh"
+    ]
+  },
+  "1.1 Opportunity": {
+    "Details": "The primary business drivers for this migration include: (a) Reduction of Total Cost of Ownership (TCO) by decommissioning legacy on-premise hardware; (b) Resolution of critical performance bottlenecks in executive reporting; (c) Enabling elastic scalability for peak workloads; and (d) Unlocking advanced AI/ML capabilities within the BigQuery ecosystem."
+  },
+  "1.2 Solution Overview:": {
+    "Proposed_Solution": "The contractor will provide professional services using migration capabilities, automation tools, and subject matter experts.",
+    "Architecture_Components": {
+      "Source_Systems": "ERP, ODS, Workday, and file-based systems.",
+      "Staging": "Google Cloud Storage (GCS) buckets.",
+      "Processing": "Dataflow and BigQuery Load.",
+      "Target_Warehouse": "BigQuery (Raw, Transform, Curated layers).",
+      "Orchestration": "dbt and Control-M.",
+      "Accelerators": "Lineage Explorer UI for assessment and Pelican for data validation."
+    }
+  },
+  "2.0 Scope": {
+    "Project_Scope": "The engagement includes two primary tracks: Track 1 for Teradata to GCP migration and Track 2 for the refresh of on-premise assessment outputs and lineage explorer provisioning.",
+    "In-Scope_Inventory": {
+      "Historical_Data": "XXXXX TB",
+      "Incremental_Data_Size": "XXXXX GB/Day",
+      "Tables": "XXXXX",
+      "Views": "XXXXX",
+      "Informatica_Processing_Jobs": "XXXXX",
+      "Stored_Procedures": "XXXXX",
+      "Macros": "XXXXX",
+      "Standard_Functions": "XXXXX",
+      "Triggers": "XXXXX",
+      "Control-M_Jobs": "XXXXX",
+      "Teradata_Source_Details": "Version [Insert Version], Total Schemas: [Insert Count]",
+      "Data_Validation_Strategy": "Deployment of 'Pelican' for automated row-count, checksum, and 5% random sample validation across all migrated tables."
+    }
+  },
+  "2.1 Scope & Deliverables": {
+    "Discovery_Analysis_and_Design": [
+      "Migration planning and documentation (Milestone and Approach)",
+      "Migration inventory (database objects, code, use cases)",
+      "Sprint Plan / Release Plan",
+      "Cutover plan",
+      "Communication plan including Project governance and cadence",
+      "Solution Architecture diagram (Future State environment)",
+      "Technical design document"
+    ],
+    "Historical_Data_Migration": [
+      "Historical Migration Scripts",
+      "One Time execution of Historical Migration Scripts to load data into Production BigQuery Tables followed by Data Validation"
+    ],
+    "Code_Conversion": [
+      "Legacy Environment Tables/Views DDLs converted to GCP BigQuery",
+      "Legacy and Informatica processing jobs converted to GCP native",
+      "Orchestrated and scheduled jobs"
+    ],
+    "Testing": [
+      "Testing Strategy",
+      "SIT test results",
+      "Validation tool reports for Data Validation"
+    ],
+    "Parallel_Run": [
+      "Parallel run test reports"
+    ],
+    "Eagle_Refresh": [
+      "Revised Lineage Information",
+      "Updated Lineage UI"
+    ],
+    "Operational_Runbook": [
+      "Documentation and appendix with machine-readable structured file (e.g., CSV)",
+      "Readme files per standard requirements (XXXXX +/- XXXXX% per workflow) at a pipeline level"
+    ],
+    "Critical_Migration_Safety": [
+      "Rollback Plan: Documented procedure for redirecting application traffic back to Teradata in the event of a Critical P1 issue during the 48-hour cutover window.",
+      "Performance Benchmarking: A side-by-side execution report for top 50 complex queries comparing Teradata runtimes vs. BigQuery runtimes.",
+      "Go-Live Checklist: Granular hour-by-hour task list for the cutover window with assigned owners and decision points."
+    ]
+  },
+  "2.2 Out of Scope & Limitations": {
+    "Exclusions": [
+      "Google Cloud Foundation setup",
+      "Source System Integration",
+      "Ingestion from Kafka",
+      "Java & Python program development",
+      "Integration with any framework/downstream Application",
+      "Development of new reports/dashboards",
+      "Encryption or Decryption of any data",
+      "GSAM or similar filtering",
+      "Software upgrades or patching",
+      "Defect fixing of legacy environment codes",
+      "User Onboarding",
+      "Report Repointing",
+      "Decommissioning of any existing environment",
+      "Assessment of BigQuery or other GCP services under this specific SOW",
+      "Data Cleansing: Any remediation of existing data quality issues in the source Teradata system is explicitly excluded.",
+      "Operations: Post-cutover managed services or hypercare beyond the defined [X] week inspection period."
+    ]
+  },
+  "3.0 Success Criteria": {
+    "Details": "Project success is measured against the following technical benchmarks:",
+    "Derived_Criteria": [
+      "Data validation runs using validation tools until data matches for an agreed period.",
+      "Non-BI reporting BigQuery SQL performance tuned to match or exceed legacy benchmarks.",
+      "Successful parallel run of applications for specified month-end and quarter-end cycles."
+    ]
+  },
+  "4.0 Assumptions and Customer Dependencies": {
+    "General_Assumptions": [
+      "GCP foundation and projects are in place.",
+      "Migration strategy is lift and shift.",
+      "Contractor offshore team is provided with necessary system access.",
+      "Development is performed from offshore offices on standard local timing.",
+      "Network: Customer will provide a dedicated interconnect or high-speed upload path to GCS to support a minimum transfer rate of [X] TB per day."
+    ]
+  },
+  "4.1 Project Assumptions": {
+    "Details": [
+      "Validation tools are installed for the project duration only.",
+      "Code is frozen for a mutually agreed period before the start of each migration sprint.",
+      "Sign-off for migration design and plan is required within XXXXX weeks of delivery.",
+      "Standard review cycles for deliverables are XXXXX business days for first review, XXXXX for second, and XXXXX for third."
+    ]
+  },
+  "4.2 Technical Assumptions": {
+    "Details": [
+      "Both legacy and GCP environments will have active production environments pointing to the same source systems.",
+      "Infrastructure (VM) for validation tools is provided by the customer.",
+      "Customer ensures sufficient legacy capacity to execute multiple parallel queries for validation."
+    ]
+  },
+  "5.0 Customer Roles and Responsibilities": {
+    "Overview": "The customer is responsible for Program Governance, Foundation Setup, DWH Setup, and DevOps environment configuration.",
+    "Security_and_Access": "The customer handles Security Configuration, Network Setup, and User Access Control."
+  },
+  "5.1 Customer Project Roles": {
+    "Roles": [
+      "Project Manager",
+      "Technical and Functional SMEs for discovery and ongoing support",
+      "Internal teams for UAT and sign-offs"
+    ]
+  },
+  "5.2 Customer Responsibilities": {
+    "Details": [
+      "Make Historical and Incremental data available in GCS buckets.",
+      "Provide necessary security approvals and access rights (ID, LDAP, etc.).",
+      "Share data/documents: Design docs, Data Models, Job Scheduling, and Business rules.",
+      "Execute legacy environment code for data validation purposes.",
+      "Coordinate matters related to other vendors or business partners."
+    ]
+  },
+  "5.3 RACI Matrix": {
+    "Details": "The following matrix defines project responsibilities between Contractor and Customer.",
+    "Matrix": [
+      "Requirements: Contractor (Consulted) | Customer (Accountable/Responsible)",
+      "Migration Execution: Contractor (Responsible) | Customer (Accountable)",
+      "UAT Testing: Contractor (Consulted) | Customer (Responsible)",
+      "Cutover Approval: Contractor (Informed) | Customer (Accountable/Responsible)"
+    ]
+  },
+  "6.0 Project Governance": {
+    "Governance_Structure": "Involves technical project management and program governance with defined matrices for planning, foundation, and migration phases.",
+    "Communication": "Includes a communication plan covering project governance and cadence."
+  },
+  "6.1 Location": {
+    "Details": [
+      "Development: Offshore.",
+      "Specialist Resources: Based in designated office during designated local hours."
+    ]
+  },
+  "6.2 Risk, Action, Issue, and Decision Management": {
+    "Details": "The Contractor will manage project risks, actions, issues, and decisions through a centralized RAID log, updated weekly and reviewed during project governance meetings to ensure timely resolution of blockers."
+  },
+  "6.3 Change Control Management": {
+    "Process": "Either party may request modifications via a Change Request.",
+    "Qualifiers": [
+      "Changes in established scope, volumetrics, or technology stack.",
+      "Changes post design sign-off.",
+      "Delays in providing reviews/sign-offs within XXXXX business days.",
+      "Changes in code post-freeze"
+    ]
+  },
+  "7.0 Project Closure": {
+    "Details": "The SOW ends on the later of the SOW End Date (XXXXX months) or the end of the last Inspection Period.",
+    "Sign-off": "Project Sign-off is the final deliverable."
+  },
+  "7.1 Knowledge Transfer": {
+    "Details": [
+      "Knowledge transfer sessions",
+      "Provision of runbooks and technical design documentation (process and code flow) for each wave"
+    ]
+  },
+  "8.0 Primary Project Contacts": {
+    "Contractor_Project_Manager": {
+      "Title": "Project Manager"
+    }
+  },
+  "8.1 Escalation Matrix": {
+    "Details": "In the event of unresolved issues, the following escalation path shall be used:",
+    "L1": "Project Manager to Project Manager (24 Hours resolution)",
+    "L2": "Delivery Director to IT Director (48 Hours resolution)",
+    "L3": "VP of Services to CIO / Sponsor (> 48 Hours resolution)"
+  },
+  "8.2 Primary CUSTOMER Contacts": {
+    "Details": "Customer Project Sponsor: [Name], Customer IT Director: [Name], Customer Project Manager: [Name]."
+  },
+  "9.0 Fees and Expenses": {
+    "Pricing_Model": "Fixed Bid"
+  },
+  "9.1 Professional Services": {
+    "Track_1_Migration_Services": "Migration Services over XXXXX Months",
+    "Track_2_Refresh_and_Support": "Refresh instances, UI access, and SME support"
+  },
+  "9.2 Expenses": {
+    "Details": "Contractor will charge expenses at actuals related to Travel, Accommodation, and Per Diem."
+  },
+  "9.3 Fees and Expense Summary": {
+    "Total_Cost": "XXXXX",
+    "Exclusions": [
+      "3rd party software license cost",
+      "Local and statutory taxes, VAT & levies"
+    ]
+  },
+  "9.4 Milestone Payment Schedule": {
+    "Details": "Payments are aligned with technical progress.",
+    "Milestones": [
+      "M1: 20% Fee upon Acceptance of Technical Design and Migration Plan.",
+      "M2: 30% Fee upon completion of Historical Data Load and Validation Report.",
+      "M3: 30% Fee upon formal UAT Sign-off by Business Stakeholders.",
+      "M4: 20% Fee upon successful Production Cutover and Project Closure."
+    ]
+  },
+  "9.5 Payment": {
+    "Schedule": "Monthly installments from Month XXXXX through Month XXXXX.",
+    "Amount_Per_Installment": "XXXXX"
+  },
+  "10.0 Signatures": {
+    "Contractor_Signatory_Title": "President",
+    "Date": "Placeholder for date"
+  },
+  "11.0 Glossary": {
+    "Terms": [
+      "BTEQ: Basic Teradata Query utility.",
+      "DDL: Data Definition Language.",
+      "GCS: Google Cloud Storage.",
+      "Parity: Matching of data between source and target systems within a 0% variance threshold."
+    ]
+  },
+  "Appendix A": {
+    "Volumetrics": {
+      "Historical_Data": "XXXXX TB",
+      "Incremental_Data": "XXXXX GB/Day",
+      "Tables": "XXXXX",
+      "Views": "XXXXX",
+      "Informatica_Jobs": "XXXXX",
+      "Stored_Procedures": "XXXXX",
+      "Macros": "XXXXX",
+      "Control-M_Jobs": "XXXXX"
+    }
+  }
+}

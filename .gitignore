@@ -33,3 +33,11 @@ build/
 # OS
 .DS_Store
 Thumbs.db
+*.db
+Backend/src/search-ahmed-bc893f97c910.json
+Frontend/log1.txt
+Frontend/logs.txt
+logs/api_routes.log
+logs/convert_slides_to_pdf.log
+logs/extractor_callbacks.log
+logs/generate_sow_document.log

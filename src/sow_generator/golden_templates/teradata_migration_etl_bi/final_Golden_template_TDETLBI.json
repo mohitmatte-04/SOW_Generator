@@ -1,0 +1,465 @@
+{
+  "Statement of Work - Teradata to GCP migration": {
+    "Preamble": "This Statement of Work (\"SOW\") entered into between [Client] (\"[Client]\" or \"Customer\") and [Vendor] (\"[Vendor]\" or \"[Vendor] Networking\") and is pursuant to the Master Service Agreement between [Vendor] and [Client] with an Effective Date of XXXXX (the \"Agreement\") the terms of which are incorporated herein by reference. In the event of an express written conflict between this SOW and the Agreement, this SOW shall govern. The terms of the Agreement or this SOW shall not be superseded by the terms of a Purchase Order or any other agreement, and any amendments shall be signed by both parties referencing this SOW and the specific provision of the Agreement. [Vendor] shall perform consulting services as described within this SOW. Unless otherwise defined in this SOW, terms that are outlined in initial uppercase letters have the meaning established for such terms as outlined in the Agreement.",
+    "SOW Schedule": {
+      "SOW Effective Date": "XXXXX",
+      "Estimated end date": "XXXXX",
+      "Estimated Project Duration": "XXXXX Months"
+    }
+  },
+  "1.0 Executive Summary - Objective and Background": {
+    "Customer Objective": "[Client]'s objective is to carry out a modernization program for its Enterprise Data Warehouse (\"EDW\") ecosystem, which is primarily based on an on-premises Teradata technology platform, and to complete a migration from a legacy on-premises solution to a next-generation cloud-based technology within Google Cloud Platform (\"GCP\").",
+    "Primary Goal": "The primary goal of this modernization program is to establish a comprehensive end-to-end (\"E2E\") data management capability aimed at the enhancement of a data ecosystem built over considerable time, and currently serving multiple critical functions, such as Marketing, Sales Operations, Finance, Accounting, and Executive Reporting.",
+    "Program Components": "The Program will involve the modernization of the EDW platform (currently based on Teradata technology) encompassing the existing data pipelines, the migration to GCP including all historical data (excluding [Internal] datasets), the configuration and set up of products and services in the GCP environment, the identification of acceptable quality control limits for the identified critical data elements for data quality and governance, real-time availability of the data for business users, the provision of a scalable platform for [Client] business users and near real-time insights to lead to improved business outcomes.",
+    "Proposed Solution": "[Vendor] proposes to provide its migration services using its automated migration tools, including but not limited to (e.g., [Discovery Tool], [Conversion Tool], and [Validation Tool]) technology and subject matter experts to help [Client] achieve its stated business objectives."
+  },
+  "2.0 Scope of Work": {
+    "Workstream 1.0: Program Governance": {
+      "Activity": "1. Program Oversight",
+      "Description": [
+        "Support the definition of the implementation plan for each program release, swim lane accounting for the various work streams and dependencies.",
+        "Support the identification of roles & responsibilities required for each scenario/activity within each workstream.",
+        "Support PI planning and sprint planning, with key stakeholders to sign off on Work Product for the sprints.",
+        "Support key activities in each workstream, and have the Work Product's output defined, agreed upon, and approved by [Client] stakeholders.",
+        "Support the development of KPIs, progress metrics, business, and adoption measures at different milestones in the project roadmap and as needed, and provide these metrics as needed for the program reporting.",
+        "[Vendor] will track the key metrics through project JIRA (per POD)."
+      ],
+      "Work Product": [
+        "1. Parts of the Program plan are tied to [Vendor] Work Product, including key activities and progress metrics to support engagement across teams and program execution.",
+        "2. Parts of the Execution Plan are tied to the [Vendor] Work Product, outlining the progress of activity timelines, dependencies, and key requirements.",
+        "3. The Migration Project Plan is limited to [Vendor]'s scope of work, which includes: a. Revised Sprint Plan; b. Revised Timelines; c. Dependencies and Assumptions.",
+        "4. Daily and weekly status reporting and contributing to exec review material.",
+        "5. Organize all the documents across work streams in the shared drive."
+      ],
+      "Timeline": {
+        "Estimated Start Date": "SOW Effective Date",
+        "Estimated End Date": "XXXXX"
+      }
+    },
+    "Workstream 2.0: Data Discovery & Analysis": {
+      "Activity": "1. Data Discovery & Analysis documentation",
+      "Description": [
+        "[Vendor] will conduct a [Discovery Tool] analysis and will provide a detailed list of tables, columns, constraints, etc.",
+        "A new incremental refresh will happen on XXXXX Logs to provide the latest volumetrics and lineage.",
+        "Lineage for user queries.",
+        "Identify schema and Code changes.",
+        "[Vendor] will perform [Discovery Tool] inventory refresh (monthly) for code and Database objects to identify new or changed code/object."
+      ],
+      "Work Product": "1. [Discovery Tool] Analysis Output",
+      "Timeline": {
+        "Estimated Start Date": "SOW Effective Date",
+        "Estimated End Date": "XXXXX"
+      }
+    },
+    "Workstream 3.0: Architect & Design": {
+      "Activity 1": "1. Solution Design (The activity is completed for Ingestion and the current TDD will only be updated for Curation/ Consumption)",
+      "Description 1": [
+        "[Vendor] will collaborate with [Client] to provide an overview of the proposed design and architecture for the future modernized platform.",
+        "[Vendor] will collaborate with [Client] to provide a detailed design of the future-state tech stack related to GCP.",
+        "[Vendor] will collaborate with [Client] to design the target architecture in GCP, considering scalability, performance, and set-up security consistent with the existing Teradata environment.",
+        "[Vendor] will provide an overview of the proposed history data migration strategy.",
+        "[Vendor] will collaborate with [Client] to conduct workshops with all stakeholders and user groups responsible for solution design, including [Client] and Google (Alphabet, Inc.) and any other tool/solutions vendors identified, to review platform architecture and design to evolve the solution design to account for and overcome gaps.",
+        "[Vendor] will collaborate with [Client] to enable a decision framework of what will be modernized, what will be direct migration to GCP, vs. what will be migrated elsewhere.",
+        "[Vendor] will provide the future state architecture and solution design, and [Client] to provide the sign-off.",
+        "[Vendor] and [Client] have agreed on the testing approach."
+      ],
+      "Activity 2": "2. Workflow and Data Flow Design (Owner: [Vendor]). Note: This activity has already been completed by [Vendor], another refresh is requested by [Client] on XXXXX logs.",
+      "Description 2": [
+        "[Vendor] will collaborate with [Client] to provide a detailed workstream analysis of the EDW/Teradata sub-systems, components & their dependencies, interfaces, and business logic.",
+        "Any changes in the [Vendor] converted pipeline/ tables for pushing data for boundary systems will be handled by the [Vendor] team.",
+        "[Vendor] will collaborate with [Client] to draft an application-level block diagram and one or more flow diagrams with dependencies/interfaces on input data sets, and output datasets, and show the E2E lineage between database objects and the provided codebase for each EDW app.",
+        "[Vendor] will plan XXXXX [Discovery Tool] Refresh in XXXXX (for up to XXXXX% of code change since XXXXX).",
+        "Run [Discovery Tool] for the new prerequisites provided by the [Client] Team.",
+        "Provide (one-time) new lineage in the format specified by the [Client] team.",
+        "Conduct technical readout sessions (up to XXXXX) for [Client] by leveraging [Discovery Tool] UI."
+      ],
+      "Work Product": [
+        "[Vendor] will provide the Data and code lineage as an output from [Discovery Tool] analysis for the below-mentioned XXXXX points:",
+        "1. EDW Data Flow Design Document - data flow & workflow document for [Business Unit A].",
+        "2. EDW Data Flow Design Document - data flow & workflow document for [Business Unit B].",
+        "3. EDW Data Flow Design Document - data flow & workflow document for [Business Unit C].",
+        "4. EDW Data Flow Design Document - data flow & workflow document for [Business Unit D].",
+        "5. All the technical and functional findings from discovery and analysis will include artifacts such as Volumetric (Metadata vs logs), Workload Distribution Dashboard, Upstream/Downstream Patterns, End-to-end lineage, Code complexity analysis, and Insights (classification, modeling, user session analysis)."
+      ],
+      "Timeline": {
+        "Estimated Start Date": "SOW Effective Date",
+        "Estimated End Date": "XXXXX"
+      }
+    },
+    "Workstream 4.0: Build & Modernize": {
+      "Governance Note": "Infrastructure and DevOps are now under [Client] ownership. However, [Vendor] will provide recommendations around the [Vendor] scope as and when required.",
+      "Activity 1: System Configuration": {
+        "Note": "This activity has already been completed. [Vendor] would follow the established design and raise any enhancement/ ticket request with [Client] (as required).",
+        "Description": [
+          "Set up and configure services & products within GCP, including, but not limited to, BigQuery, Cloud Composer, Dataproc, Cloud Big Table, Dataplex, and cloud storage.",
+          "Adopt common Site Reliability Engineering (SRE) practices like mean time-to-repair (MTTR), and production risk failure in alignment with the EDW Modernization platform."
+        ],
+        "Work Product": "Any work product in this category is out of scope for [Vendor]."
+      },
+      "Activity 2: Code conversion and solution development (Owner: [Vendor])": {
+        "Description": [
+          "[Vendor] will modernize (Re-platform or Re-architect) the workloads from Teradata within EDW, as well as various interfaces into EDW.",
+          "[Vendor] will perform automated code conversions leveraging accelerators for the current ELT/ETL workloads (XXXXX+ technologies) to equivalent GCP services.",
+          "Converted workloads will follow [Client] standards and Google best practices (native operators, task groups, consistent auditing, and security controls).",
+          "[Vendor] will set up orchestration and scheduling using Cloud Composer.",
+          "[Client] team to ensure readiness of GCP services (GKE composer Cluster, GCS Fuse connectivity).",
+          "Converted code reviewed with [Client] (up to XXXXX reviews); sign-off within XXXXX business days.",
+          "Source-to-Target Mapping (STTM) Ownership: [Vendor] will create STTM documents based on discovery; [Client] formal sign-off is required before the build phase of each sprint."
+        ],
+        "Work Product": [
+          "1. Objects/Scripts for tables and database objects.",
+          "2. Refined code and cross-dependency check across objects, schemas, integration jobs, and data objects.",
+          "3. Any objects or script-level changes required for boundary systems retrieving data from GCP.",
+          "4. Ingestion pipeline from source system to GCP.",
+          "5. Converted Tables and Views DDLs to BigQuery DDLs.",
+          "6. Converted data transformation jobs to equivalent GCP services."
+        ],
+        "Timeline": {
+          "Estimated Start Date": "XXXXX",
+          "Estimated End Date": "XXXXX"
+        }
+      },
+      "Activity 3: Shell Script Migration (Owner: [Vendor])": {
+        "Description": [
+          "Identify Shell Scripts and obtain latest inventory, code, and parameter files from [Client].",
+          "Perform job analysis identifying functions, logic, parameters, logging/monitoring, error reporting, and pipeline flow.",
+          "Provide recommendations for platform requirements (e.g., GKE configuration) for shell script rehosting.",
+          "[Vendor] will keep the already modernized workloads (XXXXX) and migrate the remaining workloads (XXXXX) in lift-and-shift methodology.",
+          "Shell scripts will be invoked through composer DAGS.",
+          "[Client] to provision the recommended GKE cluster on Google Cloud Platform."
+        ],
+        "Work Product": [
+          "1. Shell Scripts migrated from Teradata to a GKE Cluster.",
+          "2. Completed code, built and unit tested, ready for system and integration testing in PLE."
+        ],
+        "Timeline": {
+          "Estimated Start Date": "SOW Effective Date",
+          "Estimated End Date": "XXXXX"
+        }
+      },
+      "Activity 4: [Client] Custom Framework Modernization (Owner: [Vendor])": {
+        "Note": "This activity has already been completed by [Vendor]. [Client] and [Vendor] will mutually finalize the approach for the current implementation plan.",
+        "Description": [
+          "For identified frameworks ([Internal Frameworks]), obtain latest inventory, code, and parameter files.",
+          "Perform job analysis for functions, logic, parameters, logging, and data flow.",
+          "Create Solution design document and Test case document.",
+          "Provide a runbook for unique hardened patterns for deployment."
+        ],
+        "Work Product": [
+          "1. Solution design document and test case document (unit, SIT, performance testing).",
+          "2. A runbook for unique hardened patterns for deployment.",
+          "3. Completed code, built and unit tested, ready for SIT across developed components."
+        ],
+        "Timeline": {
+          "Estimated Start Date": "SOW Effective Date",
+          "Estimated End Date": "XXXXX"
+        }
+      },
+      "Activity 5: MFT Setup and Ingestion Files availability for SIT in PLE (Owner: [Vendor])": {
+        "Description": [
+          "Consolidation of the Archival path for each file-processing job for PLE.",
+          "Validate if MFT is already configured for the file.",
+          "Config preparation for MFT setup and raising MR/PR for deployment.",
+          "This activity done once; [Client] handles any required replication."
+        ],
+        "Work Product": "1. File Availability in GCP Bucket (PLE)",
+        "Timeline": {
+          "Estimated Start Date": "SOW Effective Date",
+          "Estimated End Date": "XXXXX"
+        }
+      }
+    },
+    "Workstream 8.0: BI Modernization & Reporting (Owner: [Vendor])": {
+      "Description": [
+        "Migrate [Count] reports and dashboards in [BI Tool Name, e.g., Tableau/Power BI].",
+        "Categorize report complexity as: Simple ([X]), Medium ([Y]), and Complex ([Z]).",
+        "Design and build the semantic layer / data mart in BigQuery using a star-schema/snowflake architecture.",
+        "Implement Row-Level Security (RLS) and user access models within the BI tool.",
+        "Perform UAT with business users to ensure visual and data parity with legacy reports.",
+        "Deliver training plan and materials for [Client] business users."
+      ],
+      "Work Product": [
+        "1. Converted dashboards and reports in the target BI platform.",
+        "2. Signed-off Master KPI Definition document.",
+        "3. Semantic layer design and security model documentation.",
+        "4. Training materials and completion of knowledge transfer sessions."
+      ],
+      "Timeline": {
+        "Estimated Start Date": "XXXXX",
+        "Estimated End Date": "XXXXX"
+      }
+    },
+    "Workstream 5.0: History Data Migration": {
+      "Activity 1: History Data Migration and Write-Back (Owner: [Vendor])": {
+        "History Data Migration": [
+          "Extract data from [Client] legacy Teradata environment.",
+          "[Client] responsible for network connectivity changes and providing dedicated interconnect (XXXXX GBPS).",
+          "Extraction window assumed as XXXXX hours weekdays and XXXXX hours weekends.",
+          "[Vendor] will leverage existing Data Migration framework for history data transfer.",
+          "[Client] to provide security approvals.",
+          "Load data to BigQuery Tables.",
+          "Data corruption post-loading or changes due to business reasons are out of scope."
+        ],
+        "Write-back": [
+          "Need-based history re-copy covered based on mutual agreement.",
+          "Create data pipeline and mapping from GCP BQ to TD.",
+          "Tentative update frequencies: Bulk load - XXXXX; Sprint by Sprint from XXXXX to XXXXX.",
+          "Conduct Data Validation for consumption (write-back) tables."
+        ],
+        "UAT Definition": [
+          "UAT is data validation between existing Teradata instances vs new Teradata instances.",
+          "[Client] provides access permission.",
+          "[Vendor] provides validation report; [Client] sign-off within XXXXX business days."
+        ],
+        "Data Copy": [
+          " [Vendor] responsible for replication from Teradata to BigQuery (Historical loads and daily incremental).",
+          "Covers tables for [User Group] and above not in ETL modernization scope.",
+          "Implement continuous data synchronization pipelines for source availability.",
+          "CDC Strategy: Implement Change Data Capture (CDC) using timestamp or log-based capture for high-frequency tables."
+        ]
+      },
+      "Work Product": [
+        "1. History and Incremental Data Migrated to the Google Cloud.",
+        "2. Data Copy (History and Incremental) for [User Group] and above.",
+        "3. Technical Design Document (runbook) for Historical data load framework.",
+        "4. Write back and Data Copy validation report."
+      ],
+      "Timeline": {
+        "Estimated Start Date": "SOW Effective Date",
+        "Estimated End Date": "XXXXX"
+      }
+    },
+    "Workstream 6.0: Test and Validation": {
+      "Activity 1: Testing Framework (Owner: [Vendor])": {
+        "Description": [
+          "Provide SIT and UAT plan (Pass XXXXX to XXXXX).",
+          "Performance testing and benchmarking to meet or exceed current execution time.",
+          "Run unit and SIT in PLE environment for converted code.",
+          "SIT Pass XXXXX and Pass XXXXX from Offshore using Protected Global View; UAT Pass XXXXX and onwards with Protected [Location] Views.",
+          "Protected Views will have XXXXX% non-redacted data columns.",
+          "Pass XXXXX-XXXXX will involve count validation and successful execution.",
+          "Automated reports provided during parallel run phase.",
+          "[Client] raises Firewall requests if needed.",
+          "Production deployment performed by [Client] Team.",
+          "For precuration tasks, [Vendor] only performs pass XXXXX and XXXXX."
+        ]
+      },
+      "Work Product": [
+        "1. [Validation Tool] Validation Report.",
+        "2. Track issue resolution to completion using JIRA."
+      ],
+      "Timeline": {
+        "Estimated Start Date": "SOW Effective Date",
+        "Estimated End Date": "XXXXX"
+      }
+    },
+    "Workstream 7.0: Hypercare and Write-back": {
+      "Activity 1: Hypercare - Technical Activities (Owner: [Vendor])": {
+        "Description": [
+          "Hypercare period capped at XXXXX days.",
+          "Kicks in when [Vendor] completes parallel run and [Client] sign-off is provided.",
+          "Covers bugs related to [Vendor] scope: GCP pipeline/Job failures, Data Mismatch, Converted codes/scripts, and Orchestration Failures.",
+          "[Client] responsible for monitoring and reporting identified bugs.",
+          "Resolution time: P1 (XXXXX hours), P2 (XXXXX days).",
+          "Production deployment and monitoring done by [Client] Team."
+        ]
+      },
+      "Work Product": [
+        "1. Hyper care report.",
+        "2. Support for bug resolution and XXXXX-day hypercare."
+      ],
+      "Timeline": {
+        "Estimated Start Date": "SOW Effective Date",
+        "Estimated End Date": "XXXXX"
+      }
+    }
+  },
+  "3. In-Scope Volumetrics": {
+    "Organization Distribution": {
+      "[Business Group A]": "~XXXXX%",
+      "[Business Group B]": "~XXXXX%",
+      "[Business Group C]": "~XXXXX%",
+      "[Business Group D]": "~XXXXX%",
+      "[Business Group E]": "~XXXXX%",
+      "Legal & Security Operations": "~XXXXX%",
+      "Strategy": "~XXXXX%",
+      "HR": "XXXXX%"
+    },
+    "Active Objects (based on [Discovery Tool] refresh)": {
+      "Data Size": "XXXXX (XXXXX inactive)",
+      "Tables": "XXXXX (XXXXX inactive)",
+      "Views": "XXXXX (XXXXX inactive)",
+      "Procedures": "XXXXX (XXXXX inactive)",
+      "Informatica": "XXXXX Workflow, XXXXX Mappings",
+      "Scheduling Jobs": "XXXXX",
+      "Shell Script": "XXXXX",
+      "Korn Shell Script": "XXXXX",
+      "[Internal Framework]": "XXXXX",
+      "TD Utilities": "XXXXX FAST EXPORT, XXXXX Multi Load, XXXXX TPT, XXXXX BTEQ"
+    },
+    "Notes": [
+      "[Vendor] will absorb any up to XXXXX% change in overall volumetrics based on XXXXX refresh.",
+      "Technologies marked \"NA\" are not processed through [Discovery Tool]."
+    ]
+  },
+  "4. Out of Scope": {
+    "Platform Related": [
+      "Infrastructure or platform activity (Foundation setup, VM provision, etc).",
+      "DevOps-related activity (CICD/Jenkins Pipeline/Enhancements).",
+      "Repointing/upgrading/Patching of BI/Boundary/downstream systems."
+    ],
+    "Legacy System Related": [
+      "Assess or fix legacy code issues.",
+      "Any cutover activity.",
+      "Change handling after agreed code freeze.",
+      "Changes in existing [Client] frameworks.",
+      "Legacy software upgrades/patching/procurement/licensing."
+    ],
+    "BI Specific": [
+      "Mobile BI dashboard optimization.",
+      "Real-time streaming dashboards (unless specified in inventory).",
+      "Changes to KPI definitions after the functional design sign-off.",
+      "New data sources not listed in in-scope volumetrics."
+    ],
+    "General": [
+      "Deployment in production environment.",
+      "AI-ML/Data Science code conversion.",
+      "Modernization of Shell Scripts (handled through separate CR).",
+      "Technologies marked \"NA\" (Python, Java, Perl, Hadoop, etc).",
+      "User training beyond knowledge transfer.",
+      "MFT setup for production."
+    ]
+  },
+  "5. Assumptions and Dependencies": {
+    "Customer Responsibilities": [
+      "Provide environment and tool access by XXXXX.",
+      "Shared codes/scripts in GIT repository.",
+      "Ensure readiness of GCP services (GKE cluster, GCS Fuse).",
+      "Provide sign-off within XXXXX business days for deliverables.",
+      "Provide dedicated interconnect (XXXXX GBPS).",
+      "Compliance with code freeze periods.",
+      "Provide all necessary developer licenses and access to target BI platform.",
+      "Ownership and sign-off on master KPI definitions."
+    ],
+    "Vendor Assumptions": [
+      "No changes to business logic, data model, or structure during migration.",
+      "[Validation Tool] installed for SOW duration and used only for Teradata validation.",
+      "Assumed extraction window: XXXXX hours weekdays, XXXXX hours weekends.",
+      "Source systems support required CDC methods for near real-time ingestion."
+    ]
+  },
+  "6.0 Acceptance Criteria": {
+    "General": "Deliverables will be accepted upon completion of testing cycles and closure of all Sev-1 and Sev-2 defects.",
+    "BI Reports": "Visual and data parity between legacy reports and converted GCP reports within a +/-0% variance threshold."
+  },
+  "7. Commercials and Timeline": {
+    "Pricing model": "Fixed Bid",
+    "Resourcing Model": "Onshore-Offshore",
+    "Milestone Table": [
+      {
+        "Milestone XXXXX": "Upon Signature + XXXXX Milestone",
+        "Net Amount": "XXXXX"
+      },
+      {
+        "Milestone XXXXX": "XXXXX% of Teradata workload migrated to GCP (XXXXX)",
+        "Net Amount": "XXXXX"
+      },
+      {
+        "Milestone XXXXX": "XXXXX Month Parallel Run Completion: for XXXXX% Jobs (XXXXX)",
+        "Net Amount": "XXXXX"
+      },
+      {
+        "Milestone XXXXX": "Warranty Ends (XXXXX)",
+        "Net Amount": "XXXXX"
+      }
+    ],
+    "Total Project Price": "XXXXX (after Beeline Program Fee)"
+  },
+  "8.0 Roles and Responsibilities (RACI Matrix)": {
+    "Matrix": [
+      {
+        "Activity": "GCP Infrastructure Setup",
+        "Vendor": "Informed",
+        "Client": "Accountable / Responsible",
+        "Notes": "Client owns foundation and cloud environment"
+      },
+      {
+        "Activity": "STTM Creation",
+        "Vendor": "Responsible",
+        "Client": "Consulted",
+        "Notes": "Vendor documents transformation logic"
+      },
+      {
+        "Activity": "KPI Definition",
+        "Vendor": "Consulted",
+        "Client": "Accountable / Responsible",
+        "Notes": "Client defines business logic"
+      },
+      {
+        "Activity": "Code Conversion & BI Build",
+        "Vendor": "Responsible",
+        "Client": "Accountable",
+        "Notes": "Vendor executes migration"
+      },
+      {
+        "Activity": "UAT Execution",
+        "Vendor": "Consulted",
+        "Client": "Responsible",
+        "Notes": "Client validates data and reports"
+      }
+    ]
+  },
+  "9.0 Change Management Process": {
+    "Details": "Any changes to scope, volumetrics (>10%), or business logic post-sign-off require a formal Change Request (CR) approved in writing by both parties."
+  },
+  "10.0 Risks and Mitigations": {
+    "Risks": [
+      {
+        "Risk": "KPI definition disagreement",
+        "Mitigation": "Weekly workshops with business SMEs for early functional sign-off"
+      },
+      {
+        "Risk": "Source system access delays",
+        "Mitigation": "Onboarding checklist completed 2 weeks prior to project start"
+      },
+      {
+        "Risk": "Data parity mismatch",
+        "Mitigation": "Automated checksum and row-count validation using [Validation Tool]"
+      }
+    ]
+  },
+  "11.0 Escalation Matrix": {
+    "Path": [
+      {
+        "Level": "L1",
+        "Vendor": "Project Manager",
+        "Client": "Project Manager",
+        "Time": "24 Hours"
+      },
+      {
+        "Level": "L2",
+        "Vendor": "Delivery Director",
+        "Client": "IT Director",
+        "Time": "48 Hours"
+      },
+      {
+        "Level": "L3",
+        "Vendor": "VP of Services",
+        "Client": "Executive Sponsor",
+        "Time": ">48 Hours"
+      }
+    ]
+  },
+  "12.0 Glossary": {
+    "Definitions": {
+      "CDC": "Change Data Capture",
+      "RLS": "Row-Level Security",
+      "STTM": "Source-to-Target Mapping",
+      "PLE": "Product-Like Environment"
+    }
+  },
+  "13.0 Signatures": {
+    "Authorized_Signatories": "[Client] Representative and [Vendor] Representative.",
+    "Effective_Date": "XXXXX"
+  }
+}

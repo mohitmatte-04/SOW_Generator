@@ -105,91 +105,117 @@ def render_content_to_text_and_styles(content, level=1, bulleted=False):
     return full_text, styles
 
 
+def search_elements(elements, placeholder):
+    """
+    Recursively search for ALL occurrences of placeholder within structural elements.
+    Returns a list of (start, end) tuples.
+    """
+    matches = []
+    for element in elements:
+        if "paragraph" in element:
+            para = element["paragraph"]
+            for run in para.get("elements", []):
+                if "textRun" in run:
+                    text = run.get("textRun", {}).get("content", "")
+                    
+                    # Fuzzy match: case-insensitive
+                    u_text = text.upper()
+                    u_placeholder = placeholder.upper()
+
+                    curr_pos = 0
+                    while True:
+                        pos = u_text.find(u_placeholder, curr_pos)
+                        if pos == -1:
+                            break
+                        
+                        # We found a match. Calculate exact indices.
+                        # Note: We use the length of the actual placeholder string passed in
+                        actual_start = (run.get("startIndex") or 0) + pos
+                        actual_end = actual_start + len(placeholder)
+                        matches.append((actual_start, actual_end))
+                        curr_pos = pos + len(placeholder)
+        elif "table" in element:
+            table = element["table"]
+            for row in table.get("tableRows", []):
+                for cell in row.get("tableCells", []):
+                    matches.extend(search_elements(cell.get("content", []), placeholder))
+    return matches
+
 def find_placeholder(doc, placeholder):
     """
-    Finds the precise startIndex and endIndex of a placeholder in the document,
-    including inside tables.
+    Find ALL occurrences of a placeholder in the doc body, headers, or footers.
+    Returns a list of (start, end, segment_id) tuples.
     """
-    def search_content(elements):
-        for element in elements:
-            if "paragraph" in element:
-                for run in element["paragraph"].get("elements", []):
-                    text = run.get("textRun", {}).get("content", "")
-                    if placeholder in text:
-                        start_offset = text.find(placeholder)
-                        actual_start = run.get("startIndex") + start_offset
-                        actual_end = actual_start + len(placeholder)
-                        return actual_start, actual_end
-            elif "table" in element:
-                for row in element["table"].get("tableRows", []):
-                    for cell in row.get("tableCells", []):
-                        found_start, found_end = search_content(cell.get("content", []))
-                        if found_start is not None:
-                            return found_start, found_end
-        return None, None
-
-    return search_content(doc.get("body").get("content", []))
+    all_matches = []
+    
+    # 1. Search Body
+    body_matches = search_elements(doc.get("body", {}).get("content", []), placeholder)
+    for start, end in body_matches:
+        all_matches.append((start, end, None))
+    
+    # 2. Search Headers
+    headers = doc.get("headers", {})
+    for header_id in headers:
+        header_matches = search_elements(headers[header_id].get("content", []), placeholder)
+        for start, end in header_matches:
+            all_matches.append((start, end, header_id))
+            
+    # 3. Search Footers
+    footers = doc.get("footers", {})
+    for footer_id in footers:
+        footer_matches = search_elements(footers[footer_id].get("content", []), placeholder)
+        for start, end in footer_matches:
+            all_matches.append((start, end, footer_id))
+            
+    return all_matches
 
 
 def replace_placeholder_with_dict(docs_service, doc_id, placeholder, section_data):
-    print(f"Replacing placeholder {placeholder} with section data {section_data}")
+    """
+    Replace ALL occurrences of a placeholder with hierarchical section data.
+    """
+    # Get document to find location
     doc = docs_service.documents().get(documentId=doc_id).execute()
+    matches = find_placeholder(doc, placeholder)
 
-    start, end = find_placeholder(doc, placeholder)
-
-    if start is None:
+    if not matches:
         print(f"Placeholder {placeholder} not found in document content.")
         return
 
+    # To handle multiple replacements correctly, we must process them in REVERSE order
+    # so that index shifts from earlier replacements don't affect later ones.
+    # Group by segment_id then sort by startIndex descending.
+    matches_by_segment = {}
+    for start, end, sid in matches:
+        if sid not in matches_by_segment:
+            matches_by_segment[sid] = []
+        matches_by_segment[sid].append((start, end))
+
     requests = []
 
-    # Delete placeholder
-    requests.append({
-        "deleteContentRange": {
-            "range": {
-                "startIndex": start,
-                "endIndex": end
-            }
-        }
-    })
-
-    # Collect all text and styles
-    all_text = ""
-    styles = []
-
+    # Prepare ALL content first
+    all_text, styles = "", []
     if isinstance(section_data, str):
         all_text = section_data + "\n"
     elif isinstance(section_data, list):
         all_text, styles = render_content_to_text_and_styles(section_data, level=1, bulleted=True)
     elif isinstance(section_data, dict):
-        # Case 3: Dictionary with title and content
         if "title" in section_data or "content" in section_data:
             title = str(section_data.get("title") or "")
             content = section_data.get("content")
             content_to_process = [(title, content)]
         else:
-            # Multi-key dictionary fallback: Treat each key as a title
             content_to_process = list(section_data.items())
 
         for title, content in content_to_process:
             title_text = str(title) + "\n" if title else ""
             curr_title_offset = len(all_text)
-
             if title_text:
                 all_text += title_text
-                styles.append({
-                    "type": "heading",
-                    "offset": curr_title_offset,
-                    "length": len(title_text),
-                    "level": 1
-                })
-
+                styles.append({"type": "heading", "offset": curr_title_offset, "length": len(title_text), "level": 1})
             content = content if isinstance(content, (list, str, dict)) else []
-            if isinstance(content, (str, dict)):
-                content = [content]
-                
+            if isinstance(content, (str, dict)): content = [content]
             child_text, child_styles = render_content_to_text_and_styles(content, level=1)
-            
             content_start_offset = len(all_text)
             all_text += child_text
             for s in child_styles:
@@ -198,36 +224,35 @@ def replace_placeholder_with_dict(docs_service, doc_id, placeholder, section_dat
     else:
         all_text = str(section_data) + "\n"
 
-    # Now create the requests
+    # Create insertion and styling requests for EACH match
+    # Crucially, we must sort by startIndex DESCENDING to avoid indexing issues
     if all_text:
-        # 1. Insert the whole block of text
-        requests.append({
-            "insertText": {
-                "location": {"index": start},
-                "text": all_text
-            }
-        })
-
-        # 2. Apply styling relative to start
-        for s in styles:
-            style_start = start + s["offset"]
-            style_end = style_start + s["length"]
+        for sid, seg_matches in matches_by_segment.items():
+            # Sort matches in this segment by start index descending
+            seg_matches.sort(key=lambda x: x[0], reverse=True)
             
-            if s["type"] == "heading":
-                requests.append({
-                    "updateParagraphStyle": {
-                        "range": {"startIndex": style_start, "endIndex": style_end},
-                        "paragraphStyle": {"namedStyleType": f"HEADING_{s['level']}"},
-                        "fields": "namedStyleType"
-                    }
-                })
-            elif s["type"] == "bullet":
-                requests.append({
-                    "createParagraphBullets": {
-                        "range": {"startIndex": style_start, "endIndex": style_end},
-                        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
-                    }
-                })
+            for start, end in seg_matches:
+                # 1. Delete placeholder
+                drange = {"startIndex": start, "endIndex": end}
+                if sid: drange["segmentId"] = sid
+                requests.append({"deleteContentRange": {"range": drange}})
+
+                # 2. Insert text
+                loc = {"index": start}
+                if sid: loc["segmentId"] = sid
+                requests.append({"insertText": {"location": loc, "text": all_text}})
+
+                # 3. Apply styles relative to this 'start'
+                for s in styles:
+                    s_start = start + s["offset"]
+                    s_end = s_start + s["length"]
+                    srange = {"startIndex": s_start, "endIndex": s_end}
+                    if sid: srange["segmentId"] = sid
+
+                    if s["type"] == "heading":
+                        requests.append({"updateParagraphStyle": {"range": srange, "paragraphStyle": {"namedStyleType": f"HEADING_{s['level']}"}, "fields": "namedStyleType"}})
+                    elif s["type"] == "bullet":
+                        requests.append({"createParagraphBullets": {"range": srange, "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"}})
 
     if requests:
         docs_service.documents().batchUpdate(
@@ -245,16 +270,30 @@ def generate_doc_from_dict(drive_service, docs_service, data, template_id, doc_i
 
     # Replace each placeholder
     for key, section in data.items():
-        # Try finding the placeholder as {{KEY}}, then fallback to <<KEY>> or just KEY
-        placeholder_candidates = [f"{{{{{key}}}}}" if not key.startswith("{{") else key, key]
-        found_start = None
-        found_end = None
+        # Generate candidates for this key
+        raw_key = key.replace("<<", "").replace(">>", "").replace("{{", "").replace("}}", "")
+        
+        placeholder_candidates = [
+            key,                         # Exact key from JSON (e.g. "<<TITLE>>")
+            f"<<{raw_key}>>",            # <<TITLE>>
+            f"{{{{{raw_key}}}}}"         # {{TITLE}}
+        ]
+        
+        # Specific fallbacks for poorly named placeholders in the template
+        if "PROVISION_DATE" in raw_key.upper():
+            placeholder_candidates.append("xxxxxxxxxx")
+        if "ENTER_MSA_DATE" in raw_key.upper():
+            placeholder_candidates.append("<<Enter MSA Date>>")
+
+        # Deduplicate candidates
+        placeholder_candidates = list(dict.fromkeys(placeholder_candidates))
+        
         target_placeholder = None
         
         doc = docs_service.documents().get(documentId=doc_id).execute()
         for cand in placeholder_candidates:
-            found_start, found_end = find_placeholder(doc, cand)
-            if found_start is not None:
+            matches = find_placeholder(doc, cand)
+            if matches:
                 target_placeholder = cand
                 break
         

@@ -15,7 +15,7 @@ from pydantic import BaseModel, Field
 from google.adk.agents import LlmAgent
 
 from .config import REASONING_MODEL
-from .enrichment_callbacks import before_enrichment_model_callback
+from .enrichment_callbacks import before_enrichment_agent_callback
 
 
 class ProjectMetadata(BaseModel):
@@ -57,7 +57,7 @@ class EnrichmentSchema(BaseModel):
 
 
 # Load prompt
-PROMPT_FILE = Path(__file__).parent / "prompts" / "enrichment_agent_v4.md"
+PROMPT_FILE = Path(__file__).parent / "prompts" / "enrichment_agent_v5.md"
 
 with PROMPT_FILE.open(encoding="utf-8") as f:
     PROMPT = f.read()
@@ -74,5 +74,5 @@ enrichment_agent = LlmAgent(
     tools=[],
     output_key="enrichment_agent_result",
     # output_schema=EnrichmentSchema,
-    before_model_callback=before_enrichment_model_callback,
+    before_agent_callback=before_enrichment_agent_callback,
 )

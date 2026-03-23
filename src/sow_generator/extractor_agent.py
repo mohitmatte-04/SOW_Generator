@@ -16,6 +16,8 @@ from typing import List, Literal
 
 from pydantic import BaseModel, Field
 from google.adk.agents import LlmAgent
+from google.adk.agents.readonly_context import ReadonlyContext
+from google.adk.utils import instructions_utils
 
 from .config import PRODUCTION_CONFIG, REASONING_MODEL
 from .extractor_callbacks import after_tool_callback, before_model_callback
@@ -95,8 +97,14 @@ class ExtractorSchema(BaseModel):
 
 PROMPT_FILE = Path(__file__).parent / "prompts" / "extractor_agent_v6.md"
 
-with PROMPT_FILE.open(encoding="utf-8") as f:
-    PROMPT = f.read()
+async def my_dynamic_instruction_provider(context: ReadonlyContext) -> str:
+    # template = "This is a {adjective} instruction. Use JSON like: {\"key\": \"value\"}."
+    with PROMPT_FILE.open(encoding="utf-8") as f:
+        template = f.read()
+    # This will inject the 'adjective' state variable.
+    # The JSON braces are left alone because their content is not a valid identifier.
+    return await instructions_utils.inject_session_state(template, context)
+
 
 extractor_agent = LlmAgent(
     name="extractor_agent",
@@ -106,7 +114,7 @@ extractor_agent = LlmAgent(
         "stored in Google Cloud Storage using a two-tool workflow: "
         "PDF conversion via Google Slides API and structured extraction via Gemini."
     ),
-    instruction=PROMPT,
+    instruction=my_dynamic_instruction_provider,
     tools=[],
     output_key="extractor_agent_context",
     # output_schema=ExtractorSchema,

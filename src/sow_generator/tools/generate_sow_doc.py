@@ -28,121 +28,81 @@ def _extract_drive_file_id(url_or_id: str) -> str:
         return match.group(1)
     return url_or_id
 
-def render_content_requests(content, start_index, level=1, bulleted=False):
+def render_content_to_text_and_styles(content, level=1, bulleted=False):
     """
-    Recursively convert nested dict/list into Google Docs API requests
+    Recursively convert nested dict/list into a single string and a list of style requests.
+    Styles are relative to the start of the returned string (offset 0).
     """
-    requests = []
-    index = start_index
+    full_text = ""
+    styles = []
 
     for item in content:
-
         # Case 1: Plain paragraph (or bullet if flag set)
         if isinstance(item, str):
-            text = item + "\n"
-
-            requests.append({
-                "insertText": {
-                    "location": {"index": index},
-                    "text": text
-                }
-            })
+            curr_offset = len(full_text)
+            line_text = item + "\n"
+            full_text += line_text
 
             if bulleted:
-                # Apply bullets
-                requests.append({
-                    "createParagraphBullets": {
-                        "range": {
-                            "startIndex": index,
-                            "endIndex": index + len(text)
-                        },
-                        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
-                    }
+                styles.append({
+                    "type": "bullet",
+                    "offset": curr_offset,
+                    "length": len(line_text)
                 })
-
-            index += len(text)
 
         # Case 2: Nested section
         elif isinstance(item, dict):
-            title = item.get("title")
-            sub_content = item.get("content")
-
-            # If title is missing, use the first key as the title and its value as content
-            if title is None and len(item) == 1:
-                title, sub_content = list(item.items())[0]
-            
-            title = str(title or "")
-            sub_content = sub_content if isinstance(sub_content, (list, str, dict)) else []
-            if isinstance(sub_content, (str, dict)):
-                sub_content = [sub_content]
-
-            # Insert heading
-            heading_text = title + "\n"
-
-            requests.append({
-                "insertText": {
-                    "location": {"index": index},
-                    "text": heading_text
-                }
-            })
-
-            # Apply heading style based on level
-            heading_style = f"HEADING_{min(level + 1, 6)}"
-
-            requests.append({
-                "updateParagraphStyle": {
-                    "range": {
-                        "startIndex": index,
-                        "endIndex": index + len(heading_text)
-                    },
-                    "paragraphStyle": {
-                        "namedStyleType": heading_style
-                    },
-                    "fields": "namedStyleType"
-                }
-            })
-
-            index += len(heading_text)
-
-            # Recursively render children
-            # Default to bulleted if the content is a list of strings
-            child_bulleted = any(isinstance(x, str) for x in sub_content) if isinstance(sub_content, list) else False
-            child_requests, index = render_content_requests(
-                sub_content, index, level + 1, bulleted=child_bulleted
-            )
-
-            requests.extend(child_requests)
-
-        # Case 3: List of strings → bullet list
-        elif isinstance(item, list):
-            # If it's a list of dicts, process each dict as a nested section
-            if any(isinstance(x, dict) for x in item):
-                for sub_item in item:
-                    child_requests, index = render_content_requests([sub_item], index, level)
-                    requests.extend(child_requests)
+            # If it has an explicit title/content pattern
+            if "title" in item or "content" in item:
+                title = str(item.get("title") or "")
+                sub_content = item.get("content")
+                
+                # Render this single section
+                content_to_process = [(title, sub_content)]
             else:
-                # Just a simple list of bullets
-                for bullet in item:
-                    bullet_text = str(bullet) + "\n"
-                    requests.append({
-                        "insertText": {
-                            "location": {"index": index},
-                            "text": bullet_text
-                        }
-                    })
-                    # Apply bullets
-                    requests.append({
-                        "createParagraphBullets": {
-                            "range": {
-                                "startIndex": index,
-                                "endIndex": index + len(bullet_text)
-                            },
-                            "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
-                        }
-                    })
-                    index += len(bullet_text)
+                # Multi-key dictionary: treat each key as a title
+                content_to_process = list(item.items())
 
-    return requests, index
+            for title, sub_content in content_to_process:
+                # Heading
+                curr_offset = len(full_text)
+                heading_text = str(title) + "\n"
+                full_text += heading_text
+
+                styles.append({
+                    "type": "heading",
+                    "offset": curr_offset,
+                    "length": len(heading_text),
+                    "level": min(level + 1, 6)
+                })
+
+                # Recursively render children
+                sub_content = sub_content if isinstance(sub_content, (list, str, dict)) else []
+                if isinstance(sub_content, (str, dict)):
+                    sub_content = [sub_content]
+                
+                child_bulleted = any(isinstance(x, str) for x in sub_content) if isinstance(sub_content, list) else False
+                child_text, child_styles = render_content_to_text_and_styles(
+                    sub_content, level + 1, bulleted=child_bulleted
+                )
+
+                # Shift child styles by current full_text length and add
+                content_start_offset = len(full_text)
+                full_text += child_text
+                for s in child_styles:
+                    s["offset"] += content_start_offset
+                    styles.append(s)
+
+        # Case 3: List (rarely happens at this level but handle for safety)
+        elif isinstance(item, list):
+            child_text, child_styles = render_content_to_text_and_styles(item, level, bulleted=True)
+            content_start_offset = len(full_text)
+            full_text += child_text
+            for s in child_styles:
+                s["offset"] += content_start_offset
+                styles.append(s)
+
+    return full_text, styles
 
 
 def find_placeholder(doc, placeholder):
@@ -178,7 +138,7 @@ def replace_placeholder_with_dict(docs_service, doc_id, placeholder, section_dat
     start, end = find_placeholder(doc, placeholder)
 
     if start is None:
-        print(f"Placeholder {placeholder} not found")
+        print(f"Placeholder {placeholder} not found in document content.")
         return
 
     requests = []
@@ -193,60 +153,81 @@ def replace_placeholder_with_dict(docs_service, doc_id, placeholder, section_dat
         }
     })
 
+    # Collect all text and styles
+    all_text = ""
+    styles = []
+
     if isinstance(section_data, str):
-        # Case 1: Simple string replacement
-        text = section_data + "\n"
-        requests.append({
-            "insertText": {
-                "location": {"index": start},
-                "text": text
-            }
-        })
+        all_text = section_data + "\n"
     elif isinstance(section_data, list):
-        # Case 2: List of items (treat as bulleted content)
-        content_requests, _ = render_content_requests(section_data, start, bulleted=True)
-        requests.extend(content_requests)
+        all_text, styles = render_content_to_text_and_styles(section_data, level=1, bulleted=True)
     elif isinstance(section_data, dict):
         # Case 3: Dictionary with title and content
-        title = section_data.get("title", "")
-        title_text = title + "\n" if title else ""
+        if "title" in section_data or "content" in section_data:
+            title = str(section_data.get("title") or "")
+            content = section_data.get("content")
+            content_to_process = [(title, content)]
+        else:
+            # Multi-key dictionary fallback: Treat each key as a title
+            content_to_process = list(section_data.items())
 
-        if title_text:
-            requests.append({
-                "insertText": {
-                    "location": {"index": start},
-                    "text": title_text
-                }
-            })
+        for title, content in content_to_process:
+            title_text = str(title) + "\n" if title else ""
+            curr_title_offset = len(all_text)
 
-            requests.append({
-                "updateParagraphStyle": {
-                    "range": {
-                        "startIndex": start,
-                        "endIndex": start + len(title_text)
-                    },
-                    "paragraphStyle": {
-                        "namedStyleType": "HEADING_1"
-                    },
-                    "fields": "namedStyleType"
-                }
-            })
+            if title_text:
+                all_text += title_text
+                styles.append({
+                    "type": "heading",
+                    "offset": curr_title_offset,
+                    "length": len(title_text),
+                    "level": 1
+                })
 
-        current_index = start + len(title_text)
-
-        # Render nested content
-        content = section_data.get("content", [])
-        content_requests, _ = render_content_requests(content, current_index)
-        requests.extend(content_requests)
+            content = content if isinstance(content, (list, str, dict)) else []
+            if isinstance(content, (str, dict)):
+                content = [content]
+                
+            child_text, child_styles = render_content_to_text_and_styles(content, level=1)
+            
+            content_start_offset = len(all_text)
+            all_text += child_text
+            for s in child_styles:
+                s["offset"] += content_start_offset
+                styles.append(s)
     else:
-        # Fallback for other types
-        text = str(section_data) + "\n"
+        all_text = str(section_data) + "\n"
+
+    # Now create the requests
+    if all_text:
+        # 1. Insert the whole block of text
         requests.append({
             "insertText": {
                 "location": {"index": start},
-                "text": text
+                "text": all_text
             }
         })
+
+        # 2. Apply styling relative to start
+        for s in styles:
+            style_start = start + s["offset"]
+            style_end = style_start + s["length"]
+            
+            if s["type"] == "heading":
+                requests.append({
+                    "updateParagraphStyle": {
+                        "range": {"startIndex": style_start, "endIndex": style_end},
+                        "paragraphStyle": {"namedStyleType": f"HEADING_{s['level']}"},
+                        "fields": "namedStyleType"
+                    }
+                })
+            elif s["type"] == "bullet":
+                requests.append({
+                    "createParagraphBullets": {
+                        "range": {"startIndex": style_start, "endIndex": style_end},
+                        "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"
+                    }
+                })
 
     if requests:
         docs_service.documents().batchUpdate(

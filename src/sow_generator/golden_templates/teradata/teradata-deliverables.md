@@ -1,79 +1,99 @@
+### **Golden Content Framework: Standardized Deliverables for Teradata Migration Projects**
 
-### **Standardized "Golden Content" Framework: Deliverables for Teradata Migration Projects**
+#### **I. Initiation & Program Governance**
+This foundational phase establishes the project's strategic alignment, operational framework, and clear communication channels.
 
-The following deliverables represent the tangible and measurable outputs of our engagement, directly mapping to the client's modernization objectives and ensuring a structured, predictable journey from Teradata data warehouses to a modern, scalable cloud platform.
+*   **Project Plan**: A detailed project plan, including tasks, activities, timelines, milestones, success criteria, entry/exit criteria, and a communication plan.
+*   **Sprint Roadmap/Release Plan**: An activity and delivery plan for each sprint or milestone in the build phase.
+*   **Status Reports and Progress Tracking**: Regular reports outlining work completed, plans for the upcoming period, and highlighting risks/issues/dependencies/changes.
+*   **Migration Inventory**: A comprehensive list of database objects, code, and use cases in scope for migration.
+*   **Program Governance Model Document**: A document outlining the overall program governance framework, including RACI matrix inputs.
 
-#### **Phase 1: Assessment & Discovery**
-This initial phase culminates in a comprehensive understanding of the existing Teradata landscape, often leveraging specialized automation tools, and forms the foundational blueprint for the entire migration effort.
+#### **II. Discovery & Assessment (Pre-Migration Phase Deliverables)**
+This critical deep-dive into the existing Teradata environment provides essential insights for migration planning.
 
-*   **Project Management & Planning Documentation:**
-    *   **Project Plan**: A detailed roadmap outlining timelines, key milestones, resource allocation, and success criteria for the entire engagement.
-    *   **Sprint Plan/Release Plan/Sprint Roadmap**: Granular activity and delivery plans for each sprint in the build phase, often incorporating move groups based on dependencies.
-    *   **Communication Plan**: A structured approach for project communication, meeting schedules, and cadence with key stakeholders.
-    *   **Status Reports and Progress Tracking**: Regular reports (e.g., weekly) detailing work completed, planned activities, identified risks, issues, dependencies, and changes.
-*   **Discovery & Analysis Reports (often leveraging Eagle):**
-    *   **Discovery & Analysis Report**: A comprehensive summary of technical and functional findings. This includes:
-        *   **Volumetrics Report**: Detailing metadata vs. logs (Active objects), workload distribution dashboards, and active objects' granular details.
-        *   **Data Flow Lineage**: End-to-end lineage at object level, view lineage (N-Level), and view to base tables lineage.
-        *   **Code & Workflow Lineage**: Teradata scripts lineage and code complexity analysis.
-        *   **Insights**: Identification of important and popular tables, data modeling join degree, counts, filters, joined column analysis, active user session analysis, custom tagging, and functional ID/User ID based on DBQL logs.
-    *   **Eagle Analysis Output**: Visual demonstrations of discovery findings via Eagle UI.
-*   **Architecture & Design Documents:**
-    *   **Solution and Technical Architecture Document**: A comprehensive blueprint for the future-state GCP/Azure environment, including technology mappings (current vs. future state).
-    *   **Migration Inventory**: A catalog of database objects, code, and use cases in scope for migration.
+*   **Technical and Functional Findings/Analysis Documentation**: Comprehensive documentation of the current architecture, workloads, database objects, data ingestion/transformation patterns, volumetrics, complexity, and dependencies.
+*   **Data Flow Lineage Documentation**: End-to-end lineage at the object level, view lineage (N-level), and view-to-base tables lineage.
+*   **Code & Workflow Lineage Documentation**: Analysis of Teradata scripts lineage and code complexity.
+*   **Insights Reports**: Reporting on important/popular tables, data modeling join degrees, active user session analysis, and custom tagging.
+*   **Move Group Prioritization**: Classification of objects and definition of migration move groups based on dependencies and business priorities.
+*   **Eagle Refresh Reports**: Updated volumetrics and lineage (for ongoing discovery in long projects).
+*   **Lineage Explorer UI**: Provisioning of a user interface for exploring lineage information.
 
-#### **Phase 2: Planning & Design**
-Building upon the discovery, this phase formulates the detailed blueprint for the target cloud environment and the entire migration journey.
+#### **III. Architecture & Design**
+Translating discovery findings into a concrete future-state vision and a detailed, actionable migration roadmap.
 
-*   **Migration Strategy & Design:**
-    *   **Detailed Migration Strategy Document**: Outlining approaches for data migration, code conversion, report repointing, testing, validation, and cutover.
-    *   **Migration Plan**: A detailed plan for the deployment of the platform, including release notes, cutover plan, and lessons learned.
-    *   **Testing Strategy**: A defined strategy for comprehensive testing and validation.
-    *   **Technical Design Document**: Detailed specifications for the architectural implementation and component details.
-    *   **Migration Estimates**: Cost and time estimations for the migration effort.
-*   **GCP/Azure Infrastructure & Foundation Design:**
-    *   **GCP Services and Utilities Setup**: Documentation of required GCP services and utilities enabled and set up to facilitate legacy workloads migration.
+*   **Solution and Technical Architecture Document**: A comprehensive blueprint for the target GCP environment, including technology mappings from Teradata to GCP.
+*   **Detailed Migration Strategy Document**: A granular plan covering data migration, code conversion, testing, validation, and cutover procedures.
+*   **Data Model Mapping Document**: Explicit mapping of Teradata tables to GCP/BigQuery, potentially including a BigQuery data model design.
+*   **Low-Level Design (LLD) Document**: Granular technical specifications for implementation.
+*   **GCP Foundation Design**: Design document for specific GCP services and utilities (e.g., storage, processing, IAM, networking, IaC using Terraform) as they pertain to the migration.
+*   **Test Strategy**: Document outlining the overall approach to testing and validation.
 
-#### **Phase 3: Migration & Conversion**
-This phase executes the planned transformation of data, code, and processes from the legacy Teradata environment to the modern cloud platform.
+#### **IV. Code Conversion & Transformation**
+The core engineering effort to translate existing Teradata-specific logic into a GCP-native, performant, and maintainable format.
 
-*   **Code Conversion & Modernization:**
-    *   **Converted DDLs (Tables, Views)**: Delivery of in-scope converted Data Definition Languages for database objects to target native equivalents (e.g., GCP BigQuery).
-    *   **Converted Transformation Jobs**: Translation of ETL/ELT workflows (e.g., Teradata BTEQs, Macros, Stored Procedures, Informatica, Alteryx, Datastage) to target native services (e.g., Dataflow, BigQuery SQL/SPs).
-    *   **Refactored Scripts**: Reutilization and adaptation of legacy scripts (e.g., Shell scripts) for the GCP runtime environment.
-    *   **Converted Orchestration Jobs**: Orchestrated and scheduled jobs reflecting conversion of legacy orchestrators to cloud-native solutions (e.g., Cloud Composer).
-    *   **Converted Ad Hoc Queries**: For specific cases, converted ad hoc queries compatible with BigQuery.
-*   **Data Migration Outputs:**
-    *   **Historical Data Migration Completion Report**: Confirmation of **one-time historical data load** from source (Teradata) to target (GCP/Azure), with validation.
-    *   **Incremental Ingestion Pipelines**: Built and documented pipelines for continuous data synchronization from source systems to GCP.
-    *   **Historical Data Load Framework Runbook**: Technical design document detailing the historical data load process.
-    *   **Write-Back & Data Copy Validation Report**: Validation report for write-back and data copy processes.
+*   **DDL Conversion**: Converted Teradata Tables and Views DDLs to GCP Native DDL or BigQuery equivalent.
+*   **SQL/Script Conversion**: Converted Teradata BTEQs, Macros, UDFs, Triggers, SQLs, Teradata Utilities, and Stored Procedures to GCP native/BigQuery equivalent.
+*   **ETL Tool Conversion**: Converted Informatica Mappings and workflows to GCP native. Converted Datastage and Alteryx workflows to GCP equivalents.
+*   **Shell/Python Scripts Porting**: Reutilized/adapted Shell and Python scripts for the GCP environment.
+*   **Converted Code Components**: Delivery of all developed code components for the migrated workloads.
+*   **Raven Code Conversion**: Delivery of Raven-converted tables, views, transformation jobs, and DAG components to GCP native.
 
-#### **Phase 4: Testing & Validation**
-Robust testing and validation are crucial for ensuring data integrity and functional parity in the new environment.
+#### **V. Data Ingestion & Integration**
+Establishing robust and efficient pipelines to consistently bring data from various sources into the GCP environment.
 
-*   **Test Reports:**
-    *   **Unit/System Integration Test (SIT) Reports**: Results from unit and system integration testing for converted code and pipelines.
-    *   **Data Validation Reports (Pelican)**: Comprehensive reports demonstrating data parity and integrity for both historical and incremental data, often including parallel run reports.
-    *   **System Integration and User Acceptance Test Plan**: Document outlining the E2E testing activities.
-*   **Supporting Documentation:**
-    *   **Test Cases**: Developed for unit and system integration testing.
+*   **Incremental Ingestion Pipeline**: Built from source systems to GCP for continuous data synchronization.
+*   **Continuous Data Sync Pipeline**: From Teradata to BigQuery for continuous data synchronization.
+*   **Data Extracts**: Data extracts (e.g., Flat files) from BigQuery to existing SFTP servers for downstream consumptions.
 
-#### **Phase 5: Deployment & Go-Live**
-The crucial phase where the modernized data platform is fully operationalized and transitioned into production.
+#### **VI. Historical Data Migration**
+The critical, one-time transfer of historical data from the legacy Teradata data warehouse to the target GCP BigQuery environment.
 
-*   **Deployment-Ready Builds**: The final deployment-ready artifacts for production.
+*   **Historical Data Pipeline**: Built to load one-time historical data from Teradata to GCP.
+*   **Migration Execution Report**: Documenting the historical data transfer process.
+*   **Write-Back Data Pipeline**: A data pipeline and mapping from GCP BigQuery to Teradata for write-back functionalities.
 
-#### **Phase 6: Post-Migration Support & Handover**
-Ensuring long-term operational success and empowering client teams to manage the new platform effectively.
+#### **VII. Orchestration & Scheduling**
+Migrating and establishing robust job scheduling and workflow orchestration using GCP-native services.
 
-*   **Documentation & Knowledge Transfer:**
-    *   **Runbooks & Technical Design Documents**: Operational guides and detailed technical design documentation for migrated workflows and operations on GCP.
-    *   **Knowledge Transfer Sessions**: Conducted sessions and accompanying materials for client teams.
-    *   **Post-Migration Review Documentation**: Evaluation of migration success and lessons learned.
-    *   **Report Repointing Guide**: Step-by-step report repointing guide and technical documentation.
-*   **Warranty/Hypercare Support:**
-    *   **Warranty Support**: Bug resolution and support during the defined warranty period.
-    *   **Issue Resolution Reports**: Documentation of issues resolved during the warranty period.
+*   **Orchestrated Workflows**: Set up Orchestration & Scheduling for converted workloads using **Cloud Composer** (or Azure Data Factory for Databricks migrations).
+*   **Custom Frameworks Solution Design**: For custom orchestration frameworks (e.g., GLU/MGLU/PMF/Cron), a solution design document and test case document.
 
----
+#### **VIII. Reporting & Application Repointing**
+Addressing the crucial aspect of connecting business intelligence tools and downstream applications to the new GCP data environment.
+
+*   **Repointed Reports**: Microstrategy, Tableau, and SAP BO reports repointed or redeveloped to BigQuery/Looker.
+*   **Report Repointing Guide/Documentation**: Step-by-step technical documentation for the report repointing process.
+*   **Application Rehosting**: In-scope applications (e.g., R shiny, MP Insights, Python-based ML applications) rehosted on GCP.
+*   **Consumption Acceleration Service (CAS) Deliverables**: Converted SQL queries, consultation reports for legacy SQL functionality in GCP, and a request tracking mechanism for query conversion requests.
+
+#### **IX. Testing & Validation**
+A non-negotiable phase to ensure data integrity, functional correctness, and performance parity between the legacy and target systems.
+
+*   **Unit Testing Reports**: Results of unit testing for converted workloads/code components.
+*   **System Integration Testing (SIT) Reports**: Test results and plans for system integration testing.
+*   **Data Validation Report (Pelican)**: End-to-end data validation between Teradata and GCP/Databricks, including historical data validation and parallel run reports.
+*   **Test Plan**: Document outlining testing activities and approach.
+*   **UAT Support Documentation**: Assistance and documentation for client User Acceptance Testing.
+
+#### **X. Deployment**
+The final technical execution phase, moving validated workloads to the production environment, often with significant client involvement.
+
+*   **Deployment-Ready Build**: The final deployment-ready build for production, including deployment support for investigating and fixing issues.
+*   **Cutover Plan**: A detailed plan for cutover procedures.
+
+#### **XI. Post-Migration Support & Knowledge Transfer**
+Ensuring operational readiness and long-term success through comprehensive documentation, training, and a period of warranty.
+
+*   **Knowledge Transfer Sessions**: Conducted sessions covering post-migration review, runbooks, and technical designs.
+*   **Runbooks**: Operational guides for migrated workflows and operations on GCP.
+*   **Technical Design Documentation**: Documents explaining the scope of work performed, architecture, and pipelines.
+*   **Warranty Support**: A defined period of warranty for bugs/errors directly related to the in-scope work performed.
+*   **Leading Practice and Recommendations Document**: Document detailing recommendations for next steps and leading practices for the migrated environment.
+
+#### **XII. Data Quality & Governance**
+Activities aimed at establishing and maintaining data integrity and governance frameworks within the new cloud environment.
+
+*   **Data Governance Setup**: Establishment of data governance (e.g., Dataplex).
+*   **DQ Rules Implementation**: Embedding existing data quality rules and checks into GCP-native technology.

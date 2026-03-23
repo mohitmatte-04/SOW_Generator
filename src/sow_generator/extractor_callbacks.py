@@ -186,7 +186,7 @@ async def before_model_callback(
 async def after_agent_callback(callback_context: CallbackContext) -> Optional[genai_types.Content]:
     """
     Logs exit from an agent and checks for 'sow_generation_agent_result' in session state.
-    If success, it invokes `generate_sow_document` and returns new Content to replace the agent's
+    If success, it invokes `generate_sow_from_markdown` and returns new Content to replace the agent's
     original output with the response/URI of the generated document.
     """
     agent_name = callback_context.agent_name
@@ -207,41 +207,11 @@ async def after_agent_callback(callback_context: CallbackContext) -> Optional[ge
 
     logger.info(f"[Callback] Found 'sow_generation_agent_result' in state. Extracting placeholders...")
 
-    def convert_format2_to_nested_arrays(value):
-        """
-        Convert Format 2 ({point, subpoint} objects) to nested array format.
-
-        Format 2: [{"point": "A", "subpoint": ["x", "y"]}, {"point": "B", "subpoint": []}]
-        Nested Array: [["A", ["x", "y"]], "B"]
-        """
-        if not isinstance(value, list):
-            return value
-
-        # Check if this is Format 2 (list of dicts with 'point' and 'subpoint' keys)
-        if all(isinstance(item, dict) and 'point' in item and 'subpoint' in item for item in value):
-            logger.info(f"[Callback] Converting Format 2 to nested arrays. Original: {value[:1]}...")  # Log first item
-            converted = []
-            for item in value:
-                point = item['point']
-                subpoint = item.get('subpoint', [])
-
-                if subpoint and len(subpoint) > 0:
-                    # Has subpoints: create nested array [point, [subpoints]]
-                    converted.append([point, subpoint])
-                else:
-                    # No subpoints: just use the point as a string
-                    converted.append(point)
-
-            logger.info(f"[Callback] Conversion complete. Converted: {converted[:1]}...")  # Log first item
-            return converted
-
-        # Not Format 2, return as-is
-        return value
-
     try:
-        # Assuming agent_result is a dictionary (from SowPlaceHolderOutput model)
-        # Convert dictionary keys back to placeholder format e.g. title -> <<TITLE>>
-        # Apply Format 2 conversion to list fields
+        import os
+        from .tools.generate_sow_doc import generate_sow_document
+        
+        # apply markdown conversion to list fields
         placeholders = {
             "<<TITLE>>": agent_result.get("title", "Not specified."),
             "<<CUSTOMER_NAME>>": agent_result.get("customer_name", "Not specified."),
@@ -250,19 +220,16 @@ async def after_agent_callback(callback_context: CallbackContext) -> Optional[ge
             "<<PROVISION_DATE>>": agent_result.get("provision_date", "Not specified."),
             "<<Enter MSA Date>>": agent_result.get("enter_msa_date", "Not specified."),
             "<<OPPORTUNITY>>": agent_result.get("opportunity", "Not specified."),
-            "<<SOLUTION_OVERVIEW>>": convert_format2_to_nested_arrays(agent_result.get("solution_overview", "Not specified.")),
-            "<<ACTIVITIES>>": convert_format2_to_nested_arrays(agent_result.get("activities", "Not specified.")),
-            "<<DELIVERABLES>>": convert_format2_to_nested_arrays(agent_result.get("deliverables", "Not specified.")),
-            "<<OUT_OF_SCOPE>>": convert_format2_to_nested_arrays(agent_result.get("out_of_scope", "Not specified.")),
-            "<<LIMITATIONS>>": convert_format2_to_nested_arrays(agent_result.get("limitations", "Not specified.")),
-            "<<SUCCESS_CRITERIA>>": convert_format2_to_nested_arrays(agent_result.get("success_criteria", "Not specified.")),
-            "<<TECHNICAL_ASSUMPTIONS>>": convert_format2_to_nested_arrays(agent_result.get("technical_assumptions", "Not specified.")),
-            "<<PAYMENT_SCHEDULE>>": convert_format2_to_nested_arrays(agent_result.get("payment_schedule", "Not specified.")),
-            "<<ADD_APPENDIX_DETAILS>>": convert_format2_to_nested_arrays(agent_result.get("add_appendix_details", "Not specified.")),
+            "<<SOLUTION_OVERVIEW>>": agent_result.get("solution_overview", "Not specified."),
+            "<<ACTIVITIES>>": agent_result.get("activities", "Not specified."),
+            "<<DELIVERABLES>>": agent_result.get("deliverables", "Not specified."),
+            "<<OUT_OF_SCOPE>>": agent_result.get("out_of_scope", "Not specified."),
+            "<<LIMITATIONS>>": agent_result.get("limitations", "Not specified."),
+            "<<SUCCESS_CRITERIA>>": agent_result.get("success_criteria", "Not specified."),
+            "<<TECHNICAL_ASSUMPTIONS>>": agent_result.get("technical_assumptions", "Not specified."),
+            "<<PAYMENT_SCHEDULE>>": agent_result.get("payment_schedule", "Not specified."),
+            "<<ADD_APPENDIX_DETAILS>>": agent_result.get("add_appendix_details", "Not specified."),
         }
-        
-        import os
-        from .tools.generate_sow_document import generate_sow_document
         
         # Configuration for Google Docs generation
         TEMPLATE_DRIVE_ID = os.getenv("sow_template_drive_id", "YOUR_GOOGLE_DOC_TEMPLATE_ID")
@@ -270,9 +237,8 @@ async def after_agent_callback(callback_context: CallbackContext) -> Optional[ge
         CREDENTIALS = os.getenv("sow-generator-sa", "service_account.json")
         
         customer_name = agent_result.get("customer_name", "Generated")
-        # Sanitize customer name for filename
         safe_customer_name = "".join([c if c.isalnum() else "_" for c in customer_name])
-        document_title = f"Statement_of_Work_{safe_customer_name}"
+        document_title = f"SOW_{safe_customer_name}"
 
         logger.info(f"[Callback] Calling generate_sow_document for {document_title}...")
         

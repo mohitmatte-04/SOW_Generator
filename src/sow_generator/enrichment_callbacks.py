@@ -50,7 +50,8 @@ async def before_enrichment_model_callback(
             return None
 
         # Extract category from the extractor output
-        category = extractor_context.get("category")
+        # category = extractor_context.get("category")
+        category = "hadoop_migration"
 
         if not category:
             logger.error("No category field found in extractor_agent_context")

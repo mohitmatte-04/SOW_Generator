@@ -139,6 +139,14 @@ def _extract_drive_file_id(drive_url: str) -> str | None:
 
         return match.group(1)
 
+    pattern3 = r"/(document)/d/([a-zA-Z0-9_-]+)"
+
+    match = re.search(pattern3, drive_url)
+
+    if match:
+
+        return match.group(2)
+
 
     # Pattern 3: Assume it's already a file ID
 
@@ -286,7 +294,9 @@ async def main() -> None:
 
     import asyncio
 
+    from dotenv import load_dotenv
 
+    load_dotenv()
     # Setup logging
 
     logging.basicConfig(

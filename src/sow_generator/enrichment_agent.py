@@ -57,7 +57,7 @@ class EnrichmentSchema(BaseModel):
 
 
 # Load prompt
-PROMPT_FILE = Path(__file__).parent / "prompts" / "enrichment_agent_v3.md"
+PROMPT_FILE = Path(__file__).parent / "prompts" / "enrichment_agent_v4.md"
 
 with PROMPT_FILE.open(encoding="utf-8") as f:
     PROMPT = f.read()
@@ -73,6 +73,6 @@ enrichment_agent = LlmAgent(
     instruction=PROMPT,
     tools=[],
     output_key="enrichment_agent_result",
-    output_schema=EnrichmentSchema,
+    # output_schema=EnrichmentSchema,
     before_model_callback=before_enrichment_model_callback,
 )

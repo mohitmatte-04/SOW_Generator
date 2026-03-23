@@ -64,7 +64,7 @@ class GoogleSlidesConverter:
 
 
         # Handle different credential formats
-
+        logger.info(f"credentials file {credentials_file}")
         if isinstance(credentials_file, dict):
 
             # Already a parsed JSON dict
@@ -178,7 +178,9 @@ class GoogleSlidesConverter:
 
                 fileId=file_id,
 
-                fields="name,mimeType"
+                fields="name,mimeType",
+
+                supportsAllDrives=True
 
             ).execute()
 
@@ -354,7 +356,7 @@ class GoogleSlidesConverter:
 
                     msg = f"Direct Slides export HTTP failed: {response.status_code} {response.text}"
 
-                    logger.error(msg)
+                    logger.error(msg, ex)
 
                     raise ConversionError(msg) from e
 
@@ -362,7 +364,7 @@ class GoogleSlidesConverter:
 
                 msg = f"Google Slides conversion failed: {e}"
 
-                logger.error(msg)
+                logger.error(msg, exc_info=True)
 
                 raise ConversionError(msg) from e
 

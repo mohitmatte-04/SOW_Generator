@@ -43,8 +43,7 @@ def before_enrichment_agent_callback(callback_context: CallbackContext) -> Optio
         return None
 
     # Extract category from the extractor output
-    # category = extractor_context.get("category")
-    category = "teradata"
+    category = extractor_context.get("category")
 
     if not category:
         logger.error("No category field found in extractor_agent_context")

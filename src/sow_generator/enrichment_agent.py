@@ -66,9 +66,7 @@ enrichment_agent = LlmAgent(
     name="enrichment_agent",
     model=REASONING_MODEL,
     description=(
-        "Enriches extracted SOW data by intelligently identifying and filling "
-        "missing information using category-specific golden templates. This is "
-        "the heart of the SOW generation pipeline."
+        "Enriches extracted SOW data by intelligently identifying and filling missing information using category-specific golden templates. This is the heart of the SOW generation pipeline."
     ),
     instruction=PROMPT,
     tools=[],

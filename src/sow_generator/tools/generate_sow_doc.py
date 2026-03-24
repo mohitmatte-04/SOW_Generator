@@ -491,11 +491,32 @@ async def main():
     
 
     with open(args.json_file, "r", encoding="utf-8") as f:
-        json_content = json.load(f)
-        
+        agent_result = json.load(f)
+    
+    logger.info(f"agent result {agent_result}")
+    logger.info(f"type of agent result {type(agent_result)}")
+    placeholders = {
+            "<<TITLE>>": agent_result.get("title", "Not specified."),
+            "<<CUSTOMER_NAME>>": agent_result.get("customer_name", "Not specified."),
+            "<<CUSTOMER_SHORT_NAME>>": agent_result.get("customer_short_name", "Not specified."),
+            "<<CUSTOMER_NAME_BOLD>>": agent_result.get("customer_name_bold", "Not specified."),
+            "<<PROVISION_DATE>>": agent_result.get("provision_date", "Not specified."),
+            "<<Enter MSA Date>>": agent_result.get("enter_msa_date", "Not specified."),
+            "<<OPPORTUNITY>>": agent_result.get("opportunity", "Not specified."),
+            "<<SOLUTION_OVERVIEW>>": agent_result.get("solution_overview", "Not specified."),
+            "<<ACTIVITIES>>": agent_result.get("activities", "Not specified."),
+            "<<DELIVERABLES>>": agent_result.get("deliverables", "Not specified."),
+            "<<OUT_OF_SCOPE>>": agent_result.get("out_of_scope", "Not specified."),
+            "<<LIMITATIONS>>": agent_result.get("limitations", "Not specified."),
+            "<<SUCCESS_CRITERIA>>": agent_result.get("success_criteria", "Not specified."),
+            "<<TECHNICAL_ASSUMPTIONS>>": agent_result.get("technical_assumptions", "Not specified."),
+            "<<PAYMENT_SCHEDULE>>": agent_result.get("payment_schedule", "Not specified."),
+            "<<ADD_APPENDIX_DETAILS>>": agent_result.get("add_appendix_details", "Not specified."),
+        }
+
     result = await generate_sow_document(
         template_drive_id=TEMPLATE_DRIVE_ID,
-        placeholders=json_content,
+        placeholders=agent_result,
         document_title="SOW_Acme_Cloud_Migration_2026",
         credentials=CREDENTIALS,
         drive_folder_id=DRIVE_FOLDER_ID,

@@ -47,14 +47,44 @@ INSTRUCTIONS:
 
 6. **Preserve the structure and hierarchy of the Content**
    - Ensure that the structure and hierarchy of the content is preserved. Use standard Markdown formatting features (such as headers, nested bullet points, bolding, etc.) to correctly structure the content.
-   
-7. **Output Format**
-   - Return ONLY a valid Markdown document.
+
+7. **Category Identification**
+
+   Choose ONE category from this list based on the extracted content:
+
+   **Available Categories:**
+   - `snowflake_migration` - Projects involving migration to Snowflake data platform
+   - `eagle_assessment_eagle_modernization` - Eagle system assessment or modernization projects
+   - `datawarehouse_modernization` - General data warehouse modernization (not platform-specific)
+   - `teradata_migration` - Teradata migration projects (general, without ETL/BI focus)
+   - `hadoop_migration` - Hadoop migration or modernization projects
+
+   **Category Selection Process:**
+
+- **Check Technology Keywords:**
+   - "Snowflake" mentioned → `snowflake_migration`
+   - "Teradata" mentioned → one of the teradata categories (continue to next step)
+   - "Hadoop" or "HDFS" or "MapReduce" or "Hive" mentioned → `hadoop_migration`
+   - "Eagle" system mentioned → `eagle_assessment_eagle_modernization`
+   - "Data warehouse" or "DW" without specific platform → `datawarehouse_modernization`
+
+- **Examples:**
+   - "Teradata to BigQuery migration with ETL pipeline development and Looker dashboards" → `teradata_migration`
+   - "Snowflake implementation for enterprise data warehouse" → `snowflake_migration`
+   - "Data warehouse modernization strategy assessment" → `datawarehouse_modernization`
+   - "Teradata to GCP migration with focus on data transformation" → `teradata_migration`
+   - "Eagle system performance assessment and optimization" → `eagle_assessment_eagle_modernization`
+
+- **Default Fallback:**
+   - If uncertain but Teradata is mentioned → `teradata_migration`
+   - If uncertain and no specific platform → `datawarehouse_modernization`
+
+8. **Output Format**
+   - Return ONLY a valid **Markdown** output.
    - Do not include explanations, comments, or additional text outside the requested document structure.
    - Preserve the exact structure defined below using Markdown headers:
 
-8. **Output Location**
-   - Write the generated output to a local Markdown file. The file name should be in this format 'extracted-proposal-content-<customer name>.md'.
+# category
 
 # scope
 
@@ -76,5 +106,3 @@ INSTRUCTIONS:
 10. **Quality Expectations**
     - Output should be SOW-ready and suitable for enterprise review.
     - Ensure logical grouping and readability within each section.
-
-BEGIN TASK.

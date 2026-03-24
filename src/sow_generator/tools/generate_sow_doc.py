@@ -70,7 +70,7 @@ def render_content_to_text_and_styles(content, level=1, bulleted=False):
                 full_text += heading_text
 
                 styles.append({
-                    "type": "heading",
+                    "type": "section_title",
                     "offset": curr_offset,
                     "length": len(heading_text),
                     "level": min(level + 1, 6)
@@ -212,7 +212,7 @@ def replace_placeholder_with_dict(docs_service, doc_id, placeholder, section_dat
             curr_title_offset = len(all_text)
             if title_text:
                 all_text += title_text
-                styles.append({"type": "heading", "offset": curr_title_offset, "length": len(title_text), "level": 1})
+                styles.append({"type": "section_title", "offset": curr_title_offset, "length": len(title_text), "level": 1})
             content = content if isinstance(content, (list, str, dict)) else []
             if isinstance(content, (str, dict)): content = [content]
             child_text, child_styles = render_content_to_text_and_styles(content, level=1)
@@ -249,8 +249,22 @@ def replace_placeholder_with_dict(docs_service, doc_id, placeholder, section_dat
                     srange = {"startIndex": s_start, "endIndex": s_end}
                     if sid: srange["segmentId"] = sid
 
-                    if s["type"] == "heading":
-                        requests.append({"updateParagraphStyle": {"range": srange, "paragraphStyle": {"namedStyleType": f"HEADING_{s['level']}"}, "fields": "namedStyleType"}})
+                    if s["type"] == "section_title":
+                        # Set to normal text style but make it bold
+                        requests.append({
+                            "updateParagraphStyle": {
+                                "range": srange,
+                                "paragraphStyle": {"namedStyleType": "NORMAL_TEXT"},
+                                "fields": "namedStyleType"
+                            }
+                        })
+                        requests.append({
+                            "updateTextStyle": {
+                                "range": srange,
+                                "textStyle": {"bold": True},
+                                "fields": "bold"
+                            }
+                        })
                     elif s["type"] == "bullet":
                         requests.append({"createParagraphBullets": {"range": srange, "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"}})
 

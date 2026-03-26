@@ -230,6 +230,7 @@ async def after_agent_callback(callback_context: CallbackContext) -> Optional[ge
             "<<LIMITATIONS>>": agent_result.get("limitations", "Not specified."),
             "<<SUCCESS_CRITERIA>>": agent_result.get("success_criteria", "Not specified."),
             "<<TECHNICAL_ASSUMPTIONS>>": agent_result.get("technical_assumptions", "Not specified."),
+            "<<CUSTOMER_DEPENDENCIES>>": agent_result.get("customer_dependencies", "Not specified."),
             "<<PAYMENT_SCHEDULE>>": agent_result.get("payment_schedule", "Not specified."),
             "<<ADD_APPENDIX_DETAILS>>": agent_result.get("add_appendix_details", "Not specified."),
         }

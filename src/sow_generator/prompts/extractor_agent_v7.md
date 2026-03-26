@@ -9,6 +9,8 @@ OBJECTIVE:
 Extract, consolidate, and map the content from the proposal into the appropriate SOW sections listed below.
 
 TARGET SOW SECTIONS:
+- customer_name
+- customer_short_name
 - scope
 - out_of_scope
 - success_criteria
@@ -50,7 +52,7 @@ INSTRUCTIONS:
 6. **Preserve the structure and hierarchy of the Content**
    - Ensure that the structure and hierarchy of the content is preserved. Use standard Markdown formatting features (such as headers, nested bullet points, bolding, etc.) to correctly structure the content.
 
-7. **RCAI Table Analysis and Roles Extraction**
+7. **RCAI Table Analysis and Responsibilities Extraction**
 
    **Purpose:** Extract clear definitions of customer and Onix (provider) responsibilities from the proposal, including analysis of any RCAI (Responsible, Consulted, Accountable, Informed) tables if present.
 
@@ -80,12 +82,32 @@ INSTRUCTIONS:
    - Extract customer responsibilities from text describing "Client will...", "Customer shall...", "Client provides...", "Client Dependencies", "Prerequisites", etc.
    - Extract Onix responsibilities from text describing "Onix will...", "Provider shall...", "Delivery team will...", "Scope of Work", etc.
 
-   **Output Format:**
-   - Group related responsibilities into logical categories (e.g., "Infrastructure & Access", "Testing & Validation", "Approvals & Sign-offs")
-   - Use nested bullets for sub-responsibilities or clarifications
-   - Maintain professional SOW language
+8. **Customer Name Extraction and Derivation**
 
-8. **Category Identification**
+   **Purpose:** Extract the full customer/client name and derive a professional short name for use throughout the SOW.
+
+   **Extraction Rules for customer_name:**
+   - Extract the official company/customer name from the proposal
+   - Look for patterns like: "prepared for [Customer Name]", "[Customer Name] is planning...", "Client: [Customer Name]"
+   - Include the complete legal entity name (e.g., "Acme Corporation", "The Walt Disney Company")
+   - If multiple variations appear, use the most formal/complete version
+   - If no explicit customer name is found, set to "NA"
+
+   **Derivation Rules for customer_short_name:**
+   - Derive from `customer_name` by removing business suffixes:
+     - Remove: Corporation, Inc., Ltd., LLC, Company, Co., Entertainment, Incorporated, Limited
+     - Remove prefix: "The"
+     - Trim whitespace and normalize
+   - **Examples:**
+     - "Acme Corporation" → "Acme"
+     - "The Walt Disney Company" → "Walt Disney"
+     - "Sony Pictures Entertainment" → "Sony"
+     - "Microsoft Corporation" → "Microsoft"
+     - "Amazon.com, Inc." → "Amazon"
+   - If `customer_name` is "NA", set `customer_short_name` to "NA"
+   - Preserve capitalization and multi-word names (e.g., "Walt Disney", not "WaltDisney")
+
+9. **Category Identification**
 
    Choose ONE category from this list based on the extracted content:
 
@@ -116,12 +138,16 @@ INSTRUCTIONS:
    - If uncertain but Teradata is mentioned → `teradata_migration`
    - If uncertain and no specific platform → `datawarehouse_modernization`
 
-9. **Output Format**
+10. **Output Format**
    - Return ONLY a valid **Markdown** output.
    - Do not include explanations, comments, or additional text outside the requested document structure.
    - Preserve the exact structure defined below using Markdown headers:
 
 # category
+
+# customer_name
+
+# customer_short_name
 
 # scope
 
@@ -139,13 +165,13 @@ INSTRUCTIONS:
 
 # onix_roles_responsibilities
 
-10. **Formatting Guidelines**
+11. **Formatting Guidelines**
     - Use clear, concise, and professional language.
     - Prefer bullet-style phrasing where applicable.
     - Avoid repetition across sections.
     - For roles and responsibilities sections, use categorized groups with sub-bullets for clarity.
 
-11. **Quality Expectations**
+12. **Quality Expectations**
     - Output should be SOW-ready and suitable for enterprise review.
     - Ensure logical grouping and readability within each section.
     - Ensure clear separation between customer and Onix responsibilities to avoid ambiguity.

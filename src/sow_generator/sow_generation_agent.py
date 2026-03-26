@@ -11,7 +11,7 @@ from .tools import generate_sow_document
 from .extractor_callbacks import after_agent_callback
 
 # Load prompt
-PROMPT_FILE = Path(__file__).parent / "prompts" / "sow_generation_agent_v7.md"
+PROMPT_FILE = Path(__file__).parent / "prompts" / "sow_generation_agent_v8.md"
 with PROMPT_FILE.open(encoding="utf-8") as f:
     PROMPT = f.read()
 
@@ -30,6 +30,7 @@ class SowPlaceHolderOutput(BaseModel):
     limitations: str | list[dict]
     success_criteria: str | list[dict]
     technical_assumptions: str | list[dict]
+    customer_dependencies: str | list[dict]
     payment_schedule: str | list[dict]
     add_appendix_details: str | list[dict]
 

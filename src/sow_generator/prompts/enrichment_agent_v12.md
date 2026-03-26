@@ -78,6 +78,19 @@ For EACH bullet point in the Golden Reference Content, follow this mandatory pro
 ### 8. NO MENTION of Onix Products
 * Do not mention the names of any Onix products in the SOW document such as Eagle or Raven. Instead refer to them as "Onix's proprietary tool".
 
+### 9. Customer Name Replacement (MANDATORY)
+* Extract `customer_short_name` from the PROPOSAL CONTENT (extractor output).
+* Replace occurrences of the word "Client" in section **CONTENT** (bullet points, descriptions, statements) with the extracted `customer_short_name`.
+* **Do NOT replace** "Client" in section **HEADINGS** (e.g., "### 4. Client Dependencies" should remain as-is).
+* Use the customer_short_name consistently throughout the document for professionalism and personalization.
+* **Examples:**
+  - If `customer_short_name` = "Acme", then "Client will provide..." → "Acme will provide..."
+  - If `customer_short_name` = "Walt Disney", then "Client team will..." → "Walt Disney team will..."
+  - If `customer_short_name` = "Sony Pictures", then "Client is responsible..." → "Sony Pictures is responsible..."
+* **Do NOT replace** the word "Customer" - only replace "Client".
+* **Exception:** Keep "Onix" as-is (provider name should remain unchanged).
+* If `customer_short_name` is "NA" or not found, default to using "Client".
+
 ## COMPLETENESS RULE (CRITICAL)
 * Include maximum coverage of the reference content. 
 * Sections or sub-sections which are explicitly excluded from the project scope should be omitted.

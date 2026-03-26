@@ -74,7 +74,7 @@ You must return a JSON object with these **exact keys**:
 ## Special Field Rules
 
 ### `customer_short_name`
-Derive from `customer_short_name` by removing business suffixes:
+Derive from `customer_name` by removing business suffixes:
 - Remove: Corporation, Inc., Ltd., LLC, Company, Co., Entertainment
 - Remove prefix: "The"
 - Examples: 

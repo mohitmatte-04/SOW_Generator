@@ -223,8 +223,15 @@ async def process_sow_generation(session_id: str, proposal_url: str, document_ti
             # if gcs_match:
             #     generated_sow_gcs_uri = gcs_match.group(0).strip()
             #     logger.info(f"✅ Successfully extracted GCS URI: {generated_sow_gcs_uri}")
+            # gcs_match = re.search(r'gs://[^\n]+?\.docx', result_text)  # ✅ FIXED: Handles spaces!
+            # if gcs_match:
+            #     generated_sow_gcs_uri = gcs_match.group(0).strip()
+            #     logger.info(f"✅ Successfully extracted GCS URI: {generated_sow_gcs_uri}")
 
         # If we couldn't extract URLs, use the configured output location
+        # if not generated_sow_gcs_uri:
+        #     generated_sow_gcs_uri = f"{SOW_OUTPUT_GCS_URI}{document_title}.docx"
+        #     logger.warning(f"⚠️ Could not extract GCS URI from agent response, using configured location: {generated_sow_gcs_uri}")
         # if not generated_sow_gcs_uri:
         #     generated_sow_gcs_uri = f"{SOW_OUTPUT_GCS_URI}{document_title}.docx"
         #     logger.warning(f"⚠️ Could not extract GCS URI from agent response, using configured location: {generated_sow_gcs_uri}")

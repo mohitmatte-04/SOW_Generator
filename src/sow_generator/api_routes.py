@@ -201,21 +201,23 @@ async def process_sow_generation(session_id: str, proposal_url: str, document_ti
             logger.info(f"Agent response text: {result_text}")  # Added: Log full response
             
             # Try to extract Google Drive URL
-            drive_match = re.search(r'https://[^\s]*drive\.google\.com/[^\s]+', result_text)
+            drive_match = re.search(r'https://[^\s]*docs\.google\.com/[^\s]+', result_text)
             if drive_match:
                 generated_drive_url = drive_match.group(0)
+            else:
+                logger.warning(f"Could not extract Google Drive URL from agent response {result_text}")
 
             # Try to extract GCS URI - handles spaces in filenames
             # Matches from 'gs://' to '.docx' including any characters (including spaces)
-            gcs_match = re.search(r'gs://[^\n]+?\.docx', result_text)  # ✅ FIXED: Handles spaces!
-            if gcs_match:
-                generated_sow_gcs_uri = gcs_match.group(0).strip()
-                logger.info(f"✅ Successfully extracted GCS URI: {generated_sow_gcs_uri}")
+            # gcs_match = re.search(r'gs://[^\n]+?\.docx', result_text)  # ✅ FIXED: Handles spaces!
+            # if gcs_match:
+            #     generated_sow_gcs_uri = gcs_match.group(0).strip()
+            #     logger.info(f"✅ Successfully extracted GCS URI: {generated_sow_gcs_uri}")
 
         # If we couldn't extract URLs, use the configured output location
-        if not generated_sow_gcs_uri:
-            generated_sow_gcs_uri = f"{SOW_OUTPUT_GCS_URI}{document_title}.docx"
-            logger.warning(f"⚠️ Could not extract GCS URI from agent response, using configured location: {generated_sow_gcs_uri}")
+        # if not generated_sow_gcs_uri:
+        #     generated_sow_gcs_uri = f"{SOW_OUTPUT_GCS_URI}{document_title}.docx"
+        #     logger.warning(f"⚠️ Could not extract GCS URI from agent response, using configured location: {generated_sow_gcs_uri}")
 
         # Enhanced logging for SOW save location
         logger.info(f"{'=' * 80}")
@@ -223,11 +225,10 @@ async def process_sow_generation(session_id: str, proposal_url: str, document_ti
         logger.info(f"Session: {session_id}")
         if generated_drive_url:
             logger.info(f"Google Drive: {generated_drive_url}")
-        logger.info(f"GCS Backup: {generated_sow_gcs_uri}")
         logger.info(f"{'=' * 80}")
 
         # Final stage - set result with URL (prefer Drive URL if available)
-        final_url = generated_drive_url if generated_drive_url else generated_sow_gcs_uri
+        final_url = generated_drive_url
         session_manager.set_result(
             session_id,
             result_url=final_url
@@ -247,7 +248,6 @@ async def process_sow_generation(session_id: str, proposal_url: str, document_ti
             0,
             f"Error: {str(e)}"
         )
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 # API Endpoints

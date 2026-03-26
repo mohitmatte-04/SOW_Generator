@@ -10,6 +10,8 @@
 * Use `##` for primary sections and `###` for subsections.
 * Utilize bullet points for all content delivery to ensure readability and structure.
 * Each subsection must contain complete, implementation-ready statements without placeholders.
+* Each bullet point should be crisp and concise.
+* DO NOT generate bullet points with long sentences. Shorten the sentence or break the sentence into shorter sentences which can be represented as multiple bullet points.
 * Do NOT introduce new sections or omit any existing sections or sub-points from the reference unless explicitly excluded from the project scope.
 
 ## CONTENT GENERATION RULES (HIGH PRIORITY)
@@ -43,6 +45,9 @@
 * All content must explicitly align to GCP services: BigQuery for data warehousing, Dataflow/Dataproc for processing, Cloud Storage for staging, and Cloud Composer for orchestration.
 * Address IAM, Networking, Security, Monitoring, and Logging within the GCP framework.
 
+### 8. NO MENTION of Onix Products
+* Do not mention the names of any Onix products in the SOW document such as Eagle or Raven. Instead refer to them as "Onix's proprietary tool".
+
 ## COMPLETENESS RULE (CRITICAL)
 * Include maximum coverage of the reference content. 
 * Sections or sub-sections which are explicitly excluded from the project scope should be omitted.
@@ -62,6 +67,8 @@
 * **Migration strategy:** Document the explicit strategy for data movement, ETL/code conversion, validation logic, and cutover procedures.
 
 ### Cloud Foundation Setup – GCP
+**Note: The bullet points in this section should be very crisp and short. Do not use full and descriptive sentences. List only the services and technologies that will be setup.**
+
 * **Landing zone setup:** Configure the GCP Organization hierarchy, folders, and projects according to best practices.
 * **IAM roles and hierarchy:** Establish least-privilege access using GCP IAM roles and Service Accounts.
 * **Networking:** Configure VPCs, subnets, and Cloud Interconnect or VPN connectivity to legacy sources.
@@ -438,59 +445,139 @@ Onix will provide 4 weeks of warranty support (post production deployment) and w
 
 ### 5\. Assumptions
 
-**General Assumptions**
+**Technical Assumptions**
 
-  * Migration strategy will be lift and shift migration, hence, legacy environment along with its associated workloads will be migrated to Future State Environment with the same data model and business logic
-  * **Onix IP Pelican**
-      * Pelican will be installed for the duration of this project only
-      * Prerequisite mentioned in the Appendix D will be provided by client before project start
-      * Pelican will be used to validate data only between Legacy environment and Future state environment
-      * Infrastructure (VM) for the Onix Pelican tool installation will be provided by Client and cost associated with the environment will be borne by Client
-      * Data validation services for additional other sources can be handled through a change request
-  * Client team will freeze the code for mutually agreed period of Legacy environment covering all end-to-end pipeline, including data ingestion feeds, any ETL/ELT designs/code and export / data feeds before the start of each migration sprints
-    * Any changes in the code after ‘code freeze period’ and ‘SIT phase’ will be handled through a Change Request
-  * Onix will provide 4 weeks of support post deployment of each release
-    * Onix team will conduct knowledge transfer session and handover the runbooks to Client team for that particular release
-    * Client team will perform monitoring of jobs/ pipelines and identified issues will raised to Onix team
-    * Onix will fix the raised issues based on priorities/ criticality defined by Client
-  * Client team will setup the alerting and monitoring for the production environment based on Client enterprise standard
-  * Client is responsible for monitoring the production environment
-  * Client is responsible for setting up and handling CI/CD for this project
+* Migration Strategy
+    * Migration will follow a lift-and-shift approach with minimal or no changes to the existing data model and business logic.
 
-**Project Specific Assumptions**
+* Access and Environment Readiness
+    * Customer will provide access to source and target environments (e.g., GCP and legacy systems) prior to project kickoff.
+    * Access will include Dev, QA/UAT, and Production environments as applicable.
+    * Customer will provide VPN/VDI connectivity and required network access.
+    * Customer will ensure optimal connectivity between source systems and GCP, and resolve any network-related performance issues.
 
-  * Deployment into production environment will be done by Client team
-  * The Future State Environment foundation and projects are already in place and any gaps identified by Onix team during project execution will be filled by Client team
+* Tools, Code, and Infrastructure Availability
+    * Customer will provide access to:
+        * All in-scope tools and technologies
+        * Codebase, scripts, DDLs, and related artifacts
+        * Existing deployment tools (e.g., Git, Bitbucket)
+    * Customer will ensure availability of:
+        * Required software, hardware, infrastructure, and interfaces (libraries, drivers, connectors, etc.)
+        * Necessary licenses for third-party tools
+    * Customer will provide infrastructure and security access required for Onix accelerators.
+
+* Documentation and Knowledge Transfer
+    * Customer will provide:
+        * Access to documentation repositories (e.g., Confluence)
+        * Required knowledge transfer sessions covering architecture, data models, and workflows
+        * Ongoing clarifications, walkthroughs, and design discussions as needed
+
+* Governance and Coordination
+    * Customer will assign:
+        * A dedicated PM/PMO
+        * Technical and functional SMEs as points of contact
+    * Customer will support:
+        * Cross-team/vendor coordination
+        * Timely issue resolution
+
+* Code Freeze and Change Management
+    * Customer will enforce a code freeze on the legacy environment before each migration sprint.
+    * Any changes post code freeze or SIT phase will be handled via a formal Change Request (CR) process.
+
+* Data Validation and Tooling
+    * Onix Pelican tool will be installed in the customer GCP environment for:
+        * Data validation
+        * Reconciliation between source and target systems
+    * Validation scope will be limited to in-scope workloads.
+    * Onix will validate tables and views underlying reports for data mismatches.
+
+* Data Quality and Issue Handling
+    * Any data quality issues in legacy systems may impact timelines.
+    * Customer is responsible for:
+        * Triaging and fixing data issues within defined timelines (e.g., 2 business days)
+
+* Scope Control and Change Requests
+
+* Any increase in:
+    * In-scope volumetrics
+    * New workloads or components
+* Will require a Change Request (CR).
+
+* Performance and Stability Dependencies
+    * Legacy systems are expected to remain stable during migration.
+    * Customer will provide baseline performance metrics for comparison.
+    * Performance issues due to external dependencies (e.g., network, upstream systems) are customer responsibility.
+
+* Roles and Responsibilities Boundaries
+
+* Onix responsibilities are limited to in-scope migration activities.
+* Customer is responsible for:
+    * Production deployment execution (in some cases)
+    * Upstream/downstream system readiness
+    * Third-party tools and platform management
+
+* Testing and Validation Responsibilities
+    * Customer is responsible for:
+        * User Acceptance Testing (UAT) execution
+    * Onix is responsible for:
+        * Fixing defects related to in-scope deliverables only
+
 
 -----
 
 ### 6\. Deliverables
 
-| Particulars | Deliverables |
-| :--- | :--- |
-| **Discovery, Analysis and Design** | Migration planning and documentation |
-| | Migration strategy (Milestone and Approach) |
-| | Migration inventory (database objects, code, use cases) |
-| | Sprint Plan/ Release Plan |
-| | Cutover plan |
-| | Communication plan including Project governance and cadence |
-| | Solution Architecture diagram (Future State environment) |
-| | Technical design document |
-| | Testing Strategy |
-| **Google Cloud Foundation Setup** | GCP Infrastructure Design Document |
-| | Terraform Infrastructure Automation Scripts |
-| | CI/CD Pipeline for GCP Infra Provisioning and Application Code Deployment |
-| | Execution of the Terraform Scripts to build and Configure GCP Infrastructure. |
-| **Historical Data Migration** | Historical Migration Scripts |
-| | One Time execution of Historical Migration Scripts to load data into Production Bigquery Tables followed by Data Validation. |
-| **Code Conversion** | Legacy Environment Tables/ Views DDLs converted to Future State environment |
-| | Incremental data pipelines |
-| | Legacy Environment code converted to Future State Environment |
-| | Orchestrated and scheduled jobs |
-| **Testing** | SIT test results |
-| | Pelican report - Data Validation |
-| **Production Deployment** | All the converted code and workloads deployed onto Future State production environment |
-| **Parallel Run** | Parallel run test reports |
-| **Project Handover** | Knowledge transfer sessions |
-| | Runbooks |
-| **Hypercare Warranty Support** | Hypercare warranty support(4 weeks) and Resolution to identified Bugs and errors (limited to the scope performed by Onix) |
+* Discovery and Analysis	
+  * Comprehensive discovery artifacts including current state architecture, data flows, lineage, and workload distribution
+  * Detailed data lineage (table-level, view-level, and code/workflow lineage)
+  * Code complexity analysis and workload insights (usage patterns, join analysis, active objects)
+  * Upstream and downstream dependency analysis
+  * Volumetric analysis and workload classification
+  * Identification of key datasets, transformations, and business-critical processes
+
+* Planning & Design	
+  * Final future-state architecture aligned to GCP best practices
+  * Technology mapping (source to GCP services)
+  * Detailed migration strategy including:
+  * Data migration strategy
+  * ETL/ELT conversion strategy
+  * Reporting migration/repointing strategy
+  * Testing and validation strategy
+  * Cutover strategy
+  * Migration project plan including sprint plan, timelines, and dependencies
+  * Architecture and design documentation
+  * Formal sign-off of architecture and migration plan by customer stakeholders/PMO
+
+* Google Cloud Foundation Setup	
+  * Provisioning and configuration of required GCP services and utilities
+  * Environment readiness to support migration workloads (compute, storage, orchestration, security, etc.)
+
+* Migration Activities	
+  * Development of incremental data ingestion pipelines from source systems to GCP
+  * Conversion of tables and views (DDL) to BigQuery-compatible schemas
+  * Conversion of legacy ETL/ELT pipelines and scripts (e.g., Hive, Spark, Teradata, Datastage, Alteryx) to GCP-native services (Dataflow, Dataproc, BigQuery)
+  * Migration and refactoring of reusable application scripts (Python, Java, Shell) for GCP execution
+  * Historical data migration from legacy systems to GCP with validated integrity
+  * Configuration and validation of end-to-end orchestration workflows
+  * Validation of source system integrations and data ingestion pipelines
+  * Ensuring converted workloads preserve legacy business logic and execute successfully
+
+* Report Repointing / Redevelopment	
+  * Repointing or redevelopment of BI reports (e.g., MicroStrategy, Looker) to BigQuery datasets
+  * Validation of reports against legacy system outputs for consistency
+  * Unit testing of repointed/redeveloped reports
+  * Enablement sessions and knowledge transfer for reporting teams
+  * Delivery of documentation and enablement materials
+
+* Testing & Data Validation	
+  * Unit testing of all converted workloads and pipelines
+  * Historical and incremental data validation reports
+  * Data validation using Onix Pelican tool
+  * Customer sign-off on data completeness and accuracy
+
+* Warranty / Hypercare Support	
+  * Resolution of defects identified during and post production deployment
+  * 4-week warranty support period
+  * Documentation of issues and resolutions during warranty
+  * Stable, defect-free production workloads at the end of warranty period
+  * Closure of warranty with no critical open issues

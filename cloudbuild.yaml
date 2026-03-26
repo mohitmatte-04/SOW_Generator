@@ -42,7 +42,6 @@ steps:
       - '--port=${_PORT}'
       - '--service-account=${_SERVICE_ACCOUNT}'
       - '--set-env-vars=GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GOOGLE_CLOUD_LOCATION=${_REGION},AGENT_NAME=${_SERVICE_NAME},HOST=0.0.0.0,PORT=${_PORT}'
-      - '--set-secrets=AGENT_ENGINE_URI=agent-engine-uri:latest,ARTIFACT_SERVICE_URI=artifact-service-uri:latest'
     id: 'deploy-cloud-run'
     waitFor: ['push-image']
 

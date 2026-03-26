@@ -1,0 +1,152 @@
+{
+    "<<TITLE>>": "Teradata to GCP Migration SOW",
+    "<<CUSTOMER_NAME>>": "Sony Pictures Entertainment (SPE)",
+    "<<CUSTOMER_SHORT_NAME>>": "Sony",
+    "<<CUSTOMER_NAME_BOLD>>": "Sony Pictures Entertainment (SPE)",
+    "<<PROVISION_DATE>>": "24 May 2024",
+    "<<ENTER_MSA_DATE>>": "Not specified in source data.",
+    "<<OPPORTUNITY>>": "Sony Pictures Entertainment (SPE) is undertaking a strategic initiative to modernize its data ecosystem by migrating from an aging, on-premise Teradata Vantage environment to a fully cloud-native Google Cloud Platform (GCP) BigQuery architecture. The fundamental objective of this engagement is to successfully retire the legacy Teradata system by the target deadline of October 2024, enabling SPE to significantly resolve accumulated technical debt and reduce its total cost of ownership.\n\nTo mitigate operational risk and ensure continuity, this modernization effort will strictly avoid a traditional 'Big Bang' deployment. Instead, the Provider will execute an accelerated, agile-based iterative migration strategy. This methodology allows SPE to seamlessly transition historical data, accurately convert complex database objects, and safely repoint existing Extract, Transform, and Load (ETL) and Business Intelligence (BI) tools without disrupting daily business operations.\n\nUltimately, this architectural transition will empower SPE to realize the inherent benefits of a cloud-native ecosystem. The modernized infrastructure will deliver enhanced scalability, optimized processing performance, and advanced analytics capabilities, securing long-term operational resilience and future-proofing SPE's data landscape.",
+    "<<SOLUTION_OVERVIEW>>": [
+        {
+            "Executive Summary": [
+                "The primary objective is to execute an accelerated, sprint-wise migration of the Sony Pictures Entertainment (SPE) data ecosystem from Teradata Vantage to Google Cloud Platform (BigQuery) utilizing the Onix Bird Automation Suite (Eagle, Raven, and Pelican). The project will strictly avoid a 'Big Bang' cut-over approach, heavily favoring iterative, agile deployments to maximize safety and validation. The proposed methodology (Option B: Early Teradata Retirement) ensures that Sony can fully migrate and retire Teradata by October 2024 while realizing comprehensive Cloud Native benefits."
+            ],
+            "Target State Architecture (Phase 1 Focus)": [
+                "Data Storage: The architecture mandates the migration of intermediate data storage from Amazon S3 to Google Cloud Storage (GCS).",
+                "Source Ingestion: The solution will retain WebMethods and Python, introducing an incremental and continuous data synchronization pipeline established directly from AWS S3 to GCS.",
+                "Data Warehouse: The central data warehouse environment will be fully migrated from Teradata Vantage to Google Cloud BigQuery.",
+                "Data Processing & Loading: IBM Datastage will be repointed and rehosted onto the GCP infrastructure. Alteryx workflows will be repointed to connect to BigQuery but will remain hosted within the existing SPE AWS Environment. All Teradata BTEQ scripts will be translated and converted to BigQuery native equivalents.",
+                "Orchestration & Scheduling: Existing ECS scheduling frameworks will be mapped and migrated to Google Cloud Composer for centralized task orchestration.",
+                "Data Consumption: Key Business Intelligence and reporting applications, including SAP BO, Tableau, R Studio, Power BI, and Periscope Data, will be directly repointed to query BigQuery."
+            ],
+            "Automation Ecosystem (Onix Bird Suite)": [
+                "Eagle (The Planner): This module will perform automated workload discovery, holistic assessment, deep dependency mapping, and the procedural generation of the migration strategy.",
+                "Raven (The Transformer): This module delivers intelligent, automated translation and conversion of native database objects (such as BTEQ scripts, Views, and Stored Procedures) and ETL integration into modern cloud-native formats.",
+                "Pelican (The Validator): This module executes automated, cell-level validation and statistical reconciliation of Petabyte-scale datasets across Teradata and BigQuery without migrating data, guaranteeing absolute consistency before legacy systems are decommissioned."
+            ]
+        }
+    ],
+    "<<ACTIVITIES>>": [
+        {
+            "Phase 1: Discovery and Architecture Setup": [
+                "The Provider shall conduct a comprehensive Discovery and Analysis phase of the current Teradata Vantage environment to deliver appropriate architectural designs and strategic migration recommendations.",
+                "The Provider shall execute the Google Cloud Foundation setup in strict alignment with the agreed-upon project requirements and security postures.",
+                "The Provider shall architect and build a robust, incremental ingestion pipeline from AWS S3 to Google Cloud Storage (GCS) to facilitate continuous data synchronization."
+            ],
+            "Phase 2: Migration and Conversion Execution": [
+                "The Provider shall perform a one-time historical data migration from Teradata Vantage to the Google Cloud Platform, encompassing approximately 21 TB of historical enterprise data.",
+                "The Provider shall systematically convert Teradata database objects to GCP native formats, specifically including 9,118 Tables, 3,858 Views, 67 Stored Procedures, and 115 BTEQ scripts."
+            ],
+            "Phase 3: Tool Repointing and Integration": [
+                "The Provider shall successfully repoint IBM Datastage (inclusive of 940 Sequence Jobs and 3,969 Parallel Jobs) and rehost the platform onto GCP native infrastructure.",
+                "The Provider shall repoint 394 Alteryx Workflows to interface with GCP while maintaining their hosting on the AWS environment.",
+                "The Provider shall configure enterprise orchestration and scheduling by migrating workloads from ECS to Cloud Composer.",
+                "The Provider shall establish highly secure and optimized connectivity between all in-scope Business Intelligence (BI) tools and GCP BigQuery.",
+                "The Provider shall systematically repoint existing BI reporting infrastructure to GCP BigQuery, including SAP BO (10 Universes, 2,041 Reports), Tableau (295 Reports), Periscope (5 Reports), and Power BI (5 Reports)."
+            ],
+            "Phase 4: Validation, Optimization, and Enablement": [
+                "The Provider shall execute rigorous Testing and Validation, guaranteeing end-to-end data accuracy between the legacy Teradata source and the target GCP destination.",
+                "The Provider shall perform comprehensive performance testing and query optimization for all converted workloads operating on the target BigQuery environment.",
+                "The Provider shall facilitate formal project management and governance cadences to track agile migration sprints, proactively manage risks, and coordinate all deliverables across stakeholder teams.",
+                "The Provider shall deliver dedicated knowledge transfer and structured transition support to the Client's operations teams, ensuring the effective management of the modernized data platform.",
+                "The Provider shall supply standard Warranty Support immediately following deployment phases to address any post-migration anomalies."
+            ]
+        }
+    ],
+    "<<DELIVERABLES>>": [
+        {
+            "Migration Strategy & Plan": [
+                "A comprehensive planning document that includes a current-state deep dive analysis, empirical workload pattern analysis, underlying system dependencies, finalized design recommendations, and precise sprint-level migration details."
+            ],
+            "Assessment Reports (via Eagle)": [
+                "Detailed analytical reporting covering ETL/ELT workflow discovery, end-to-end data lineage, data model discovery, data flow mapping, volumetric analysis, code complexity analysis, capacity planning, and workload migration clustering."
+            ],
+            "Fully Converted Code (via Raven)": [
+                "Delivery of automated BTEQ and legacy SQL dialects strictly translated into target BigQuery SQL, along with automated translations of complex scripts and completely mapped ETL workloads."
+            ],
+            "Reconciled Data Proof (via Pelican)": [
+                "Comprehensive validation outputs ensuring 100% cell-level data matching between the cloud database and the on-premise system. Deliverables include highlight reporting for any identified mismatches, duplicate records, or missing records."
+            ],
+            "Optimization Outputs": [
+                "An in-depth analysis of cloud utilization metrics, pinpointing actionable tuning opportunities for migrated data models, complex queries, and platform compute costs."
+            ],
+            "Operational Documentation": [
+                "Complete set of runbooks and technical documentation thoroughly detailing the finalized implementation architecture and operational best practices."
+            ],
+            "Sprint Schedule & Status Reports": [
+                "Ongoing, standardized tracking logs of sprint progress, milestones, blockages, and applied mitigation plans."
+            ],
+            "UAT Sign-off Documents": [
+                "Formalized acceptance records and validation artifacts captured from the SPE team confirming approval for all deployed iteration phases."
+            ]
+        }
+    ],
+    "<<OUT_OF_SCOPE>>": [
+        {
+            "General Exclusions": [
+                "Any migration activities or assessments involving the Snowflake environment.",
+                "Any software upgrades, major version changes, or patching activities for existing systems.",
+                "End-user application onboarding or enterprise-wide change management training.",
+                "The physical decommissioning, infrastructural teardown, and final cut-over of existing legacy systems and server environments.",
+                "The procurement, installation, or financial management of third-party software licensing.",
+                "The migration of any auxiliary data sources, applications, or Business Intelligence reports that are not explicitly documented in the scope."
+            ],
+            "Technical Exclusions": [
+                "Phase 2 strategic activities, specifically defined as the 100% Cloud Native transition, direct connectivity set up between raw source systems and GCS, and the total replacement of ETL tools (Datastage/Alteryx) with GCP native solutions.",
+                "Any modifications, logic changes, or functional enhancements applied to the existing legacy data models.",
+                "Performance tuning and query optimization for poorly performing legacy queries that are not expressly included within the automated conversion scope."
+            ]
+        }
+    ],
+    "<<LIMITATIONS>>": [
+        {
+            "Project Constraints": [
+                "Unforeseen system access delays or extreme network latencies encountered during massive historical data transfers may negatively impact the aggressive target completion date of October 2024.",
+                "The overall project velocity is contingent upon the quality, accuracy, and completeness of legacy documentation provided by the customer; deficiencies may mandate additional, unforeseen discovery efforts.",
+                "The timeline of subsequent agile migration sprints will be directly affected by any delays in the User Acceptance Testing (UAT) review and sign-off process by the SPE team."
+            ]
+        }
+    ],
+    "<<SUCCESS_CRITERIA>>": [
+        {
+            "Outcome Objectives": [
+                "Successful and accelerated end-to-end migration via the leveraging of the Onix Bird Suite Accelerators.",
+                "Achievement of a 100% guaranteed conversion rate for all defined in-scope workloads.",
+                "Achievement of 100% validated and matching data records between the legacy solution and the target cloud to build operational confidence necessary to sunset Teradata.",
+                "The Teradata environment is fully migrated and successfully retired by the culmination of Phase 1 (target date October 2024).",
+                "Project execution driven solely by Agile-based iterative migrations aligned with customer priorities, entirely avoiding Big Bang cut-over deployments.",
+                "The successful repointing and functional operational verification of all in-scope Business Intelligence tools dynamically pointing to Google Cloud BigQuery.",
+                "The attainment of formalized, documented sign-off on User Acceptance Testing (UAT) for all migrated workflows and datasets by the designated customer team."
+            ]
+        }
+    ],
+    "<<TECHNICAL_ASSUMPTIONS>>": [
+        {
+            "Migration Approach": [
+                "The overarching migration strategy will be heavily based on a lift-and-shift methodology, introducing minimal to zero alterations to the underlying data model structure.",
+                "Any pre-existing data corruption, structural anomalies, or historical errors resident within the legacy data warehouse could delay the targeted project timelines.",
+                "The target Google Cloud Platform (GCP) environment and necessary Google Cloud Storage (GCS) buckets will be adequately sized, secured, and fully provisioned prior to the commencement of data migration activities."
+            ],
+            "Customer Responsibilities": [
+                "The Client will grant the Provider uninhibited access to the GCP and Teradata environments across all required tiers (Dev, Test, QA, Prod), as well as access to all in-scope tooling (e.g., Datastage, Alteryx, BI Tools).",
+                "The Client will provide access to essential incident management and ticketing systems (e.g., JIRA) and organizational document portals (e.g., Confluence) relevant to the project.",
+                "The Client will provision all required VPN/VDI infrastructure and dedicated network interconnects to the Provider.",
+                "The Client is responsible for furnishing all necessary in-scope codes, legacy scripts, DDLs, and any corresponding software assets.",
+                "The Client will grant necessary access to existing code deployment repositories and versioning systems (e.g., Bitbucket, GIT).",
+                "The Client will manage infrastructural setup and secure necessary security approvals to provision access rights for Onix accelerators at zero additional cost.",
+                "The Client will ensure adequate knowledge transfer concerning the current state architecture, data schemas, codebase nuances, and contextual business information.",
+                "The Client will take primary ownership of the resolution to issues and coordination matters involving any parallel third-party vendors or business partners intersecting with the project scope.",
+                "The Client will nominate a primary Point of Contact (functioning as technical and functional SME) who can be accessed readily throughout the project lifecycle.",
+                "The Client will ensure that any prerequisite software, hardware, operational infrastructure, and interfaces (Licenses, Libraries, ODBC Drivers, Connectors) required for integration are procured and active.",
+                "The Client's dedicated teams will rigorously perform the User Acceptance Testing (UAT) immediately following every sprint delivery executed by the Onix team."
+            ],
+            "Infrastructure and Tooling": [
+                "In the event that the project necessitates re-platforming existing ETL or BI tools onto GCP due to performance issues or external factors, the Client will assume complete responsibility for the procurement and environment setup of these tools on GCP.",
+                "The Client's Alteryx ETL instance will maintain hosting on AWS and is strictly excluded from transitioning onto GCP infrastructure.",
+                "The Client's networking team is responsible for ensuring optimal, unimpeded connectivity between GCP and Teradata Vantage; any performance degradations or transmission failures arising from network bottlenecks will be handled directly by the Client's internal teams."
+            ]
+        }
+    ],
+    "<<PAYMENT_SCHEDULE>>": "Billing for this engagement will be conducted strictly on a milestone or sprint-completion basis, as explicitly defined in the finalized commercial agreement. Iterative invoices will be generated in accordance with the agile delivery schedule and shall remain payable by the Client within the standard financial terms outlined in the governing Master Services Agreement (MSA).",
+    "<<ADD_APPENDIX_DETAILS>>": "Detailed and exhaustive technical inventories of all systems to be migrated have been recorded and cataloged in the core project discovery documentation. This confirmed scope includes Teradata Tables (9,118), Database Views (3,858), Stored Procedures (67), and BTEQ scripts (115). Furthermore, the complex ETL and reporting infrastructure consists of Datastage Jobs (4,909 total), Alteryx Workflows (394), and Business Intelligence Reports (2,346 total). This detailed baseline inventory will serve as the definitive and binding reference point for all sprint planning, capacity tracking, and workload execution throughout the lifecycle of the project."
+}

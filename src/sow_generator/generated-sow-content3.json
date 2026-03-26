@@ -1,0 +1,299 @@
+{
+    "title": "Teradata Vantage to Google Cloud Platform Migration",
+    "customer_name": "The Client",
+    "customer_short_name": "Client",
+    "customer_name_bold": "The Client",
+    "provision_date": "24 May 2024",
+    "enter_msa_date": "Not specified",
+    "opportunity": "The Client is planning to migrate its current Teradata Vantage data warehouse environment, along with its associated workloads, to a modern, future-state cloud data warehouse built on Google Cloud Platform (GCP). The migration will follow a lift-and-shift strategy with minimal to no data model changes, aiming to completely retire the legacy 21 TB Teradata system by the end of Phase 1 (Target: October 2024).\n\nOnix proposes to provide professional services utilizing our accelerated agile \"Sprint-Wise\" methodology and the Onix Bird Automation Suite (Eagle, Raven, Pelican). Onix's subject matter experts will execute the preparation, conversion, implementation, and rigorous validation of the migration to build 100% confidence for the Teradata sunset, ensuring zero data movement discrepancies and mitigating risks through extended parallel runs.\n\nThe Client's current landscape and target scope consist of an upstream AWS S3 source system integrating into the Teradata Vantage warehouse. Data transformation pipelines are currently powered by IBM Datastage (940 Sequence Jobs, 3,969 Parallel Jobs) and Alteryx (394 Workflows), with orchestration managed via Cloud Composer. The downstream reporting layer involves SAP BusinessObjects (10 Universes, 2,041 Reports), Tableau (295 Reports), Periscope (5 Reports), and Power BI (5 Reports).",
+    "solution_overview": "The proposed solution leverages an Accelerated Agile \"Sprint-Wise\" approach, avoiding a big-bang migration and ensuring continuous, verifiable delivery. This methodology facilitates the preparation, intelligent conversion, and structured implementation of the migration while executing extended parallel runs for rigorous risk mitigation prior to the final cutover.\n\nCentral to this solution is the Onix Bird Automation Suite. Onix Eagle (The Planner) will be used for automated workload discovery, granular assessment, lineage dependency mapping, and migration sprint planning. Onix Raven (The Transformer) will drive intelligent, automated code conversion, translating Teradata objects (BTEQ, DDLs) and ETL mappings directly to GCP-native formats. Finally, Onix Pelican (The Validator) will ensure high-fidelity, cell-level data validation and reconciliation between the legacy Teradata system and GCP BigQuery with absolutely zero data movement.\n\nThe architectural approach prioritizes a direct migration of Teradata historical data to GCP BigQuery and establishes an incremental pipeline for continuous synchronization from AWS S3 to Google Cloud Storage (GCS). This targeted Phase 1 solution achieves the early retirement of Teradata by rehosting Datastage on GCP, natively repointing existing ETL jobs and all designated BI reporting tools seamlessly to BigQuery.",
+    "activities": [
+        {
+            "2.1 Discovery, Analysis and Design": [
+                {
+                    "Current State Understanding utilizing Onix Eagle (The Planner)": [
+                        "Assessing Teradata business usage, domain segregations, and Line of Business dependencies.",
+                        "Mapping current technical and data architecture to the planned GCP architecture.",
+                        "Evaluating AWS S3 source system feeds, frequency, formats, and synchronization mechanisms.",
+                        "Automated extraction of end-to-end table-level and cell-level lineage dependency mapping.",
+                        "Analyzing use case priorities associated with the 9,118 Tables, 3,858 Views, 67 Stored Procedures, and 115 BTEQs.",
+                        "Profiling Datastage (4,909 total jobs) and Alteryx (394 workflows) data transformation pipelines, patterns, and volumetrics.",
+                        "Evaluating existing data quality policies, rules, and data flow mechanisms across layers.",
+                        "Reviewing the current Dev, Test, QA, and Prod environment landscape constraints.",
+                        "Auditing data security, compliance, and PII management requirements for GCP.",
+                        "Baselining current pipeline execution performance for post-migration comparison.",
+                        "Documenting job orchestration and scheduling dependencies to be ported to Cloud Composer.",
+                        "Defining consumption patterns for SAP BO, Tableau, Periscope, and Power BI feeds.",
+                        "Identifying operational challenges, performance gaps, and future GCP expectations.",
+                        "Defining a robust testing strategy and validating the Onix Pelican testing infrastructure."
+                    ]
+                },
+                {
+                    "Project Design and Planning": [
+                        "Future state design architecture featuring GCP BigQuery, Cloud Storage, and Dataflow/Dataproc as applicable.",
+                        "Technology mappings translating Teradata structures and legacy ETL to GCP native components.",
+                        "Detailed migration strategy including historical data migration (21 TB), intelligent ETL conversion and re-hosting, BI tool repointing, zero-data-movement testing via Pelican, and a cutover strategy outlining Teradata retirement by October 2024.",
+                        "Migration planning recommendations utilizing an agile 'Sprint-Wise' framework, including comprehensive project plans, Sprint Roadmaps, and workload prioritization based on Eagle outputs.",
+                        "Status reporting mechanisms for progress tracking, risk mitigation, and issue logging, with weekly status reports submitted to the Client PMO.",
+                        "Timeline enforcement: Final Design/Migration plan sign-off to be provided by the Client within five (5) business days post-delivery.",
+                        "Data Pipeline design customized for continuous sync from AWS S3 to GCS.",
+                        "Orchestration & Scheduling patterns integrated with Cloud Composer (implementing legacy schedules as-is)."
+                    ]
+                }
+            ]
+        },
+        {
+            "2.2 Google Cloud Foundation Setup": [
+                {
+                    "GCP Foundation Setup": [
+                        "Onix will establish a secure GCP landing zone and foundational infrastructure across Dev, QA, PreProd, and Prod environments.",
+                        "Storage: Configure GCS for AWS S3 incremental ingestion, implementing standard/nearline/coldline/archival strategies and object lifecycle policies.",
+                        "Compute: Provision Compute Engine (including re-hosting Datastage on GCP) and Dataflow/Dataproc deployment.",
+                        "Data Warehouse: BigQuery configuration customized for Teradata workload patterns.",
+                        "Job Scheduling/Orchestration: Cloud Composer setup and sizing.",
+                        "Identity Management & Access Control: Set up Organization/folder-level IAM user groups, Service Accounts, Custom IAM roles, and Integration with Client's central authentication.",
+                        "Organization Hierarchy: Establish Folder and project layout, Resource tagging and labels.",
+                        "Networking: Architect VPC including Shared VPC configurations, integrating with Customer-provided VPN/VDI and dedicated interconnect.",
+                        "Logging, Auditing & Monitoring: Configure log workspaces, filters, monitoring dashboards, budget, and failure alerting mechanisms.",
+                        "Monitoring Integration: Configure Cloud Monitoring & Logging exports (Client handles downstream SIEM ingestion).",
+                        "Advanced Security: Enforce organization policies, Security Command Center enablement, Cloud KMS, and Secret Manager.",
+                        "Cost Management: Setup budget alerts, billing labels, and billing exports to BigQuery.",
+                        "GCP Secret Manager: Enablement and role allocation for secure credential access.",
+                        "Data Encryption: Default at-rest and in-transit encryption (Cloud DLP API integration if required).",
+                        "Terraform: Create Infrastructure as Code (IaC) via Terraform for automated deployments, integrating with existing Client CI/CD pipelines."
+                    ]
+                },
+                {
+                    "Platform Readiness": [
+                        "Execute a gap analysis of the current GCP footprint versus the Target Architecture.",
+                        "Enable all required APIs and Services necessary for Teradata migration execution.",
+                        "Collaborate with the Client team within T+2 weeks of project start to finalize Project creation and IAM mapping."
+                    ]
+                },
+                {
+                    "Pelican Setup": [
+                        "Installation and configuration of the Onix Pelican Product (The Validator) on GCP/Customer infrastructure for automated, high-fidelity cell-level data validation."
+                    ]
+                }
+            ]
+        },
+        {
+            "2.3 Historical Data Migration": [
+                "One-time historical data migration of 21 TB from Teradata Vantage to Google Cloud Platform (BigQuery).",
+                "Onix will deploy customized scripts or leverage native transfer appliances/Data Transfer Service (DTS) to securely extract, transfer, and load historical data to GCS, and subsequently into BigQuery.",
+                "Rigorous validation of migrated history using Onix Pelican (zero data movement validation) including row count, byte-level validation, randomized sampling, key-metric checks, aggregation validations, and cell-level white-box validation."
+            ]
+        },
+        {
+            "2.4 Code Conversion": [
+                "Utilization of Onix Raven (The Transformer) for intelligent, automated conversion of legacy logic.",
+                "Conversion of existing Teradata DDLs to BigQuery native format exactly matching 9,118 Tables and 3,858 Views.",
+                "Conversion of complex processing scripts to BigQuery-compliant GoogleSQL including 67 Stored Procedures and 115 BTEQ scripts.",
+                "Repointing and re-platforming existing ETL workflows: IBM Datastage (940 Sequence Jobs, 3,969 Parallel Jobs) re-hosted on GCP; Alteryx (394 Workflows) repointed while remaining on AWS.",
+                "Converted code strictly preserves existing business logic (Lift and Shift methodology) with identically mapped schemas and data types."
+            ]
+        },
+        {
+            "2.5 Source System Integration": [
+                "Design and build an incremental ingestion pipeline from AWS S3 to Google Cloud Storage (GCS) to ensure continuous data synchronization.",
+                "Leverage native GCP tools (Storage Transfer Service, Dataflow, or Pub/Sub) to maintain ongoing deltas from the AWS S3 upstream systems until Teradata decommissioning.",
+                "Support flat files, database extracts, and required APIs delivered to the AWS S3 buckets."
+            ]
+        },
+        {
+            "2.6 Orchestration and Scheduling": [
+                "Setup, configure, and migrate legacy job orchestration to Cloud Composer (managed Apache Airflow) for migrated GCP workflows.",
+                "Develop, deploy, and test DAGs corresponding to the migrated Datastage, Alteryx, and BigQuery execution chains.",
+                "Strictly mirror legacy scheduling sequences, dependencies, and execution times for the newly established DAGs."
+            ]
+        },
+        {
+            "2.7 Report Repointing": [
+                "Establish connectivity and repoint specific in-scope Business Intelligence tools to the new GCP BigQuery environment.",
+                "Repoint SAP BO (10 Universes, 2,041 Reports), Tableau (295 Reports), Periscope (5 Reports), and Power BI (5 Reports).",
+                "Modify connection strings and ODBC configurations to route queries to BigQuery.",
+                "Conduct schema refreshes within the BI tools without rewriting report logic, altering UI layouts, or redesigning dashboard semantics."
+            ]
+        },
+        {
+            "2.8 Testing": [
+                {
+                    "Development & System Testing": [
+                        "Iterative unit and development testing within the GCP Dev environment during each sprint.",
+                        "Comprehensive system testing within GCP QA/PreProd environments using production-grade data.",
+                        "Historical data validation of the 21 TB load based on the Testing Strategy.",
+                        "Data pipeline validation confirming continuous AWS S3 to GCS ingestion.",
+                        "Two (2) successful incremental data validation iterations using Onix Pelican to certify data pipelines."
+                    ]
+                },
+                {
+                    "User Acceptance Testing (UAT)": [
+                        "Client to perform and formally sign off on UAT within five (5) business days following sprint delivery.",
+                        "Onix to supply dedicated support, facilitate defect triaging, and resolve all identified bugs tied to converted code, ETL repointing, or orchestration."
+                    ]
+                },
+                {
+                    "Performance & Report Validation": [
+                        "Benchmark query, BTEQ, and Stored Procedure execution times in BigQuery against historical Teradata performance.",
+                        "Conduct BigQuery performance tuning to meet SLAs (Stress/Peak Load Testing out of scope).",
+                        "Test connectivity and schema refreshes for all 2,346 in-scope reports querying BigQuery."
+                    ]
+                }
+            ]
+        },
+        {
+            "2.9 Production Deployment": [
+                "Onix will execute the deployment of the converted DDLs, BigQuery code, ETL updates, and Composer DAGs into the GCP Production environment.",
+                "Client walkthrough of SOPs for production change management and code deployment repository integration at least T-2 weeks prior to Go-Live."
+            ]
+        },
+        {
+            "2.10 Parallel Run in Production": [
+                "Execute an extended parallel run spanning two (2) iterations to validate outputs between legacy Teradata and BigQuery production environments using Onix Pelican.",
+                "Concurrent consumption of identical upstream feeds via AWS S3 across both environments."
+            ]
+        },
+        {
+            "2.11 Project Handover": [
+                "Provide Knowledge Transfer (KT) sessions over a two (2) week period covering BigQuery architecture, automated code outputs, Datastage/Alteryx repointing, and Cloud Composer DAG structures.",
+                "Deliver runbooks and technical documentation explicitly limited to the scope performed by Onix."
+            ]
+        },
+        {
+            "2.12 Hypercare Warranty Support": [
+                "Provide four (4) weeks of hypercare warranty support post-production deployment for each major release/phase.",
+                "Support covers bug fixes for AWS S3 to GCS incremental pipeline failures, data mismatch anomalies, converted Teradata scripts, and Cloud Composer orchestration failures."
+            ]
+        }
+    ],
+    "deliverables": [
+        {
+            "Discovery, Analysis and Design": [
+                "Migration Strategy & Plan (including automated Workload Discovery via Eagle, Move groups/prioritization, and End-to-End Lineage dependency mapping).",
+                "Target State Solution Architecture and Cutover Strategy.",
+                "Sprint Roadmap, Release Plan, and Project Communications Plan.",
+                "Testing and Validation Strategy."
+            ]
+        },
+        {
+            "Google Cloud Foundation Setup": [
+                "Cloud Foundation Setup implementation (Dev, QA, PreProd & Prod platform setup).",
+                "GCP Infrastructure Design Document, Security Setup, and DevOps/CI/CD Integration.",
+                "Onix Accelerator Setup (Provisioning Pelican infrastructure).",
+                "Execution of Terraform Scripts for Infrastructure as Code (IaC)."
+            ]
+        },
+        {
+            "Historical Data Migration": [
+                "One-Time Historical Data Loaded to GCP (21 TB from Teradata to BigQuery).",
+                "Extraction and Transfer automation scripts."
+            ]
+        },
+        {
+            "Code Conversion & Pipelines": [
+                "Converted Code/Scripts: Teradata objects (9,118 Tables, 3,858 Views, 67 SPs, 115 BTEQs) natively running on GCP BigQuery.",
+                "Incremental ingestion pipeline established from AWS S3 to GCS.",
+                "Converted/Repointed ETL Jobs: Datastage (4,909 jobs) re-hosted and repointed, Alteryx (394 workflows) repointed.",
+                "Configured Orchestration and Scheduling: Workflows operational in Cloud Composer."
+            ]
+        },
+        {
+            "Testing": [
+                "SIT test results and environment validation.",
+                "End-to-End Data Validation Reports utilizing Pelican (Zero-data-movement cell-level reconciliation between Teradata and BigQuery)."
+            ]
+        },
+        {
+            "Production Deployment": [
+                "Production Deployment execution and bug fixes for converted code."
+            ]
+        },
+        {
+            "Parallel Run": [
+                "Parallel run test reports confirming pipeline parity across legacy and GCP."
+            ]
+        },
+        {
+            "Project Handover": [
+                "Knowledge Transfer sessions (2 Weeks).",
+                "Runbooks and Technical Documents detailing implementation specifics."
+            ]
+        },
+        {
+            "Hypercare Warranty Support": [
+                "4-Weeks of Hypercare Support for issue resolution and bug fixing (limited strictly to the scope delivered by Onix)."
+            ]
+        }
+    ],
+    "out_of_scope": [
+        {
+            "General": [
+                "Any software upgrades, versioning, or system patching for Datastage, Alteryx, SAP BO, Tableau, Periscope, or Power BI.",
+                "User onboarding or Identity Provider (IdP) administration.",
+                "Decommissioning, physical tear-down, or license termination of existing Teradata/legacy systems.",
+                "L1, L2, L3 ongoing Managed Service support post-hypercare.",
+                "Integration with 3rd-party systems not explicitly defined in the scope.",
+                "Development of new reports, BI dashboards, or enhancement of existing report logic.",
+                "Creation or enhancement of AI/ML predictive models.",
+                "Stress, peak load, or penetration testing."
+            ]
+        },
+        {
+            "Project Specific": [
+                "Migration or repointing of the Snowflake data warehouse.",
+                "Re-platforming or re-writing Alteryx workflows (Alteryx will remain on AWS).",
+                "Resolution of performance bottlenecks caused by Customer network limitations or latency between GCP and legacy/BI systems."
+            ]
+        }
+    ],
+    "limitations": [
+        {
+            "Technical Limitations": [
+                "Onix will repoint connections and conduct schema refreshes within the BI tools, but will not rewrite report logic, alter UI layouts, or redesign dashboard semantics.",
+                "Stress Testing and Peak Load Testing are entirely out of scope.",
+                "100% conversion of targeted code is based strictly on volumetrics defined in this SOW (9,118 Tables, 3,858 Views, 67 SPs, 115 BTEQs); volumes exceeding this will be handled via a Change Request.",
+                "Data integrity errors or corruption originating within legacy Teradata/AWS S3 data that impede the migration timeline will require timeline extensions."
+            ]
+        },
+        {
+            "Client Dependency Constraints": [
+                "Client must formally sign off on deliverables within five (5) business days, otherwise deliverables are deemed approved to protect agile sprint timelines.",
+                "Onix relies entirely on the Client for 24/7 proactive monitoring and escalation via ticketing during the hypercare warranty support phase.",
+                "Client holds full responsibility for procuring, upgrading, or scaling third-party ETL/BI tools if platform-level performance issues emerge inherently post-repointing.",
+                "Delays or performance degradation caused by suboptimal network bandwidth are the sole responsibility of the Client."
+            ]
+        }
+    ],
+    "success_criteria": [
+        {
+            "Primary Outcomes": [
+                "100% Guaranteed conversion of targeted in-scope code to cloud-native technologies.",
+                "100% validated and matching data reconciled between Teradata and GCP to build definitive confidence to sunset the legacy platform.",
+                "Teradata Vantage environment fully migrated and technically capable of being retired by the end of Phase 1 (Target: October 2024)."
+            ]
+        }
+    ],
+    "technical_assumptions": [
+        {
+            "General Assumptions": [
+                "The migration strategy is strictly lift-and-shift. Workloads will be migrated with minimal or no data model changes.",
+                "Business logic inside processing scripts, pipelines, and reporting feeds will be preserved exactly as-is.",
+                "Onix Eagle, Raven, and Pelican products are deployed solely for the duration of this engagement.",
+                "The Client will enforce a strict code freeze on Teradata pipelines, tables, and ingestion logic prior to the start of the respective migration sprint. Alterations post-freeze will require a formal Change Request (CR).",
+                "The Client will manage their own CI/CD repositories, ITSM mapping tools, and operational monitoring platforms.",
+                "The Client is solely responsible for coordinating with third-party vendors (e.g., SAP, IBM, Alteryx) to resolve any native integration platform issues."
+            ]
+        },
+        {
+            "Project Specific Assumptions": [
+                "Phase 1 targets the retirement of Teradata by October 2024. Dependencies impacting this timeline (e.g., UAT delays, network issues) may shift this target.",
+                "Alteryx workflows will definitively remain hosted on AWS and will not be migrated to GCP infrastructure, only repointed to query BigQuery.",
+                "Datastage environments will be re-hosted onto GCP infrastructure by Onix utilizing the Client's existing licenses.",
+                "Infrastructure (VMs/Compute) and security whitelisting required to host Onix Pelican will be provided and financially borne by the Client at no cost to Onix.",
+                "The Client will provide VPN/VDI access, unrestricted source access, necessary security approvals, and a functioning dedicated cloud interconnect between GCP and corporate networks 1 week prior to Sprint Start."
+            ]
+        }
+    ],
+    "payment_schedule": "Not specified in source data.",
+    "add_appendix_details": "Not specified in source data."
+}

@@ -1,0 +1,145 @@
+# Project Metadata
+- Title: Hadoop Transformation Journey - Phase 2
+- Customer Name: Bell Canada
+- MSA Date: [msa_date]
+
+# Category
+hadoop_to_gcp_migration
+
+# SOW Content
+
+## Opportunity
+The engagement focuses on Phase 2 of the Hadoop Transformation Journey: migrating Bell Canada's legacy Hadoop ecosystem to a scalable, cost-efficient, and future-ready Google Cloud Platform (GCP) architecture.
+
+## Solution Overview
+The solution utilizes an automated, IP-led migration approach to transition Bell Canada's legacy Hadoop Enterprise Data Lake to a modernized, GCP-native architecture. Execution will follow an Agile methodology organized into "Move Groups"—logical collections of Hadoop workloads grouped by technical and domain dependencies (e.g., data layers, user domains) and migrated iteratively via time-boxed sprints. 
+
+The modernization relies heavily on Onix's suite of proprietary accelerators:
+- **Eagle (The Planner):** Utilized in Phase 1 for discovery, dependency lineage, volumetrics, and migration roadmap planning.
+- **Raven (The Transformer):** Automates the translation of complex legacy scripts, ETL, and SQL (Hive, Spark, Pig, Sqoop) into cloud-native equivalents.
+- **Pelican (The Validator):** An AI-powered tool providing end-to-end data validation and reconciliation between Hadoop and BigQuery with granular cell/row-level accuracy, requiring zero data movement.
+- **Condor:** Facilitates automated data ingestion pipeline creation.
+
+**Target GCP State & Technology Mapping:**
+- **Batch Ingestion & Streaming:** Migrating from Sqoop, Kafka, and Streamsets to Google Cloud Dataflow and native Kafka integrations.
+- **ETL/ELT Processing:** Migrating from Apache Spark on Hadoop to Serverless Dataproc and BigQuery.
+- **SQL Query Engine & Data Warehouse:** Consolidating Hive, Trino, and Impala workloads into BigQuery.
+- **Data Lake Storage:** Replacing HDFS and NetApp S3 with Google Cloud Storage (GCS).
+- **Orchestration:** Transitioning from Apache Oozie to Cloud Composer (Airflow), ensuring existing workflow dependencies and triggers are mirrored.
+- **Reporting & BI:** Connecting the existing MicroStrategy environment directly to BigQuery via mapped schemas, alongside a comprehensive repointing strategy and performance tuning. 
+
+This hyper-automated strategy ensures exact functional parity, minimal business disruption, reduction of technical debt, and an expedited path to a scalable, governable, and cost-efficient Data & AI platform on Google Cloud.
+
+## Activities
+### Project Initiation and Planning
+- Conduct project kickoff and align on communication plan
+- Finalize sprint planning and Move Group definitions
+- Validate access to source environments and GCP foundation
+
+### Source System Integration
+- Set up incremental ingestion from source systems (RDBMS, flat files, and APIs) to GCP using Google Cloud Dataflow.
+
+### Code Conversion & Refactoring
+- Convert in-scope database objects (tables, views) to BigQuery-compatible schemas and formats.
+- Convert legacy native scripts (Sqoop imports, Scala, Spark SQL, Hive/Impala SQL scripts, Trino queries) into GCP-native services (Serverless Dataproc, Dataflow, and BigQuery) using the Onix Raven automated code converter.
+- Reutilize non-SQL Spark workloads using Dataproc or equivalent GCP frameworks.
+- Migrate and reuse existing Python, Java, and Shell scripts in GCP where applicable.
+
+### Historical Data Migration
+- Perform a one-time migration of historical data from Hadoop (HDFS/S3) to GCP (Cloud Storage and BigQuery) leveraging tools like `gsutil`, `distcp`, and GCP `bqload`.
+
+### Orchestration & Scheduling
+- Implement orchestration for migrated workloads using Cloud Composer (Airflow).
+- Ensure scheduling for migrated workflows mirrors existing Oozie schedules in the legacy environment.
+
+### End-to-End Pipeline Testing & Data Validation
+- Perform unit testing of converted workloads.
+- Conduct historical data validation and parallel testing using Onix Pelican.
+- Perform system integration testing (SIT) for end-to-end data pipelines.
+
+### Report Repointing & BI Enablement
+- Repoint MicroStrategy reports from Hadoop sources to BigQuery specifically for the “wireline access” project (or similar).
+- Deliver enablement sessions to walk the Bell BI team through the repointing process, best practices, and common scenarios.
+
+### Deployment, Support & Handover
+- Deploy workloads into QA, SIT, and Production environments.
+- Provide UAT support and defect triage/resolution.
+- Provide a 4-week warranty support period post-deployment.
+- Conduct Knowledge Transfer (KT) sessions with Bell’s engineering and BI teams.
+
+### Optional/Additional Scope Components
+- **Google Cloud Foundation Service (6 Weeks):** Project setup and organization, IAM configuration, BigQuery/GCS provisioning, Cloud Build enablement, logging/monitoring setup, security/DLP integration, and cost visibility setup.
+- **AI-Powered DataOps Managed Services (12 Months):** 24x7 L1/L2/L3 support encompassing Infrastructure Management, Data Pipeline Support, Data Quality Monitoring, Data Observability, Cost Management, and Data Access Management.
+
+## Deliverables
+### Project Management & Governance
+- Detailed migration plan, sprint roadmap, architecture, and solution design documents.
+- Weekly status reporting and issue log updates.
+- Generation of Parallel Run validation reports.
+
+### Engineering & Migration Execution
+- Converted Hive/Impala/Trino Tables & Views into BigQuery DDLs.
+- QA Validated Code deployed into QA and SIT environments.
+- Production Deployed Code (Pipelines and MicroStrategy Projects).
+- Cloud Composer DAGs corresponding to migrated Oozie workflows.
+
+### Validation & Testing
+- Pelican Validation Results (Historical and Incremental runs).
+- Report Validation Reports establishing BI parity.
+- Pipeline Execution Runtime Comparison Report (Hive PROD vs. BQ PROD).
+- MicroStrategy Report Performance Comparison Report (for business-critical reports).
+- Closed Bug Jira(s) resulting from defect triage and resolution.
+- User Acceptance Testing (UAT) sign-off documentation.
+
+### Knowledge Transfer & Handover
+- Runbooks, technical design documents, and operational guides.
+- Packaged Enablement Kit (playbooks, checklists, validation templates) for the Bell BI Team.
+- Completed Knowledge Transfer (KT) sessions with Bell’s engineering and BI teams.
+
+## Out of Scope
+- Any activity not explicitly mentioned in the Scope of Work.
+- Any software upgrades or patching.
+- Repointing of any MicroStrategy project other than the “wireline access” project (or similar agreed-upon project).
+- New report development.
+- Linked or Child reports reconfiguration.
+- Changes in legacy environments.
+- User onboarding.
+- Decommissioning and cut-over of existing systems/environments.
+- Third-party tool licensing and procurement.
+- Hardware provisioning or physical infrastructure setup.
+
+## Limitations
+- Performance guarantees are contingent upon Google Cloud quotas and limits being appropriately sized.
+- The accuracy of Raven's automated code conversion depends on the quality and standardization of the legacy code provided.
+- Pelican data validation requires source systems to be accessible and stable during the validation window.
+
+## Success Criteria
+- **Data Parity:** Establish 100% data parity between the legacy Hadoop systems and Google Cloud BigQuery.
+- **Validation Approvals:** Successful data validation via Pelican for Historical data and Day 1/Day 2 incremental data loads, with any acceptable deviations reviewed and approved by Bell Technical SMEs.
+- **Reporting Parity:** Establish report/dashboard-level parity for business-critical reports.
+- **Performance Benchmarks:** Pipeline runtime is better than or at par with the current Hive pipeline runtime. Report and dashboard refresh times are at par with or better than the legacy equivalents.
+- **User Acceptance:** UAT approval obtained from designated business users.
+- **Team Enablement:** The Bell BI team becomes self-sufficient in executing MicroStrategy-to-BigQuery repointing, utilizing reusable tools, playbooks, and validation assets to achieve near-zero vendor dependency for remaining projects.
+
+## Technical Assumptions
+- The migration strategy is defined as a "lift and shift" modernization with no data model changes.
+- Legacy Hadoop and source system environments will remain stable during the project; no major changes will be introduced. Code freezes (except for business-critical changes) will be enforced for upcoming Move Groups.
+- Bell Canada will own GCP code changes for legacy code modifications post-deployment.
+- Bell team will perform User Acceptance Testing (UAT) within 5 business days of sprint delivery by the Onix team.
+- Bell team remains responsible for user onboarding and integration setup for any 3rd party managed upstream or downstream systems.
+- MicroStrategy repointing is limited strictly to the “wireline access” project or similar; all other reporting requirements are explicitly out of scope.
+- Any issues or errors inherent in the legacy or source data can delay project timelines.
+- Any deviations in activity, technology components, or outlined volumetrics within the scope will undergo a formal Change Request (CR) process.
+- Bell Canada will provide access to all in-scope tools, technologies, and environments required for migration (Dev, QA, Prod-readonly).
+- Bell Canada will provide all in-scope codes, scripts, DDLs, and applicable software (Sqoop, Hive/Impala SQL, Trino, Spark, Python, Java, Shell, etc.).
+- Bell Canada will provide access to existing code deployment tools (e.g., Bitbucket, GIT).
+- Bell Canada will provide infrastructure and necessary security approvals/access rights for Onix accelerators (Eagle, Raven, Pelican, Condor) at no cost.
+- Bell Canada will provide timely knowledge transfer sessions on current architecture, data models, scheduling, and codebase.
+- A designated technical and functional Subject Matter Expert (SME) will be available for queries and clarifications.
+- Any necessary software, hardware, infrastructure, licenses, libraries, ODBC drivers, or connectors required for the engagement will be provided by Bell Canada.
+
+## Payment Schedule
+Payment milestones and invoicing schedules will be detailed in the finalized Order Form or Commercial Agreement associated with this Statement of Work.
+
+## Add Appendix Details
+NA

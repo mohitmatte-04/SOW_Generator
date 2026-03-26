@@ -1,0 +1,199 @@
+{
+    "title": "Phase 2 Hadoop Modernization",
+    "customer_name": "Bell",
+    "customer_short_name": "Bell",
+    "customer_name_bold": "Bell",
+    "provision_date": "24 May 2024",
+    "enter_msa_date": "Not specified in source data.",
+    "opportunity": "The Provider shall execute Phase 2 of the Client's Hadoop modernization roadmap. This engagement focuses on the systematic migration of identified active workloads from the legacy Hadoop ecosystem to Google Cloud Platform (GCP). The Provider will employ a modular, Move Group-based agile execution approach to ensure seamless transition and minimal business disruption. By leveraging this iterative methodology, the migration will prioritize risk mitigation and operational continuity. The Provider will work closely with the Client to ensure that all targeted workloads are successfully modernized, optimized, and validated within the Google Cloud environment, setting a robust foundation for future data scalability and analytics maturity.",
+    "solution_overview": [
+        {
+            "Modernization Strategy": [
+                "The solution centers on modernizing the Client's legacy Hadoop ecosystem by migrating its data platform to Google Cloud Platform (GCP). This transition uses an agile, sprint-based delivery model grouped into logical Move Groups. The implementation leverages the Provider's automation-led accelerators (Migration Birds) to ensure maximum speed, operational accuracy, and overall efficiency."
+            ]
+        },
+        {
+            "Onix Automation-Led Accelerators (Migration Birds)": [
+                "Eagle (The Planner): Utilized extensively during Phase 1 for deep workload discovery, comprehensive infrastructure assessment, structural dependency lineage tracking, and strategic move-group planning.",
+                "Raven (The Transformer): Systematically automates the conversion of complex legacy codebases, including Hive, Spark, Impala, and Oozie, to native GCP functional equivalents.",
+                "Pelican (The Validator): Ensures 100% data reconciliation and validation between the legacy Hadoop environment and the target GCP environment without necessitating risky or redundant data movement.",
+                "Condor (The Transporter): Facilitates the rapid, secure creation and deployment of robust automated data ingestion pipelines."
+            ]
+        },
+        {
+            "Target State Technology Mapping": [
+                "Batch Ingestion: The Provider shall migrate batch ingestion workloads from Sqoop, Kafka, StreamSets, and Spark to Google Cloud Dataflow.",
+                "ETL/ELT Processing: Processing frameworks will be migrated from Apache Spark, Hive, Trino, and Impala to Serverless Dataproc and BigQuery.",
+                "SQL Query Engine: All query engines will be transitioned from Hive, Trino, and Impala strictly to BigQuery.",
+                "Orchestration: Workload orchestration will migrate from legacy Oozie environments to Cloud Composer (Airflow).",
+                "Data Storage (Lake & Warehouse): Storage systems will transition from HDFS, NetApp S3, and Hive Tables to Google Cloud Storage (GCS) and BigQuery.",
+                "Reporting & BI: The Client will retain the MicroStrategy platform; however, the Provider will repoint all necessary data connections directly to BigQuery.",
+                "Streaming: Existing streaming infrastructure will migrate from Kafka and Streamsets to Kafka and Google Cloud Dataflow.",
+                "Monitoring/Search: Observability services will migrate from ELK and Grafana to native ELK and Grafana implementations hosted on GCP.",
+                "Security & IAM: The Provider will implement standard GCP Identity and Access Management (IAM) policies, configure encryption protocols for data at rest and in transit, and establish rigid network security boundaries."
+            ]
+        },
+        {
+            "Data Load & Validation Workflow": [
+                "Historical Load: The Provider shall extract historical data files from HDFS and deposit them into designated GCS buckets utilizing gsutil or distcp. Subsequently, data will be meticulously copied from GCS into BigQuery leveraging the GCP bqload utility, with the entire process seamlessly orchestrated via Cloud Composer.",
+                "Incremental & Parallel Processing: Legacy data pipelines, encompassing Day 0, Day 1, and Day 2 snapshots, will run in parallel alongside the newly converted GCP pipelines to verify integrity.",
+                "Validation: The Pelican validation accelerator will automatically compare source data residing in Hive against target data in BigQuery at a highly granular cell and row level to guarantee total functional parity before any production cutover is initiated."
+            ]
+        }
+    ],
+    "activities": [
+        {
+            "Core Migration Activities": [
+                "Source System Integration: The Provider shall establish and configure incremental data ingestion pipelines from existing source systems, including Relational Database Management Systems (RDBMS), flat files, and Application Programming Interfaces (APIs), directly into the Google Cloud Platform.",
+                {
+                    "Code Conversion & Refactoring": [
+                        "The Provider will systematically convert all in-scope database objects, such as tables and views, into highly optimized, BigQuery-compatible schemas and formats.",
+                        "The Provider will convert legacy native scripts, including Sqoop imports, Scala, Spark SQL, Hive/Impala SQL scripts, and Trino queries, into fully managed GCP-native services such as Dataproc, Dataflow, and BigQuery.",
+                        "The Provider will adapt and reutilize non-SQL Spark workloads utilizing Google Cloud Dataproc or functionally equivalent GCP processing frameworks.",
+                        "The Provider will migrate and effectively reuse existing Python, Java, and Shell scripts within the new GCP environment wherever applicable and advantageous."
+                    ]
+                },
+                "Historical Data Migration: The Provider shall execute a comprehensive, one-time migration of historical data assets from the legacy Hadoop environment (HDFS and S3) into appropriate target GCP storage solutions (Cloud Storage and BigQuery).",
+                "Orchestration & Scheduling: The Provider shall implement robust task orchestration for all newly migrated workloads utilizing Cloud Composer (Airflow). The new scheduling logic will accurately reflect and mirror the existing Oozie schedules currently operating in the legacy environment.",
+                "End-to-end Pipeline Testing and Data Validation: The Provider will conduct rigorous testing protocols encompassing the unit testing of converted workloads, comprehensive historical data validation checks, and intensive parallel testing routines.",
+                "Report Repointing: The Provider shall repoint existing MicroStrategy reports from legacy Hadoop sources directly to BigQuery, specifically targeting the wireline access project or functionally similar reporting initiatives. Additionally, the Provider will deliver targeted enablement sessions to actively guide the Client through the repointing process, industry best practices, and common troubleshooting scenarios.",
+                "UAT Support: The Provider will deliver dedicated technical support during the User Acceptance Testing (UAT) phase to proactively assist the Client in validating the fully migrated workloads.",
+                "Warranty & Knowledge Transfer: The Provider shall supply a defined four-week warranty support period immediately following the final deployment. Concurrently, the Provider will conduct structured, comprehensive knowledge transfer sessions meticulously tailored for the Client's engineering and Business Intelligence (BI) teams."
+            ]
+        },
+        {
+            "Project Management Activities": [
+                "Agile Ceremonies: The Provider shall continuously facilitate structured sprint planning sessions, host a comprehensive standard project kickoff meeting, and conduct weekly status alignment meetings.",
+                "Risk Management: The Provider will proactively identify, manage, and mitigate project risks, track ongoing complex issues, and actively monitor critical dependencies throughout the entire lifecycle of the migration engagement."
+            ]
+        },
+        {
+            "Optional Google Cloud Foundation Service Setup (If selected)": [
+                "The Provider shall establish a foundational GCP Organization structure, defining core projects, distinct folder hierarchies, and applying baseline Identity and Access Management (IAM) roles and security policies.",
+                "The Provider shall provision the necessary BigQuery datasets and Google Cloud Storage buckets, ensuring the careful implementation of appropriate data lifecycle policies and stringent security configurations.",
+                "The Provider shall enable essential GCP services including Dataflow, Cloud Composer, and Cloud Build, while proactively configuring centralized logging frameworks, performance monitoring tools, and targeted billing alerts.",
+                "The Provider shall integrate Cloud Data Loss Prevention (DLP) services to systematically identify, classify, and prevent the unauthorized exposure of critical sensitive data assets."
+            ]
+        },
+        {
+            "Optional AI-Powered DataOps Managed Services (If selected)": [
+                "The Provider shall deliver continuous 12-month, 24x7 operational coverage encompassing comprehensive Infrastructure Management, Data Pipeline Support, Data Quality Monitoring routines, holistic Data Observability, Cloud Cost Management, and secure Data Access Management."
+            ]
+        }
+    ],
+    "deliverables": [
+        {
+            "Planning and Architecture Deliverables": [
+                "A detailed, comprehensive migration plan covering the sprint roadmap, technical architecture specifications, and finalized solution design framework.",
+                "Detailed runbooks, comprehensive technical design documents, and standardized operational guides.",
+                "A formal Project Kickoff Presentation strictly outlining key objectives, specific timelines, and overarching execution strategies.",
+                "Weekly Project Status Reports clearly detailing weekly progress, identified risks, and critical upcoming milestones.",
+                "A formal Final Project Closure and Sign-off Document specifically designed to signify the successful conclusion of the engagement."
+            ]
+        },
+        {
+            "Code and Engineering Deliverables": [
+                "Quality Assurance (QA) validated codebase tailored exclusively for the Google Cloud Platform environment.",
+                "Production-deployed code assets, clearly encompassing operational data pipelines and successfully repointed MicroStrategy projects.",
+                "Documentation of comprehensively closed bug Jira tickets, including exact resolution details, if applicable during the engagement's duration."
+            ]
+        },
+        {
+            "Testing and Validation Deliverables": [
+                "Pelican Validation Results, consisting of highly automated reports that proactively highlight any deviations, discrepancies, or data mismatches.",
+                "A formal Report Validation Report detailing the performance stability and accuracy of repointed analytical assets.",
+                "A comprehensive Parallel Run Validation Report to formally document structural and functional parity between the legacy and target systems.",
+                "A Pipeline Execution Runtime Comparison Report strictly comparing execution metrics from the legacy Hive PROD to the new BigQuery PROD environments.",
+                "A MicroStrategy Report Performance Comparison Report specifically targeting the identified business-critical analytical reports."
+            ]
+        },
+        {
+            "Enablement Deliverables": [
+                "A Packaged Enablement Kit carefully designed specifically for the Client's BI team, containing operational playbooks, process checklists, and standardized validation templates."
+            ]
+        }
+    ],
+    "out_of_scope": [
+        {
+            "General Exclusions": [
+                "Any technical activity, service iteration, or project deliverable not explicitly documented and formally agreed upon within this Scope of Work.",
+                "The execution of any software upgrades or systematic hardware patching within the Client's existing environments.",
+                "The repointing, integration, or reconfiguration of any MicroStrategy projects other than the explicitly defined wireline access project or a mutually agreed equivalent.",
+                "The development, design, testing, or implementation of any entirely new analytical reports or operational dashboards.",
+                "The reconfiguration, systematic mapping, or functional alteration of linked or child reports within the broader MicroStrategy ecosystem.",
+                "Any structural, architectural, or baseline configuration changes introduced directly into the legacy Hadoop environments.",
+                "The administration of standard system user onboarding processes or basic access provisioning functions.",
+                "The decommissioning, formal retirement, or systematic cut-over processes for any existing legacy on-premises systems or external environments.",
+                "The formal procurement, provisioning, or ongoing financial management of requisite software licenses or underlying baseline cloud infrastructure resource costs.",
+                "Comprehensive organizational change management initiatives or broad end-user training sessions, directly extending beyond the highly specific designated knowledge transfer targeted strictly at the engineering and BI teams."
+            ]
+        }
+    ],
+    "limitations": [
+        {
+            "System and Network Constraints": [
+                "Overall external data transfer speeds and comprehensive pipeline execution timelines are strictly subject to the network bandwidth availability and stability between the Client's on-premises environment and the global Google Cloud infrastructure.",
+                "The projected total migration velocity and the overall project lifecycle timeline are entirely contingent upon the documented stability, continuous availability, and consistent performance of the legacy Hadoop environment and all interconnected upstream source systems."
+            ]
+        }
+    ],
+    "success_criteria": [
+        {
+            "Data Parity": [
+                "The Provider shall establish and empirically verify 100% core data parity between the legacy Hadoop ecosystem and target BigQuery environments. This foundational parity will be meticulously confirmed via automated validation processes leveraging the Pelican accelerator for all identified historical data sets and all subsequent Day 1 and Day 2 incremental data loads."
+            ]
+        },
+        {
+            "MicroStrategy Integration": [
+                "The Provider shall achieve successful integration, strict authentication, and continuous uninterrupted connectivity of the Client's MicroStrategy platform with the newly established GCP data infrastructure.",
+                "The Provider will establish and formally validate uncompromising data parity for all fundamental foundational base tables natively supporting the designated business-critical and relevant analytical reports."
+            ]
+        },
+        {
+            "Performance Parity and Improvement": [
+                "The solution must consistently demonstrate objectively equivalent or measurably improved systemic performance metrics for all specifically designated business-critical dashboards.",
+                "The solution must guarantee that targeted data pipeline runtime execution is structurally superior to or entirely on par with the previously documented current Hive pipeline runtime execution metrics.",
+                "The final validation must confirm that generated report and user dashboard refresh times are fully on par with or demonstrably faster than the equivalent legacy reports previously operational on the Hive system."
+            ]
+        },
+        {
+            "Approval and Sign-off": [
+                "All generated comprehensive Parallel Run validation reports must be thoroughly reviewed, formally accepted, and officially approved by the Client's explicitly designated Technical Subject Matter Experts (SMEs).",
+                "The Provider must achieve successful and formalized User Acceptance Testing (UAT) approval from all appropriately designated business user stakeholders representing the Client."
+            ]
+        },
+        {
+            "Knowledge Transfer": [
+                "The Provider will successfully complete all designated complex technical enablement sessions and finalize the formal, documented handover of the Packaged Enablement Kit directly to the appropriately designated Client engineering and Business Intelligence (BI) teams."
+            ]
+        }
+    ],
+    "technical_assumptions": [
+        {
+            "Project and Migration Approach Assumptions": [
+                "The core tactical migration strategy will operate strictly as a lift-and-shift migration approach, inherently assuming no substantial modifications to existing structural data models.",
+                "The Client's legacy Hadoop ecosystem and all deeply associated source system environments will maintain operational stability throughout the complete project duration; no major architectural or fundamental software changes will be introduced during this continuous period.",
+                "MicroStrategy repointing activities are strictly structurally confined to the designated wireline access project or a mutually agreed equivalent; all supplementary reporting or dashboard architectural requirements are explicitly formally excluded from the general project scope.",
+                "Any unforeseen underlying data quality issues, structural architectural errors, or systemic inconsistencies discovered within the legacy or source data environments may directly detrimentally impact and delay the projected timeline.",
+                "Any requested deviations concerning project activities, defined internal technology components, or established systemic volumetrics beyond the precisely documented scope will necessitate the immediate initiation of a formal project Change Request (CR) process.",
+                "The primary Google Cloud Organization and all critical target network infrastructure components will be fully pre-configured, rigorously tested, and securely functionally accessible prior to the official commencement of migration activities, unless the Optional Google Cloud Foundation Service Setup has been explicitly formally exercised and integrated into the overarching engagement.",
+                "Source baseline data volumes and processing complexity structural metrics will definitely not exceed the initial baseline measurements strictly established during the preliminary assessment phase by a calculated margin greater than 10%."
+            ]
+        },
+        {
+            "Client Responsibilities": [
+                "The Client's designated technical team will rigorously execute and fully complete comprehensive User Acceptance Testing (UAT) strictly within five business days immediately following the formal sprint software delivery by the Provider's team.",
+                "The Client fundamentally maintains sole absolute responsibility for executing all basic user onboarding processes and successfully finalizing the integration configuration setup for any external third-party managed upstream or downstream software systems.",
+                "The Client shall provide the Provider with completely comprehensive, unhindered functional access to all strictly in-scope software tools, applied technologies, and critical system environments strictly required for migration execution.",
+                "The Client shall directly supply all absolutely relevant in-scope foundational codebase materials, definitively encompassing functional scripts, applied DDLs, and deeply associated software structural artifacts such as Sqoop configurations, Hive/Impala SQL schemas, Trino setups, Spark configurations, Python codebase, Java codebase, and Shell integrations.",
+                "The Client shall provide unimpeded functional access to all existing internal code deployment structural tools and specific repositories such as Bitbucket or GIT.",
+                "The Client shall fully supply the explicitly necessary infrastructure, strictly complete basic security approvals, and effectively grant the unrestricted internal access rights logically required to deploy the Provider's accelerators and operational structural resources entirely at no additional cost to the Provider.",
+                "The Client shall highly facilitate completely timely and highly comprehensive structural knowledge transfer sessions deeply focusing on the current Hadoop architecture, complex foundational data models, existing systemic scheduling logic within Oozie, primary codebase nuances, and deeply associated business operational processes exactly as fundamentally required by the executing project team.",
+                "The Client shall actively officially assign a designated dedicated primary point of contact possessing both vital technical and essential functional SME knowledge to remain consistently available for properly addressing project-related queries and consistently providing absolutely critical functional clarifications.",
+                "The Client shall formally procure and directly furnish any completely essential foundational software, strictly requisite hardware, functional infrastructure components, and directly necessary operational interfaces including all baseline software licenses, relevant software libraries, functional ODBC drivers, and essential systemic connectors strictly mandated for the successful execution of the continuous engagement."
+            ]
+        }
+    ],
+    "payment_schedule": "Invoicing for this engagement will be conducted on a predictable monthly basis. Billing will be accurately calculated based strictly on the actual professional hours incurred by the project team or alternately upon the verified successful completion of mutually agreed-upon foundational project milestones. All standard invoicing and continuous payment activities will be comprehensively executed strictly in total accordance with the established formal financial provisions rigorously outlined in the prevailing Master Services Agreement and all formally associated commercial terms documents.",
+    "add_appendix_details": "Further deeply detailed functional documentation regarding the exact target architecture framework, strictly applied baseline security practices, and highly comprehensive operational output examples directly derived from the Provider's specialized Migration Birds suite encompassing the Eagle, Raven, Pelican, and Condor technical solutions can be appropriately provided strictly to the Client upon formal internal request. These extensive and detailed technical foundational specifications will also be formally structurally documented and actively integrated seamlessly during the highly active complex design phase of the overarching engagement."
+}

@@ -1,0 +1,82 @@
+2026-03-17 16:07:58,240 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 16:07:58,241 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 16:07:58,241 - __main__ - ERROR - Input JSON file not found: D:\AI_ML\SOW-Generatorepo\SOW_Generator\src\sow_generator\prj-sandbox-presales-portal-b9a1ce61abb0.json
+2026-03-17 16:09:32,182 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 16:09:32,184 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 16:09:32,184 - __main__ - ERROR - Input JSON file not found: D:\AI_ML\SOW-Genera    tor\repo\SOW_Generator\src\sow_generator\prj-sandbox-presales-portal-b9a1ce61abb0.json
+2026-03-17 16:09:44,538 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 16:09:44,539 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 16:09:44,540 - __main__ - ERROR - Generation failed: name 'document_stream' is not defined
+Traceback (most recent call last):
+  File "D:\AI_ML\SOW-Generator\repo\SOW_Generator\src\sow_generator\tools\generate_docs_from_template.py", line 127, in generate_doc_from_template
+    document_stream.seek(0)
+    ^^^^^^^^^^^^^^^
+NameError: name 'document_stream' is not defined
+2026-03-17 16:11:45,514 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 16:11:45,515 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 16:11:45,517 - __main__ - ERROR - Missing credentials: 'sow-generator-sa' or 'GOOGLE_APPLICATION_CREDENTIALS' environment variable not set
+2026-03-17 16:12:10,757 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 16:12:10,757 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 16:12:10,759 - __main__ - INFO - Initializing Google Docs generator
+2026-03-17 16:12:10,842 - __main__ - INFO - Generating Google Doc from template
+2026-03-17 16:12:12,907 - __main__ - ERROR - Document generation failed: Failed to copy template document: <HttpError 404 when requesting https://www.googleapis.com/drive/v3/files/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/copy?alt=json returned "File not found: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM.". Details: "[{'message': 'File not found: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM.', 'domain': 'global', 'reason': 'notFound', 'location': 'fileId', 'locationType': 'parameter'}]">
+2026-03-17 16:14:42,142 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 16:14:42,143 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 16:14:42,146 - __main__ - INFO - Initializing Google Docs generator
+2026-03-17 16:14:42,213 - __main__ - INFO - Generating Google Doc from template
+2026-03-17 16:14:43,957 - __main__ - ERROR - Document generation failed: Failed to copy template document: <HttpError 404 when requesting https://www.googleapis.com/drive/v3/files/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/copy?alt=json returned "File not found: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM.". Details: "[{'message': 'File not found: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM.', 'domain': 'global', 'reason': 'notFound', 'location': 'fileId', 'locationType': 'parameter'}]">
+2026-03-17 16:15:54,249 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 16:15:54,250 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 16:15:54,251 - __main__ - INFO - Initializing Google Docs generator
+2026-03-17 16:15:54,310 - __main__ - INFO - Generating Google Doc from template
+2026-03-17 16:15:57,592 - __main__ - ERROR - Document generation failed: Failed to copy template document: <HttpError 403 when requesting https://www.googleapis.com/drive/v3/files/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/copy?alt=json returned "The user's Drive storage quota has been exceeded.". Details: "[{'message': "The user's Drive storage quota has been exceeded.", 'domain': 'usageLimits', 'reason': 'storageQuotaExceeded'}]">
+2026-03-17 16:18:08,836 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 16:18:08,837 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 16:18:08,840 - __main__ - INFO - Initializing Google Docs generator
+2026-03-17 16:18:08,903 - __main__ - INFO - Generating Google Doc from template
+2026-03-17 16:18:12,201 - __main__ - ERROR - Document generation failed: Failed to copy template document: <HttpError 403 when requesting https://www.googleapis.com/drive/v3/files/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/copy?alt=json returned "The user's Drive storage quota has been exceeded.". Details: "[{'message': "The user's Drive storage quota has been exceeded.", 'domain': 'usageLimits', 'reason': 'storageQuotaExceeded'}]">
+2026-03-17 16:24:36,557 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 16:24:36,558 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 16:24:36,560 - __main__ - ERROR - Generation failed: name 'credentials' is not defined
+Traceback (most recent call last):
+  File "D:\AI_ML\SOW-Generator\repo\SOW_Generator\src\sow_generator\tools\generate_docs_from_template.py", line 140, in generate_doc_from_template
+    if isinstance(credentials, dict):
+                  ^^^^^^^^^^^
+NameError: name 'credentials' is not defined
+2026-03-17 16:25:28,304 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 16:25:28,304 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 16:25:28,306 - __main__ - ERROR - Generation failed: name 'service_account' is not defined
+Traceback (most recent call last):
+  File "D:\AI_ML\SOW-Generator\repo\SOW_Generator\src\sow_generator\tools\generate_docs_from_template.py", line 153, in generate_doc_from_template
+    creds = service_account.Credentials.from_service_account_file(
+            ^^^^^^^^^^^^^^^
+NameError: name 'service_account' is not defined
+2026-03-17 16:26:05,321 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 16:26:05,323 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 16:26:05,367 - __main__ - INFO - Initializing Google Docs generator
+2026-03-17 16:26:05,421 - __main__ - INFO - Generating Google Doc from template
+2026-03-17 16:26:09,001 - __main__ - ERROR - Document generation failed: Failed to copy template document: <HttpError 403 when requesting https://www.googleapis.com/drive/v3/files/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/copy?supportsAllDrives=true&alt=json returned "The user's Drive storage quota has been exceeded.". Details: "[{'message': "The user's Drive storage quota has been exceeded.", 'domain': 'usageLimits', 'reason': 'storageQuotaExceeded'}]">
+2026-03-17 16:27:22,167 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 16:27:22,168 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 16:27:22,170 - __main__ - INFO - Credentials: D:\AI_ML\SOW-Generator\repo\SOW_Generator\src\sow_generator\prj-sandbox-presales-portal-b9a1ce61abb0.json
+2026-03-17 16:27:22,213 - __main__ - INFO - Initializing Google Docs generator
+2026-03-17 16:27:22,263 - __main__ - INFO - Generating Google Doc from template
+2026-03-17 16:27:25,754 - __main__ - ERROR - Document generation failed: Failed to copy template document: <HttpError 403 when requesting https://www.googleapis.com/drive/v3/files/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/copy?supportsAllDrives=true&alt=json returned "The user's Drive storage quota has been exceeded.". Details: "[{'message': "The user's Drive storage quota has been exceeded.", 'domain': 'usageLimits', 'reason': 'storageQuotaExceeded'}]">
+2026-03-17 16:32:09,561 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 16:32:09,562 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 16:32:09,564 - __main__ - INFO - Credentials: D:\AI_ML\SOW-Generator\repo\SOW_Generator\src\sow_generator\prj-sandbox-presales-portal-b9a1ce61abb0.json
+2026-03-17 16:32:09,610 - __main__ - INFO - Initializing Google Docs generator
+2026-03-17 16:32:09,666 - __main__ - INFO - Generating Google Doc from template
+2026-03-17 16:32:14,622 - __main__ - ERROR - Document generation failed: Failed to copy template document: <HttpError 403 when requesting https://www.googleapis.com/drive/v3/files/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/copy?supportsAllDrives=true&alt=json returned "The user's Drive storage quota has been exceeded.". Details: "[{'message': "The user's Drive storage quota has been exceeded.", 'domain': 'usageLimits', 'reason': 'storageQuotaExceeded'}]">
+2026-03-17 18:30:54,243 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 18:30:54,244 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 18:30:54,245 - __main__ - INFO - Credentials: D:\AI_ML\SOW-Generator\repo\SOW_Generator\src\sow_generator\prj-sandbox-presales-portal-b9a1ce61abb0.json
+2026-03-17 18:30:54,313 - __main__ - INFO - Initializing Google Docs generator
+2026-03-17 18:30:54,373 - __main__ - INFO - Generating Google Doc from template
+2026-03-17 18:31:05,404 - __main__ - INFO - Document generation successful: https://docs.google.com/document/d/1tyixZewOagC02k1YZ_db_9X5COWAXtBO2tEuRD7kpVM/edit
+2026-03-17 18:44:18,422 - __main__ - INFO - Starting generation for template: https://docs.google.com/document/d/15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM/edit?usp=drive_link
+2026-03-17 18:44:18,422 - __main__ - INFO - Extracted template ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 18:44:18,423 - __main__ - INFO - Credentials: D:\AI_ML\SOW-Generator\repo\SOW_Generator\src\sow_generator\prj-sandbox-presales-portal-b9a1ce61abb0.json
+2026-03-17 18:44:18,474 - __main__ - INFO - Initializing Google Docs generator
+2026-03-17 18:44:18,525 - __main__ - INFO - Generating Google Doc from template
+2026-03-17 18:44:26,657 - __main__ - INFO - Document generation successful: https://docs.google.com/document/d/1q1AWhvi6DPY37COfN2_gtBSUivnPkjVdH6cneJecca4/edit

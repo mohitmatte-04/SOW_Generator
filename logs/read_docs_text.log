@@ -1,0 +1,14 @@
+2026-03-17 16:40:34,813 - __main__ - INFO - Starting text extraction for document: SOW Template
+2026-03-17 16:40:34,814 - __main__ - INFO - Credentials: D:\AI_ML\SOW-Generator\repo\SOW_Generator\src\sow_generator\prj-sandbox-presales-portal-b9a1ce61abb0.json
+2026-03-17 16:40:34,814 - __main__ - ERROR - Read operation failed: name 'service_account' is not defined
+Traceback (most recent call last):
+  File "D:\AI_ML\SOW-Generator\repo\SOW_Generator\src\sow_generator\tools\read_docs_text.py", line 118, in read_docs_text
+    creds = service_account.Credentials.from_service_account_file(
+            ^^^^^^^^^^^^^^^
+NameError: name 'service_account' is not defined
+2026-03-17 16:41:08,520 - __main__ - INFO - Starting text extraction for document: SOW Template
+2026-03-17 16:41:08,520 - __main__ - INFO - Credentials: D:\AI_ML\SOW-Generator\repo\SOW_Generator\src\sow_generator\prj-sandbox-presales-portal-b9a1ce61abb0.json
+2026-03-17 16:41:08,567 - __main__ - INFO - Initializing Google Docs generator utility
+2026-03-17 16:41:08,616 - __main__ - INFO - Searching for document by name in folder: 1jgcAuUMLOvIJFDNLSdGlnJ5cKuZutrml
+2026-03-17 16:41:10,217 - __main__ - INFO - Reading document content for Doc ID: 15JfzE9EShnjlt6zPtZYfuPpDf8HlWsG3HvlKPrcrMmM
+2026-03-17 16:41:12,166 - __main__ - INFO - Successfully read 11205 characters

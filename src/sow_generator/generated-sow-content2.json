@@ -1,0 +1,177 @@
+{
+    "title": "Teradata to Google Cloud Platform (GCP) Migration",
+    "customer_name": "Sony Corporation",
+    "customer_short_name": "Sony",
+    "customer_name_bold": "Sony Corporation",
+    "provision_date": "24 May 2024",
+    "enter_msa_date": "Not specified in source data.",
+    "opportunity": "The Customer is seeking to modernize its enterprise data analytics infrastructure by executing a comprehensive migration from its on-premises Teradata Vantage data warehouse to Google Cloud Platform (GCP). This strategic initiative is fundamentally driven by the objective to achieve early retirement of the legacy Teradata environment by October 2024. By transitioning to a highly scalable, cloud-native architecture centered on Google BigQuery, the Customer aims to reduce total cost of ownership, eliminate legacy technical debt, and establish a robust foundation for advanced analytics.\n\nTo facilitate this transition rapidly and securely, the engagement relies on a strict lift-and-shift migration strategy that avoids complex data model alterations during the initial phase. The project encompasses the secure transfer of 21 TB of historical data and the precise syntactical translation of thousands of complex Teradata objects—including over 9,000 tables, 3,800 views, stored procedures, and BTEQ scripts—into native GCP equivalents. Additionally, the project will structurally repoint critical ETL pipelines and global Business Intelligence tools to seamlessly interact with the new BigQuery environment, ensuring zero disruption to downstream business consumers.\n\nBy employing an Agile, sprint-based methodology combined with sophisticated automated migration accelerators, the Provider will systematically mitigate the operational risks conventionally associated with large-scale data migrations. This iterative approach, complemented by extensive parallel run validations and cell-level data reconciliation, ensures absolute data integrity, functional parity, and a seamless transition to the Google Cloud Platform.",
+    "solution_overview": "The project will be executed utilizing an Agile 'Sprint-Wise' methodology, strategically designed to mitigate the inherent risks of a 'Big Bang' migration approach. Identified workloads will be iteratively discovered, migrated, code-converted, tested, and deployed into production, supported by an extended parallel run period to guarantee operational stability and seamless functional parity.\n\nIn alignment with the selected 'Option B' Migration Strategy, the primary objective is to enable the Early Retirement of the legacy Teradata system. All structural data and historical workloads will be migrated directly to Google BigQuery. Concurrently, existing ETL toolsets, including IBM DataStage and Alteryx, alongside global BI tools such as SAP BusinessObjects, Tableau, Power BI, and Periscope, will be precisely repointed to BigQuery. During this phase, DataStage will be actively rehosted within the GCP infrastructure, whereas Alteryx workloads will remain hosted on AWS.\n\nThe future state architecture is designed to seamlessly transfer source system files into an AWS S3 Data Lake. From there, an incremental ingestion pipeline will continuously synchronize data into Google Cloud Storage (GCS). This data will be securely processed through the repointed ETL pipelines and organized within BigQuery's tiered Raw, Curated, and Serving layers. Workload orchestration will be centrally managed by Cloud Composer, while comprehensive security frameworks, identity governance, and advanced data loss prevention will be strictly enforced via Cloud IAM and Cloud DLP.\n\nTo accelerate execution and ensure precision, the Provider will deploy the proprietary 'Bird Suite' of automation accelerators. This suite includes 'Eagle' (The Planner) to automate lineage mapping and formulate prioritized sprint plans; 'Raven' (The Transformer) to systematically translate Teradata syntaxes (BTEQs, DDLs, Stored Procedures) into native GCP constructs; and 'Pelican' (The Validator) to perform enterprise-scale, cell-level data reconciliation between the Teradata and BigQuery environments without necessitating physical data movement, providing 100% data matching verification.",
+    "activities": [
+        {
+            "Discovery, Architecture & Planning": [
+                "Perform comprehensive discovery and analysis of the existing Teradata Vantage environment, formulating detailed architectural designs and strategic technical recommendations.",
+                "Conduct a formal Project Kick-off session to align all stakeholders on project objectives, establish structured communication channels, and clearly define individual responsibilities.",
+                "Provide rigorous Program Oversight and Reporting, encompassing regular program status meetings, systematic progress tracking, and the formulation of a comprehensive risk management strategy.",
+                "Develop exhaustive Low-Level Design (LLD) documents that specify technical configurations and explicitly map the legacy technologies to their target Google Cloud Platform equivalents."
+            ]
+        },
+        {
+            "Infrastructure & Foundation": [
+                "Configure and provision the Google Cloud Foundation tailored to the specific requirements of Development, QA, Pre-Production, and Production environments."
+            ]
+        },
+        {
+            "Data Ingestion & Migration": [
+                "Engineer an incremental data ingestion pipeline from AWS S3 to Google Cloud Storage (GCS) to facilitate continuous, automated data synchronization.",
+                "Execute a one-time, comprehensive historical data migration of approximately 21 TB from Teradata Vantage seamlessly into the Google Cloud Platform."
+            ]
+        },
+        {
+            "Code Conversion & Orchestration": [
+                "Perform automated and manual conversion of Teradata objects to native GCP technologies, specifically translating 9,118 Tables, 3,858 Views, 67 Stored Procedures, and 115 BTEQ scripts.",
+                "Repoint essential ETL tools to native GCP services, including the repointing and rehosting of IBM DataStage onto GCP, and the repointing of Alteryx workloads while retaining their hosting on AWS.",
+                "Configure orchestration and advanced scheduling for all converted and repointed workloads utilizing Google Cloud Composer."
+            ]
+        },
+        {
+            "Reporting & BI Connectivity": [
+                "Establish robust connectivity integrations between the globally scoped Business Intelligence tools and the target Google Cloud BigQuery instances.",
+                "Repoint diverse analytical reporting assets to GCP BigQuery, encompassing SAP BusinessObjects (10 Universes, 2,041 Reports), Tableau (295 Reports), Periscope (5 Reports), and Power BI (5 Reports)."
+            ]
+        },
+        {
+            "Testing, Deployment & Support": [
+                "Conduct rigorous syntactical validation and pre-data unit testing on all converted codebase objects to confidently guarantee functional parity with the legacy system.",
+                "Perform exhaustive Testing and Data Validation utilizing the Pelican accelerator, executing System Integration Testing (SIT) and facilitating extended parallel runs between Teradata and GCP environments.",
+                "Implement structured Bug Identification and Tracking processes to meticulously log, manage, and remediate any defects identified during the testing and validation phases.",
+                "Deliver comprehensive technical support for build generation, release management, and formal production deployment activities.",
+                "Facilitate dedicated knowledge transfer sessions with Customer teams and execute a formalized, documented project handover process.",
+                "Provide defined post-deployment warranty support to ensure sustained operational stability of the migrated workloads."
+            ]
+        }
+    ],
+    "deliverables": [
+        {
+            "Initiation & Governance": [
+                "Comprehensive Migration Strategy and Plan, explicitly detailing sprint schedules, workload prioritization frameworks, project timelines, and end-to-end lineage discovery outcomes.",
+                "Regular Status Reports and Progress Tracking logs, systematically highlighting completed deliverables, upcoming planned activities, identified risks, and critical path dependencies."
+            ]
+        },
+        {
+            "Architecture & Design": [
+                "Technical and Functional Findings and Analysis Documentation, systematically derived from the comprehensive Discovery phase.",
+                "Target State Solution Architecture and definitive Data Model Mapping Document to guide the structural implementation.",
+                "Extensive Low-Level Design (LLD) Document accompanied by a formalized and comprehensive Test Strategy framework."
+            ]
+        },
+        {
+            "Implementation & Build": [
+                "Fully provisioned Cloud Foundation, inclusive of requisite Security postures, IAM roles, and functional DevOps pipeline setups.",
+                "Fully Converted Codebase, encompassing Teradata objects, DDLs, Stored Procedures, and BTEQ scripts accurately translated to GCP BigQuery native syntaxes.",
+                "Completed and verified Historical Data Load securely ingested into the Google Cloud Platform environments.",
+                "Successfully repointed and thoroughly tested ETL jobs (IBM DataStage and Alteryx) alongside functional realignments for all in-scope BI Reports.",
+                "Fully operational Orchestration and Scheduling configurations deployed and tested via Google Cloud Composer.",
+                "Final, verified Deployment-Ready Build packaged for seamless production release."
+            ]
+        },
+        {
+            "Validation, Support & Handover": [
+                "Comprehensive Unit Testing and System Integration Testing (SIT) Execution Reports detailing functional parity outcomes.",
+                "End-to-End Data Validation and cell-level Reconciliation Reports, algorithmically generated via the Pelican validation accelerator.",
+                "User Acceptance Testing (UAT) Support Documentation and structured operational guidance materials.",
+                "Detailed Operational Runbooks and intricate Technical documentation chronicling the specific structural implementation.",
+                "Formalized Knowledge Transfer Sessions complemented by an official Project Handover Sign-off document."
+            ]
+        }
+    ],
+    "out_of_scope": [
+        {
+            "System & Infrastructure": [
+                "Any software upgrades or system patching targeting the existing infrastructure, current enterprise systems, or designated target platform products.",
+                "The physical decommissioning, operational retirement, and procedural cut-over of existing legacy systems and historical environments.",
+                "The migration of any localized or enterprise Snowflake data warehouse environments."
+            ]
+        },
+        {
+            "Development & Remediation": [
+                "Phase 2 initiatives targeting a 100% Cloud-Native architecture, specifically including the replacement of IBM DataStage or Alteryx with native Google Cloud Platform integration tools.",
+                "Modifications or structural enhancements to core business logic, existing data models, or foundational transformation rules, strictly adhering to the mandated lift-and-shift migration principle.",
+                "Extensive analysis, codebase enhancements, or developmental efforts intended to address or remediate pre-existing bugs or functional issues native to the legacy Teradata code or associated source systems.",
+                "The conceptualization and development of new analytical reports, system redesign efforts, or user interface and user experience (UI/UX) alterations for downstream consuming applications.",
+                "The retrospective merging of legacy code updates that are deployed into the existing on-premises environment post-migration into the newly established target architecture."
+            ]
+        },
+        {
+            "Data & Governance": [
+                "Data cleansing, structural remediation, or broader restructuring efforts targeting inherently incorrect, corrupted, or fundamentally incomplete legacy source data.",
+                "Broad organizational data governance, security implementation, and extensive compliance activities extending beyond immediate technical metadata capture and necessary system integrations (e.g., the development of bespoke PII handling frameworks)."
+            ]
+        },
+        {
+            "Project & Administration": [
+                "General user onboarding, systemic change management procedures, and comprehensive end-user platform training.",
+                "Any modifications to the mutually agreed-upon project scope or structural volumetrics beyond established thresholds, unless formalized through an official Change Request protocol.",
+                "General third-party software licensing acquisition, system integration, or complex vendor management not explicitly detailed within the formal scope of deliverables."
+            ]
+        }
+    ],
+    "limitations": [
+        {
+            "Project Constraints": [
+                "The project operates on a strict lift-and-shift methodology; therefore, any requirement for performance tuning, deep query optimization, or structural cost optimization is fundamentally excluded from the migration. Final acceptance criteria are strictly predicated on achieving data parity and query equivalence.",
+                "The Alteryx ETL environment will securely remain hosted on AWS infrastructure and is explicitly excluded from the migration to native GCP hosting.",
+                "In the event it becomes necessary to re-platform legacy ETL or BI tools natively onto GCP due to inherited performance constraints or external factors, the Customer assumes complete responsibility for procuring, licensing, and operationally setting up these tools on the GCP infrastructure.",
+                "Warranty coverage parameters apply strictly and exclusively to codebase objects and structural workloads delivered explicitly within this defined engagement. Issues stemming from out-of-scope enterprise workloads, inherited upstream data quality defects, or architectural modifications introduced post-migration by the Customer are categorically excluded.",
+                "The integrity of the defined project timelines is intrinsically linked to the health and structural quality of the legacy Teradata data. Any pervasive issues, historical data corruption, or severe structural errors identified within the source data during migration operations may inherently necessitate timeline extensions.",
+                "The Customer is mandated to enforce a strict, definitive code freeze within the legacy Teradata environment for a mutually agreed period immediately prior to the commencement of each planned migration sprint."
+            ]
+        }
+    ],
+    "success_criteria": [
+        {
+            "Migration Objectives": [
+                "Achieve 100% successful programmatic conversion and functional translation of all uniquely in-scope legacy codebase to native Google Cloud Platform technologies.",
+                "Attain 100% validated data parity between the legacy Teradata environment and the target GCP BigQuery architecture, rigorously verified at the individual cell level utilizing automated accelerators.",
+                "Enable the technical and architectural capability for the early retirement and comprehensive decommissioning of the legacy Teradata platform by October 2024, marking the formal conclusion of Phase 1 operations.",
+                "Successfully facilitate and seamlessly conclude comprehensive User Acceptance Testing (UAT) and execute robust parallel run validations in the Production environment entirely without introducing localized disruption to downstream end-users."
+            ]
+        }
+    ],
+    "technical_assumptions": [
+        {
+            "Technical & Migration Approach": [
+                "It is mutually assumed that the overarching migration strategy will adhere strictly to a lift-and-shift technical approach, integrating minimal to zero substantive data model alterations.",
+                "All successfully converted programmatic codebase and orchestrated workflow architectures will accurately retain their original operational business logic and natively utilize identical or strictly compatible data types as functionally observed in their legacy counterparts."
+            ]
+        },
+        {
+            "Customer Responsibilities & Access": [
+                "The Customer will guarantee uninterrupted technical and administrative access to both the target GCP environments and the localized source Teradata environments (spanning Dev, Test, QA, and Prod tiers), alongside necessary functional access to all in-scope platforms, including IBM DataStage, Alteryx, and designated analytical BI Tools.",
+                "The Customer will seamlessly furnish necessary network access credentials and operational rights to requisite operational incident management systems (e.g., JIRA) and foundational structural documentation portals (e.g., Confluence).",
+                "The Customer assumes complete responsibility for providing highly available VPN/VDI access interfaces and dedicated, high-throughput network interconnectivity to facilitate safe data movement.",
+                "The Customer will reliably supply all in-scope enterprise codes, execution scripts, DDLs, and natively applicable software assets directly through their pre-established code deployment repositories (e.g., Bitbucket, GIT, etc.).",
+                "The Customer will actively provide foundational infrastructure provisions, necessary security clearances, and extensive access rights required specifically for the deployment and localized operation of proprietary Provider accelerators, such as Pelican, at zero additional cost to the Provider.",
+                "The Customer assumes full organizational responsibility for the localized provision and operational maintenance of any comprehensively required software, structural hardware, foundational infrastructure elements, and critical operational interfaces (including all relevant structural licenses, code libraries, ODBC connectivity drivers, and analytical integrations) critical for this engagement.",
+                "The Customer bears the holistic responsibility to natively ensure and procedurally maintain optimal network connectivity mapping directly between the Google Cloud Platform and Teradata Vantage; any operational programmatic delays or localized architectural performance degradation resulting specifically from underlying enterprise network bottlenecks will be managed and comprehensively resolved by the Customer team.",
+                "The Customer strictly commits to delivering timely, formally structured responses regarding any procedural change order requests, formal systemic approvals, strategic architectural feedback, requirement clarifications, and formalized sign-offs directly associated with structural designs and staged deliverables."
+            ]
+        },
+        {
+            "Data & Testing Governance": [
+                "The data currently residing within the localized Teradata environment is foundationally assumed to be wholly complete, structurally accurate, and fundamentally fit for immediate migration processing.",
+                "The Customer team retains complete organizational responsibility for the functional execution and strict governance of rigorous User Acceptance Testing (UAT) protocols immediately following localized sprint-level deliveries provided by the implementation team."
+            ]
+        },
+        {
+            "Project Governance & Resourcing": [
+                "The Customer will proactively and structurally facilitate all uniquely required technical knowledge transfer sessions comprehensively surrounding the current-state architecture, foundational complex data models, underlying localized codebases, and critical systemic network operations as fundamentally required.",
+                "Procedural resolution to operational issues and complex structural coordination matters specifically related to any other integrated third-party vendor or active business partner natively associated with the overarching project ecosystem will be promptly natively provided.",
+                "The Customer strictly commits to ensuring the continuous ongoing availability of dedicated structural Points of Contact, specifically Technical and localized Functional Subject Matter Experts (SMEs), consistently throughout the entire project lifecycle to actively anchor collaborative working sessions and proactively drive comprehensive issue resolution.",
+                "Any localized foundational change significantly impacting the comprehensively described technical scope, resulting in a measurable procedural increase in volumetrics, or introducing inherently complex additional operational requirements, will automatically be comprehensively treated as a formal structural Change Request (CR) and inherently priced separately from the foundational engagement."
+            ]
+        }
+    ],
+    "payment_schedule": "Not specified in source data.",
+    "add_appendix_details": "Not specified in source data."
+}

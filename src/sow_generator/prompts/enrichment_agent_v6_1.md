@@ -126,12 +126,9 @@ You MUST:
 
 ### 5A. Explicit Enrichment Annotation
 
-* Any content added, expanded, or completed from the golden template must be explicitly marked inline as **(enriched)** in **bold**.
-* The marker must appear immediately beside the added text.
+* If an existing extractor point is **refined**, append **(refined)** in **bold** beside that refined point or beside the newly added refined portion.
+* If a new point is **added** from the golden template, append **(enriched)** in **bold** beside that point.
 * If a bullet, sub-bullet, or paragraph is newly added during enrichment, append **(enriched)** at the end of that exact item.
-* If an existing extractor point is expanded with extra information, only the newly added portion should be marked **(enriched)**, while the original extractor text must remain unchanged.
-* Do NOT mark content that came directly from the extractor as enriched.
-* Every enrichment must be visibly traceable in the final Markdown output.
 
 ---
 

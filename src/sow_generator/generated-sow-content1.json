@@ -1,0 +1,197 @@
+{
+    "<<TITLE>>": "Hadoop to GCP Data Modernization and Migration",
+    "<<CUSTOMER_NAME>>": "Bell Canada",
+    "<<CUSTOMER_SHORT_NAME>>": "Bell Canada",
+    "<<CUSTOMER_NAME_BOLD>>": "Bell Canada",
+    "<<PROVISION_DATE>>": "24 May 2024",
+    "<<ENTER_MSA_DATE>>": "[MSA Date]",
+    "<<OPPORTUNITY>>": "The Provider recognizes Bell Canada's strategic objective to modernize its legacy data infrastructure by migrating active Hadoop workloads to a highly scalable, cost-efficient, and future-ready enterprise data platform on the Google Cloud Platform (GCP). This initiative is driven by the necessity to mitigate operational overhead, optimize infrastructure costs, and embrace modern cloud-native capabilities.\n\nBy systematically transitioning from legacy on-premises systems—specifically Hive, Impala, Spark, and Sqoop—to advanced GCP-native services such as BigQuery, Dataproc, and Dataflow, Bell Canada aims to significantly enhance analytical scalability and streamline data operations. This migration will target improved pipeline execution runtimes, guaranteeing strict data parity across all historical and incremental datasets.\n\nUltimately, this modernization effort will establish a robust and secure foundation for advanced enterprise analytics. It will empower Bell Canada's business intelligence teams, promoting operational self-sufficiency in reporting workflows, and accelerating time-to-value for strategic data-driven initiatives across the organization.",
+    "<<SOLUTION_OVERVIEW>>": "The Provider shall execute the Phase 2 roadmap designed to systematically migrate Bell Canada's active Hadoop workloads to a highly scalable, cost-efficient, and fully managed data platform on the Google Cloud Platform (GCP). Building upon the strategic findings and technical insights gathered during the Phase 1 Eagle Assessment, the Provider's solution will utilize an automated, agile, and move-group-based execution methodology. This approach heavily leverages the proprietary Onix Migration Birds product suite to ensure accuracy, speed, and minimal disruption.\n\nWithin this suite, the Provider will deploy the Eagle toolset for comprehensive workload discovery, strategic planning, domain sequencing, and the generation of tailored move groups based on functional IDs and precise data lineage mapping. The Raven accelerator will facilitate the automated and accelerated translation of legacy code frameworks—encompassing Hive, Spark, Scala, and Sqoop—into their optimized cloud-native equivalents, specifically BigQuery SQL, Dataflow, and Serverless Dataproc. To guarantee absolute accuracy, the Pelican AI-powered engine will execute zero-data-movement enterprise validation, establishing 100% data parity between the legacy Hadoop environment and the target BigQuery infrastructure across both historical backfills and incremental data loads. Additionally, the Condor module will automate the migration and provisioning of resilient ingestion pipelines.\n\nThe target architecture established by the Provider will seamlessly replace existing legacy components. Batch ingestion via Dataflow will replace Sqoop, Kafka, StreamSets, and Apache Spark, while Serverless Dataproc and BigQuery will govern ETL/ELT processing in place of Apache Spark, Hive, Trino, and Impala. The data storage layer will transition from HDFS, NetApp S3, and Hive Tables to highly durable Cloud Storage (GCS) and BigQuery. Orchestration workflows currently managed by Oozie will be modernized via Cloud Composer (Airflow), and the MicroStrategy reporting environment will be directly repointed to BigQuery. Furthermore, the Provider will establish a comprehensive security and governance framework, implementing robust IAM roles, precise VPC network controls, and Cloud Data Loss Prevention (DLP) protocols to protect Personally Identifiable Information (PII) throughout the data lifecycle.\n\nThe execution of this migration will be governed by Agile Sprints perfectly aligned to logical 'Move Groups', prioritizing technical dependencies and high-value business requirements. Each sprint implementation cycle will rigidly enforce historical data loading, automated code refactoring, end-to-end data pipeline validation, targeted MicroStrategy report repointing, and a structured parallel execution phase. This structured parallel run ensures absolute business continuity and zero disruption prior to a meticulously planned gradual cutover. Finally, the Provider will employ comprehensive enablement and joint ownership models to upskill Bell Canada's internal Business Intelligence team, empowering them to manage self-sufficient repointing and data operations at scale.",
+    "<<ACTIVITIES>>": [
+        {
+            "1. Source System Integration": [
+                "The Provider shall architect and implement incremental data ingestion pipelines to facilitate secure and continuous data transfer from designated legacy source systems, including RDBMS, flat files, and APIs, directly into the Google Cloud Platform (GCP) environment."
+            ]
+        },
+        {
+            "2. Code Conversion & Refactoring": [
+                "The Provider shall execute comprehensive conversion of all in-scope database objects, including tables and views, to ensure strict compatibility with BigQuery schemas and optimized storage formats.",
+                "The Provider will systematically refactor legacy native scripts, encompassing Sqoop imports, Scala, Spark SQL, Hive/Impala SQL scripts, and Trino queries, migrating them into corresponding GCP-native services such as Dataproc, Dataflow, and BigQuery.",
+                "The Provider shall optimize and reutilize non-SQL Apache Spark workloads by deploying them onto Dataproc Serverless or alternative equivalent GCP frameworks to ensure maximum processing efficiency.",
+                "Where technically applicable, existing Python, Java, and Shell scripts will be migrated and reused within the GCP environment to preserve existing business logic.",
+                "This activity is strictly bound by designated volumetrics: approximately 3798.85 TB of historical data, 6850 tables, 381 views, 1228 SQL and HQL scripts, 1643 Shell scripts, 651 Sqoop scripts, 124 Streamsets, 1094 Scala scripts, 150 Python scripts, 43 Java scripts, 2179 Oozie Jobs, and 754 MicroStrategy Objects (representing approximately 20% of the total ecosystem)."
+            ]
+        },
+        {
+            "3. Historical Data Migration": [
+                "The Provider shall orchestrate and execute a secure, one-time migration of historical datasets originating from the legacy Hadoop environments (HDFS and NetApp S3) to the targeted GCP storage layers, specifically Cloud Storage and BigQuery.",
+                "This process includes extracting historical data files securely from HDFS using the gsutil utility, followed by the deployment of the bqload tool to ensure performant and verified data ingestion into BigQuery structures."
+            ]
+        },
+        {
+            "4. Orchestration & Scheduling": [
+                "The Provider shall architect and deploy a robust scheduling and orchestration framework for all migrated and newly modernized workloads utilizing Cloud Composer (Apache Airflow).",
+                "This activity requires accurately mirroring the existing Oozie schedules, operational workflow dependencies, and specific job triggers currently operating within the legacy environment to guarantee operational continuity."
+            ]
+        },
+        {
+            "5. End-to-End Pipeline Testing and Data Validation": [
+                "The Provider shall conduct rigorous unit testing for all converted and refactored code components and targeted workloads.",
+                "This testing phase will incorporate comprehensive historical data validation alongside incremental data load validations encompassing both Day 1 and Day 2 operational scenarios.",
+                "The Provider will systematically execute continuous parallel testing and perform extensive runtime validations to confirm data integrity and pipeline stability."
+            ]
+        },
+        {
+            "6. Report Repointing & Enablement": [
+                "The Provider shall establish secure and performant operational connectivity between the MicroStrategy reporting platform and the BigQuery data warehouse.",
+                "The Provider will execute the direct repointing of specific MicroStrategy reports, specifically transitioning the existing Hadoop-sourced reports associated with the 'wireline access' project (or closely equivalent initiatives) to source data exclusively from BigQuery.",
+                "This includes meticulous adjustment and optimization of the underlying SQL queries to align with BigQuery dialect and performance standards.",
+                "The Provider shall facilitate structured enablement sessions designed to educate the Bell Canada Business Intelligence team on repointing procedures, architectural best practices, and effective troubleshooting methodologies."
+            ]
+        },
+        {
+            "7. UAT & Warranty Support": [
+                "The Provider shall deliver comprehensive support during the User Acceptance Testing (UAT) phase, providing technical resources for continuous defect triage, root cause analysis, and rapid issue resolution.",
+                "Following final deployment into the production environment, the Provider will supply four (4) weeks of dedicated warranty support to systematically log, prioritize, and remediate any critical defects explicitly related to the structurally migrated in-scope workloads."
+            ]
+        },
+        {
+            "8. Optional: Google Cloud Foundation Setup": [
+                "Upon client election, the Provider shall configure the fundamental Google Cloud Organization structure, including customized project provisioning, logical folder hierarchies, stringent Identity and Access Management (IAM) role assignments, and fully linked operational billing accounts.",
+                "The Provider will technically provision structured BigQuery datasets, securely configured Cloud Storage buckets enforcing defined lifecycle policies, and deploy essential services including Dataflow and Cloud Composer.",
+                "This module encompasses enabling Cloud Build, establishing centralized logging mechanisms, deploying Cloud Monitoring dashboards, integrating Cloud DLP for explicit PII protection, and implementing customized cost visibility and budget control mechanisms.",
+                "Foundational network connectivity infrastructure, including Virtual Private Cloud (VPC) design and Cloud DNS configuration, will be architected and established."
+            ]
+        },
+        {
+            "9. Optional: AI Powered DataOps Managed Services": [
+                "Upon client election, the Provider shall supply continuous 24x7 Level 1, Level 2, and Level 3 managed operational support spanning twelve (12) months post-migration.",
+                "This service tier encompasses proactive infrastructure management, continuous data pipeline monitoring and remediation, automated data quality tracking, comprehensive data observability mechanisms, granular cost management analysis, and structured administrative oversight of data access requests and identity management protocols."
+            ]
+        },
+        {
+            "10. Project Management and Governance": [
+                "The Provider shall instantiate robust program governance, initiating the engagement with a formal project kickoff, rigidly defining iterative sprint cycles, and standardizing a comprehensive communication strategy.",
+                "The Provider will facilitate recurring status update sessions and distribute detailed weekly status reports encompassing progress, risks, and mitigation strategies to designated Bell Canada stakeholders.",
+                "The Provider will actively manage continuous sprint planning cycles, execute rigorous backlog grooming exercises, and maintain transparent issue resolution tracking mechanisms."
+            ]
+        }
+    ],
+    "<<DELIVERABLES>>": [
+        {
+            "Design & Planning": [
+                "Project Charter and formalized Communication Plan.",
+                "Comprehensive Detailed Migration Plan, encompassing the Sprint Roadmap and structured Move Group Sequence.",
+                "Target State Solution and complete Technical Architecture Design Document."
+            ]
+        },
+        {
+            "Migration & Code": [
+                "Converted and optimized BigQuery Data Definition Language (DDL) statements transcribed from legacy Hive, Impala, and Trino structures.",
+                "Fully translated Dataproc, Dataflow, and BigQuery execution scripts originating from legacy Sqoop, Spark SQL, and Scala workloads.",
+                "Technically refactored and functionally tested Python, Java, and Shell operational scripts.",
+                "Fully operational Orchestration Directed Acyclic Graphs (DAGs) natively built and deployed within Cloud Composer.",
+                "Quality Assurance (QA) Validated Codebase and final Production Deployed Code assets."
+            ]
+        },
+        {
+            "Data Migration": [
+                "Successfully validated and structurally migrated Historical Data residing within the target GCP ecosystem (Cloud Storage and BigQuery)."
+            ]
+        },
+        {
+            "Testing & Validation": [
+                "Comprehensive Pelican Validation Results, including granular row-level and aggregated operational data parity reports.",
+                "Parallel Run Validation Report detailing execution comparisons.",
+                "Pipeline Execution Runtime Comparison Report documenting performance benchmarks between legacy Hive PROD and BigQuery PROD environments.",
+                "MicroStrategy Report Performance Comparison Report highlighting optimized BI load times.",
+                "Consolidated registry of Closed Bug Jira tickets verifying defect remediation."
+            ]
+        },
+        {
+            "Enablement & Handover": [
+                "Successfully repointed and functionally verified MicroStrategy 'Wireline Access' reporting assets.",
+                "A thoroughly Packaged Enablement Kit containing operational Playbooks, procedural Checklists, specific Validation Templates, defined Dataset Structures, and standard Connection Templates.",
+                "Comprehensive Runbooks, localized Technical Design Documents, and detailed Operational Support Guides.",
+                "Formally conducted Knowledge Transfer (KT) sessions tailored for both platform engineering and business intelligence (BI) teams.",
+                "Archive of all Weekly Status Reports and final, formally executed project sign-off documentation."
+            ]
+        }
+    ],
+    "<<OUT_OF_SCOPE>>": [
+        {
+            "General Exclusions": [
+                "Any professional service, technical activity, or operational support not explicitly documented within this Scope of Work.",
+                "Execution of software upgrades, version patches, or maintenance activities on existing legacy software tools."
+            ]
+        },
+        {
+            "Reporting & System Exclusions": [
+                "Repointing or structural modification of any MicroStrategy projects or reporting assets extending beyond the designated 'wireline access' project (or explicitly agreed similar workloads).",
+                "Development, conceptualization, or structural creation of new business reports or dashboards.",
+                "Reconfiguration, structural mapping, or repointing of complex linked or inherited child reports within the legacy business intelligence environment."
+            ]
+        },
+        {
+            "Infrastructure & Data Exclusions": [
+                "System configurations, performance tunings, or architectural modifications applied directly to the legacy source environments.",
+                "Administrative onboarding of new users, user lifecycle management, or identity provisioning tasks for Bell Canada personnel.",
+                "Hardware decommissioning, secure data wiping, software sunsetting, or the physical retirement and cutover processes of existing legacy systems and hardware infrastructure.",
+                "Proactive source data cleansing, data quality enhancement, or the specific remediation of inherent data corruption or inconsistencies present within the legacy system prior to migration initiation.",
+                "Financial procurement, vendor negotiations, or the acquisition of software licensing for third-party tools that are not explicitly documented within the designated solutions architecture.",
+                "Provisioning of physical hardware appliances, network components, or the ongoing maintenance of any pre-existing legacy on-premises infrastructure."
+            ]
+        }
+    ],
+    "<<LIMITATIONS>>": [
+        {
+            "Project Constraints": [
+                "The Provider operates under the strict constraint that it holds no responsibility for the preexisting structural integrity, inherent quality, or historical accuracy of the source data currently residing within Bell Canada's Hadoop environment or associated legacy source systems.",
+                "It is understood that targeted system performance improvements and optimization metrics are strictly subject to and constrained by the inherent architectural quotas, platform limitations, and API thresholds dynamically enforced by the Google Cloud Platform infrastructure.",
+                "The overall cadence and calculated velocity of the migration engagement are critically dependent upon Bell Canada's adherence to the mutually agreed move-group sequencing, and fundamentally rely upon the timely, successful execution and sign-off of iterative User Acceptance Testing (UAT) cycles by the designated Bell Canada personnel."
+            ]
+        }
+    ],
+    "<<SUCCESS_CRITERIA>>": [
+        {
+            "Validation Outcomes": [
+                "Data Parity: The Provider shall successfully establish and mathematically verify 100% aggregate and row-level data parity between the legacy source Hadoop environment and the target BigQuery infrastructure.",
+                "Validation Acceptance: The engagement will achieve formalized success upon the completed execution of data validation utilizing the Pelican platform for all designated Historical backfill data, as well as Day 1 and Day 2 incremental loads. Corresponding Pelican automated reports must be formally published, systematically reviewed, and securely approved by designated Bell Canada Subject Matter Experts (SMEs), with all identified deviations formally documented and mutually accepted.",
+                "Reporting Parity: Absolute data parity must be explicitly verified and established for all base tables powering identified business-critical reporting assets. Furthermore, full operational parity must be verified and achieved at the dashboard aggregation level.",
+                "Performance Validation: The newly migrated pipeline execution runtimes must functionally register as better than, or at strict statistical par with, the historical baseline runtimes of current legacy Hive pipelines. Similarly, specific analytical Report and Dashboard refresh intervals must perform comparably to, or demonstrably faster than, the pre-existing response times sourced natively from the Hive environment.",
+                "Operational Readiness: Project milestones will be deemed successfully complete upon the procurement of explicit User Acceptance Testing (UAT) approval and formal sign-off from designated end-users. Additionally, comprehensive Parallel run validation reports must be meticulously reviewed and formally approved by appropriate Technical SMEs representing Bell Canada.",
+                "Self-Sufficiency: Bell Canada's internal Business Intelligence (BI) team must successfully demonstrate operational self-sufficiency in executing continuous MicroStrategy-to-BigQuery report repointing, appropriately leveraging the delivered reusable toolsets, defined operational playbooks, and standardized validation assets."
+            ]
+        }
+    ],
+    "<<TECHNICAL_ASSUMPTIONS>>": [
+        {
+            "General Architecture Assumptions": [
+                "The overarching migration strategy is strictly defined as a direct 'lift and shift' migration methodology, explicitly precluding the introduction of any new data modeling changes, target schema redesigns, or transformative business logic modifications.",
+                "The existing legacy Hadoop clusters and associated upstream source system environments are assumed to remain completely stable and structurally frozen throughout the project duration; Bell Canada shall ensure no major architectural upgrades or structural changes are introduced during this operational window.",
+                "All identified data discrepancies, undocumented anomalies, or inherent structural errors existing within the legacy data or source ecosystem possess the explicit potential to forcibly delay the formalized project timelines and impact sprint deliverables.",
+                "Any mutually agreed deviations regarding scope activity, the designated technology stack components, or adjustments superseding the strictly outlined historical data volumetrics (3798.85 TB) will necessitate the initiation and formalized approval of an administrative Change Request (CR) process.",
+                "Following the completion of the migration and final production deployment, Bell Canada shall retain full and absolute ownership of all resulting GCP Codebase assets, assuming total responsibility for any future legacy code modifications or operational enhancements.",
+                "The comprehensive validation of all ingestion processes is inherently dependent on Bell Canada providing uninterrupted access to corresponding incremental data backups located precisely at predefined directory structures and strictly adhering to explicitly agreed-upon naming conventions.",
+                "Bell Canada shall enforce strict operational code freezes across the legacy environment—permitting strictly business-critical emergency break-fix changes—specifically targeting source objects aligned with the scheduled upcoming sprint move groups.",
+                "The targeted Google Cloud Platform (GCP) enterprise environment and specific localized project quotas have been previously architected and provisioned by Bell Canada with substantially sufficient capacity limits to efficiently process and house the projected historical data volumetrics (3798.85 TB)."
+            ]
+        },
+        {
+            "Customer Responsibilities and Dependencies": [
+                "Bell Canada shall ensure the Provider has unencumbered, secure, and timely operational access to all designated in-scope tools, technology platforms, and associated computing environments—specifically Development, Quality Assurance, and strictly read-only access to Production—as strictly required to execute the migration lifecycle.",
+                "Bell Canada is fully responsible for the immediate and complete provision of all targeted in-scope source codes, executable scripts, Data Definition Language (DDL) schemas, and any applicable source software logic (encompassing Sqoop, Hive/Impala SQL, Trino, Spark, Python, Java, and Shell).",
+                "Bell Canada shall grant the Provider secure operational access to all existing internal code deployment platforms, centralized version control repositories, and CI/CD tools (e.g., Bitbucket, GIT) critical for executing deployments.",
+                "Bell Canada must guarantee the timely provisioning of underlying infrastructure, expedite all requisite security clearance approvals, and provide uninhibited access rights necessary for the deployment of Onix proprietary operational accelerators (Pelican, Condor) at zero operational cost to the Provider.",
+                "Bell Canada shall actively facilitate robust and timely knowledge transfer (KT) sessions dedicated to extensively mapping the current Hadoop cluster architecture, existing enterprise data models, complex scheduling dependencies (Oozie), customized operational codebases, and critical associated business processes.",
+                "Bell Canada shall officially designate and consistently provide access to a primary Point of Contact (functioning dually as a Technical and Functional SME) empowered to rapidly respond to architectural queries and execute procedural clarifications.",
+                "Bell Canada remains singularly responsible for the swift and accurate provisioning of any essential software, infrastructure components, physical hardware, and specific digital interfaces (including required Licensing, proprietary Libraries, ODBC Drivers, and enterprise Connectors) mandatory for the fulfillment of this engagement.",
+                "Bell Canada shall successfully complete and formally verify all timely foundational environment readiness protocols, including the complete functional setup of the fundamental target GCP architecture (specifically VPC routing, Dedicated Interconnects, IAM provisioning, and core Network firewalls).",
+                "Bell Canada shall guarantee the formal execution of User Acceptance Testing (UAT) by internal stakeholders within a strict timeframe of five (5) business days following the formalized delivery of sprint outputs by the Provider's technical team.",
+                "Bell Canada assumes explicit, continuing responsibility for all internal end-user onboarding procedures and the complex integration setup required for any upstream or downstream systems completely managed by third-party external entities."
+            ]
+        }
+    ],
+    "<<PAYMENT_SCHEDULE>>": "The Provider's formal invoicing processes shall be strategically aligned and billed strictly against the formalized completion and mutual acceptance of predefined functional Move Groups, scheduled Agile Sprint implementation milestones, and the formal submission of designated deliverable reports. Furthermore, any optional operational components—such as the Google Cloud Foundation Setup and the continuous AI Powered DataOps Managed Services—will be explicitly billed in accordance with the customized terms strictly defined within the associated overriding commercial agreement, contingent exclusively upon formal selection and authorization by Bell Canada.",
+    "<<ADD_APPENDIX_DETAILS>>": "Not specified in source data."
+}

@@ -10,7 +10,7 @@
 * Use `##` for primary sections and `###` for subsections.
 * Utilize bullet points for all content delivery to ensure readability and structure.
 * Each subsection must contain complete, implementation-ready statements without placeholders.
-* Do NOT introduce new sections or omit any existing sections or sub-points from the reference.
+* Do NOT introduce new sections or omit any existing sections or sub-points from the reference unless explicitly excluded from the project scope.
 
 ## CONTENT GENERATION RULES (HIGH PRIORITY)
 
@@ -44,7 +44,8 @@
 * Address IAM, Networking, Security, Monitoring, and Logging within the GCP framework.
 
 ## COMPLETENESS RULE (CRITICAL)
-* Include 100% coverage of the reference content.
+* Include maximum coverage of the reference content. 
+* Sections or sub-sections which are explicitly excluded from the project scope should be omitted.
 * Do not drop any points, combine unrelated points, or summarize detailed sections.
 
 ## GENERATION APPROACH
@@ -56,10 +57,9 @@
 ## SECTION-SPECIFIC EXPECTATIONS
 
 ### Discovery, Analysis and Design
-* **Current state assessment:** Conduct a granular audit of the legacy environment, including data profiling, lineage mapping, and workload analysis within the first 2 weeks of the project.
-* **Target GCP architecture:** Define explicit GCP services (BigQuery, GCS, Dataflow) and create the high-level design (HLD) for client approval within 5 business days of assessment completion.
+* **Current state assessment:** Conduct a granular assessment of the legacy environment, including undestanding of the current state architecture, current tools and technologies being used, data flow and scripts lineage, volumetrics and complexit analysis and workload distribution analysis.
+* **Target GCP architecture:** Define and map explicit GCP services (BigQuery, GCS, Dataflow) to current tools and technologies and create a high-level design (HLD) for client approval.
 * **Migration strategy:** Document the explicit strategy for data movement, ETL/code conversion, validation logic, and cutover procedures.
-* **Risk identification:** Establish a risk register with specific mitigation plans for technical and operational blockers.
 
 ### Cloud Foundation Setup – GCP
 * **Landing zone setup:** Configure the GCP Organization hierarchy, folders, and projects according to best practices.
@@ -167,13 +167,9 @@ To fulfill the service objectives of this engagement, Onix will perform followin
       * Define move groups based on Eagle outputs, and incorporate them into the overall migration roadmap to ensure an orderly and risk-mitigated execution
       * Status Reports and Progress Tracking
       * Required information to track and report the work progress of each sprint and highlight risks/issues/dependencies/changes
-      * Weekly status reports for the Bell PMO team outlining the work completed and plans for the upcoming week
+      * Weekly status reports for the client's PMO team outlining the work completed and plans for the upcoming week
 
   * Final Design/ Migration plan sign-off will be provided by the Client team within five business days post delivery from Onix
-
-  * Data Pipeline design
-  * Orchestration & Scheduling patterns
-      * *Note: Existing job orchestration, dependencies and schedule will be implemented as-is*
 
 #### 2.2 Google Cloud Foundation Setup - Please select the right option between 1 or 2 else say “Not Applicable”
 
@@ -245,7 +241,7 @@ To fulfill the service objectives of this engagement, Onix will perform followin
 #### 2.3 Historical Data Migration - Please modify the content as per requirement
 
 * One-time historical data migration from Hadoop to Google Cloud Platform
-    * The Bell team will provide the required access to extract the history data from the Hadoop environment, as and when required
+    * The client will provide the required access to extract the history data from the Hadoop environment, as and when required
 * Set up and utilize customised scripts to extract, transfer & ingest historical data from Hadoop to GCP or leverage native GCP tools such as Storage Transfer Service (STS) or Data Transfer Service (DTS) for automated, high-throughput, and secure data migration
 * Onix will validate the migrated history using a mutually defined approach, which will include:
     * Row count validation between source (Hadoop) and target (BigQuery) datasets

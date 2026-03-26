@@ -93,7 +93,7 @@ class ExtractorSchema(BaseModel):
 
 # Load prompt
 
-PROMPT_FILE = Path(__file__).parent / "prompts" / "extractor_agent_v6.md"
+PROMPT_FILE = Path(__file__).parent / "prompts" / "extractor_agent_v7.md"
 
 with PROMPT_FILE.open(encoding="utf-8") as f:
     PROMPT = f.read()

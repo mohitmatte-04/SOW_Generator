@@ -57,7 +57,7 @@ class EnrichmentSchema(BaseModel):
 
 
 # Load prompt
-PROMPT_FILE = Path(__file__).parent / "prompts" / "enrichment_agent_v11.md"
+PROMPT_FILE = Path(__file__).parent / "prompts" / "enrichment_agent_v12.md"
 
 with PROMPT_FILE.open(encoding="utf-8") as f:
     PROMPT = f.read()

@@ -64,7 +64,6 @@ class GoogleSlidesConverter:
 
 
         # Handle different credential formats
-        logger.info(f"credentials file {credentials_file}")
         if isinstance(credentials_file, dict):
 
             # Already a parsed JSON dict

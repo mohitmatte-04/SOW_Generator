@@ -132,7 +132,9 @@ To fulfill the service objectives of this engagement, Onix will perform followin
 
 #### 2.1 Discovery, Analysis and Design
 
-**Current state understanding of:**
+**Do not include the below sub-section `Current state understanding` if the assessment is already completed as per the proposal or project scope**
+
+**Current state understanding:** 
 
   * Business Overview (Key Business areas/ Domains/ Line of Business)
   * Current Technical and Data Architecture
@@ -171,7 +173,8 @@ To fulfill the service objectives of this engagement, Onix will perform followin
 
   * Final Design/ Migration plan sign-off will be provided by the Client team within five business days post delivery from Onix
 
-#### 2.2 Google Cloud Foundation Setup - Please select the right option between 1 or 2 else say “Not Applicable”
+
+#### 2.2 Google Cloud Foundation Setup - Please select the right option between 1 or 2 else say “Not Applicable” - **Do not include this section if the foundation is already set up or will be set up by the client**
 
 **Option 1: If Onix has to setup end to end foundation**
 
@@ -315,7 +318,7 @@ To fulfill the service objectives of this engagement, Onix will perform followin
   * Report Load Testing (Needs to be Estimated based on number of times executed)
     * One Time Run Reports load testing with extrapolated users and reports to determine how many slots are required during holiday / peak season. Automated Load testing functionality/capability should be available in the BI Tool for executing the load testing.
 
-#### 2.9 Production Deployment - Please select the right option between 1 or 2
+#### 2.9 Production Deployment - Please select the right option between 1 or 2 based on the proposal content
 
 **Option 1: Client will Deploy, Onix will support**
 
@@ -329,7 +332,7 @@ To fulfill the service objectives of this engagement, Onix will perform followin
     * Client will provide access to the production environment and existing code deployment tools (i.e Bitbucket, GIT, etc)
     * Client will provide walkthrough of current deployment process
 
-#### 2.10 Parallel Run in Production [Optional]
+#### 2.10 Parallel Run in Production [Optional] 
 
   Onix or Client will validate the data between Legacy Environment production environment and Future State production Environment for 2 iterations using Onix’s IP Pelican
   * Legacy Environment production environment and Future State Production environment must be connecting to same source systems
@@ -366,8 +369,7 @@ Onix will provide 4 weeks of warranty support (post production deployment) and w
 
 ### 3\. Out of Scope - Please modify as per Scope of Work
 
-**General**
-
+  * Integration with any upstream or downstream application(s) other than those mentioned in the scope
   * Any report related activities such as Migration/ Repointing/ Enhancement of reports
   * Production deployment
   * Encryption or Decryption of any data
@@ -378,12 +380,7 @@ Onix will provide 4 weeks of warranty support (post production deployment) and w
   * User Onboarding
   * L1, L2, L3 Managed service support
   * Integration with 3rd party applications other than mentioned in scope
-  * Decommissioning of any existing environment
-  * PII Data Implementation (Tagging, Encryption, etc)
-
-**Project Specific**
-
-  * TBD
+  * Decommissioning and cutover of existing systems/environment
 
 -----
 

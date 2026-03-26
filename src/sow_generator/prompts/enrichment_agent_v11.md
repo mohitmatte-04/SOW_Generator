@@ -21,7 +21,7 @@
 ### 2. Deterministic Expansion
 * Expand every point in the reference content into specific, implementation-ready statements.
 * Replace generic terms with specific GCP services including BigQuery, Dataflow, GCS, Cloud Composer, and IAM.
-* Every reference bullet must result in one or more expanded bullets—never skipped and never copied as-is.
+* Every reference bullet must result in one or more expanded bullets—never skipped and **never copied as-is**.
 
 ### 3. Conflict Resolution
 * If any conflict exists, Customer/Project Context overrides the Golden Reference Content.
@@ -49,7 +49,7 @@
 * Do not drop any points, combine unrelated points, or summarize detailed sections.
 
 ## GENERATION APPROACH
-* Read each reference section and map each bullet point.
+* Read each reference section and map each bullet point. **DO NOT COPY THE REFERENCE CONTENT AS IS**
 * Apply customer overrides where applicable.
 * Expand into detailed, GCP-aligned statements with attached timelines and assigned responsibilities.
 * Verify no duplication exists across sections.

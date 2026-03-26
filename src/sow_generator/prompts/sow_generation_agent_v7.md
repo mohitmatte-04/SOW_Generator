@@ -53,7 +53,7 @@ You must return a JSON object with these **exact keys**:
 |--------------|-------------|-------|
 | `title` | `project_metadata.title` | Plain text | e.g. "Hadoop to GCP Migration 
 ", "Teradata to GCP Migration", "Snowflake to GCP Migration", etc
-| `customer_name` | `project_metadata.customer_name` | Full legal name | e.g. "Acme Corporation", "The Walt Disney Company", "Sony Pictures Entertainment", etc
+| `customer_name` | `project_metadata.customer_name` | Plain text | e.g. "Full legal name of the organization"
 | `customer_short_name` | Derived from `customer_name` | Remove business suffixes |
 | `customer_name_bold` | `project_metadata.customer_name` | Format: `**Full Name**` |
 | `provision_date` | "xxxxxxx" | Hardcoded text |

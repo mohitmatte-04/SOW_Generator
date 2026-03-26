@@ -1,3 +1,15 @@
+### **Standardized "Golden Content" Framework for Teradata to GCP Migration SOWs**
+
+This framework outlines the essential phases and granular activities that repeatedly appear in comprehensive SOWs for Teradata to Google Cloud Platform migrations.
+
+---
+
+### 1. Executive Summary & Introduction
+
+*   **Opportunity/Problem Statement**: Clearly articulate the client's strategic objective to modernize their data platform by migrating from **Teradata (whether on-premise or cloud-hosted)** to **Google Cloud Platform (GCP)**. Highlight anticipated benefits such as **enhanced scalability, improved cost-efficiency, and strengthened data-driven decision-making capabilities**.
+*   **Solution Overview**: Briefly describe the vendor's proposed solution approach, emphasizing the use of **automated migration tools (e.g., Eagle for assessment, Raven for code conversion, Pelican for data validation)** and **deep subject matter expertise**. Outline the high-level phases or tracks of the engagement (e.g., Discovery, Migration, Reporting Re-pointing).
+*   **Project Schedule**: Provide **estimated project start and end dates**, along with the overall **duration** and a high-level breakdown of key phases or milestones.
+
 ### 2. Scope of Work (Detailed Activities)
 
 This section is the core of any migration SOW, meticulously defining the contractual boundaries and ensuring crystal-clear expectations for all parties.
@@ -66,3 +78,59 @@ This section is the core of any migration SOW, meticulously defining the contrac
     *   **Warranty Support**: Provide a clearly defined **warranty period (e.g., 4 weeks, 3 months, 90 days)** post-deployment or post-delivery of specific components for **bug/error resolution** related to the converted code and scripts. The client is responsible for performing initial investigation and providing detailed analysis to the vendor for issue resolution.
     *   **Ad-hoc Support**: Offer **ad-hoc query support/conversion** for new environment enablement or direct user requests. Provide **consumption acceleration services** to facilitate user adoption.
     *   **Change Management**: Facilitate the **identification of key users/stakeholders for organizational change management** and assist in **defining their roles and responsibilities** within the new data ecosystem.
+
+### 3. Deliverables (Summary of Outputs)
+
+A concise summary of the tangible outputs from the engagement:
+
+*   **Assessment Reports**: Volumetric analysis, data flow/code lineage, workload distribution dashboards, migration plans, solution designs, and technical architecture documents.
+*   **Code & Data Assets**: Converted DDLs, BigQuery-compatible SQL scripts, translated ETL jobs, orchestrated workflows, and successfully migrated historical and incremental data.
+*   **Testing Reports**: Unit test results, detailed data validation reports (often from Pelican), parallel run reports, and UAT issue logs with resolution details.
+*   **Documentation**: Comprehensive runbooks, technical design documents, KT session materials, migration strategy documents, and sprint roadmaps.
+*   **Support & Services**: Formal warranty support agreements and delivered ad-hoc query conversion services.
+
+### 4. Success Criteria
+
+Clearly defined metrics for measuring project success:
+
+*   **Functional Equivalence**: **100% data matching** between the legacy Teradata environment and GCP BigQuery, with **no changes to the core business logic**.
+*   **Operational Readiness**: All **in-scope workloads operating successfully and reliably in the production environment on GCP**.
+*   **Data Consumption**: All **in-scope BI reports and downstream applications seamlessly consuming data from GCP BigQuery**.
+*   **Scalability & Cost-Efficiency**: Realization of the intrinsic benefits of cloud migration, such as **improved scalability and optimized cost-efficiency** (implied by the primary objective of migration).
+
+### 5. Assumptions and Dependencies (Critical for Project Execution)
+
+Crucial elements that must be met for the project to proceed successfully:
+
+*   **Client Responsibilities (General)**: The client is responsible for providing **timely access** (to GCP environments, legacy systems, and required tools), allocating **dedicated Subject Matter Experts (SMEs)**, providing **comprehensive documentation**, facilitating **clarifications**, ensuring **prompt issue resolution**, and delivering **timely sign-offs** on deliverables and designs.
+*   **Technical Environment Readiness**: The **GCP foundation (projects, IAM, networking, security configurations)** must be **already in place, configured, and fully accessible** to the project team. **Optimal network connectivity** between on-premise/legacy cloud environments and GCP is paramount.
+*   **Data & Code Quality**: The **legacy Teradata data is assumed to be complete and accurate, free from significant data quality issues** that could impede migration and testing. A **code freeze** for all in-scope components is required during migration sprints. The client is responsible for **resolving any identified legacy code or data issues**.
+*   **Tools & Accelerators**: Adequate **infrastructure and security approvals** for vendor accelerators (e.g., Pelican, Raven, Eagle) must be provided. **Pelican** (for data validation) is typically installed within the **client's GCP environment**.
+*   **Deployment Accountability**: The **client is ultimately responsible for production deployment** (with vendor support and guidance).
+*   **Scope Boundaries & Change Management**: The migration strategy is primarily defined as **lift-and-shift with minimal or no data model changes**. **Any changes to the defined scope or additional volumetrics will necessitate a formal Change Request (CR)**, which will be estimated and approved separately.
+
+### 6. Out of Scope (Clear Exclusions)
+
+Explicitly stating what is *not* included helps manage expectations and prevent scope creep:
+
+*   **GCP Foundation Setup**: This is generally considered a **prerequisite** for the engagement and not part of the migration scope.
+*   **Advanced Features Development**: **AI/ML model development or enhancement** is typically excluded.
+*   **Legacy System Decommissioning**: **Decommissioning or sunsetting of legacy environments** is outside the scope, as are **software upgrades or patching** of legacy systems.
+*   **Beyond Migration Activities**: **Performance tuning or optimization** beyond ensuring functional equivalence, **user training or onboarding** beyond the provided knowledge transfer, **custom application changes or modifications to business logic**, and **integration with unlisted third-party applications** are typically excluded.
+*   **Specific Technology Exclusions**: Any technologies or platforms not explicitly listed in the in-scope sections are excluded from migration or assessment.
+
+### 7. Roles and Responsibilities
+
+While a full RACI matrix is often in an appendix, the main SOW outlines key roles:
+
+*   **Vendor Roles**: Typically include **Technical Project Manager, Technical Architect, Technical Lead, Data Engineer, Data/Test Engineer, SRE/DevOps Lead/Engineer, and BI Lead/Engineer**.
+*   **Client Roles**: Crucial client personnel generally include **Executive Leadership, Project Manager, Owners of Data Products/SMEs, Technical Architects, Database Administrators (DBAs), Application Owners, Functional/Technical Support Teams, and Cloud Administrators**.
+
+### 8. Commercials
+
+The financial terms of the engagement:
+
+*   **Pricing Model**: Consistently structured as a **Fixed Bid/Fixed Fee** engagement.
+*   **Resourcing Model**: Often employs an **Onshore-Offshore** delivery model to optimize cost and resource availability.
+*   **Milestone Payment Schedule**: Payments are explicitly **tied to the completion and formal acceptance of specific deliverables or project milestones**.
+*   **Expenses**: A clear delineation of **reimbursable expenses**, often requiring prior client approval, is typically included.

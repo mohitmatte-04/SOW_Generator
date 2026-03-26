@@ -196,7 +196,7 @@ def replace_placeholder_with_dict(docs_service, doc_id, placeholder, section_dat
     # Prepare ALL content first
     all_text, styles = "", []
     if isinstance(section_data, str):
-        all_text = section_data + "\n"
+        all_text = section_data
     elif isinstance(section_data, list):
         all_text, styles = render_content_to_text_and_styles(section_data, level=1, bulleted=True)
     elif isinstance(section_data, dict):

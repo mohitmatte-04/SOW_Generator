@@ -71,14 +71,14 @@ def before_enrichment_agent_callback(callback_context: CallbackContext) -> Optio
             logger.info(f"Reading section '{section}' from: {md_file}")
             with md_file.open(encoding="utf-8") as f:
                 content = f.read()
-            callback_context.state[section] = content
+            # callback_context.state[section] = content
         else:
             logger.warning(f"Markdown file for section '{section}' not found: {md_file}")
             # Store empty string or handle as error
-            callback_context.state[section] = ""
+            # callback_context.state[section] = ""
 
     # Store golden template sections in state for enrichment agent
-    callback_context.state["golden_template_category"] = category
+    # callback_context.state["golden_template_category"] = category
 
     logger.info(f"Golden template sections loaded successfully for category: {category}")
     logger.info(f"Loaded sections: {sections}")

@@ -11,7 +11,7 @@ from .tools import generate_sow_document
 from .extractor_callbacks import after_agent_callback
 
 # Load prompt
-PROMPT_FILE = Path(__file__).parent / "prompts" / "sow_generation_agent_v6.md"
+PROMPT_FILE = Path(__file__).parent / "prompts" / "sow_generation_agent_v7.md"
 with PROMPT_FILE.open(encoding="utf-8") as f:
     PROMPT = f.read()
 

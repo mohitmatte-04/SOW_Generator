@@ -51,11 +51,11 @@ You must return a JSON object with these **exact keys**:
 
 | JSON Key | Source Path | Notes |
 |--------------|-------------|-------|
-| `title` | `project_metadata.title` | Plain text | e.g. "Hadoop to GCP Migration 
+| `title` | `enrichment_agent_result.title` | Plain text | e.g. "Hadoop to GCP Migration 
 ", "Teradata to GCP Migration", "Snowflake to GCP Migration", etc
-| `customer_name` | `project_metadata.customer_name` | Plain text | e.g. "Full legal name of the organization"
+| `customer_name` | `enrichment_agent_result.customer_name` | Plain text | e.g. "Full legal name of the organization"
 | `customer_short_name` | Derived from `customer_name` | Remove business suffixes |
-| `customer_name_bold` | `project_metadata.customer_name` | Format: `**Full Name**` |
+| `customer_name_bold` | `enrichment_agent_result.customer_name` | Format: `**Full Name**` |
 | `provision_date` | "xxxxxxx" | Hardcoded text |
 | `enter_msa_date` | "<Enter MSA Date>" | Hardcoded text |
 | `opportunity` | `sow_content.opportunity` | Expand into 2-4 paragraphs |
@@ -66,6 +66,7 @@ You must return a JSON object with these **exact keys**:
 | `limitations` | `sow_content.limitations` | List of constraints |
 | `success_criteria` | `sow_content.success_criteria` | Infer outcomes if "NA" |
 | `technical_assumptions` | `sow_content.technical_assumptions` | List of infrastructure requirements |
+| `customer_dependencies` | Section 4: Client Dependencies from enrichment output | Customer responsibilities and prerequisites |
 | `payment_schedule` | `sow_content.payment_schedule` | Milestones or "Not specified" |
 | `add_appendix_details` | `sow_content.add_appendix_details` | Expanded technical details |
 
@@ -74,10 +75,11 @@ You must return a JSON object with these **exact keys**:
 ## Special Field Rules
 
 ### `customer_short_name`
-Derive from `customer_name` by removing business suffixes:
-- Remove: Corporation, Inc., Ltd., LLC, Company, Co., Entertainment
-- Remove prefix: "The"
-- Examples: 
+Extract directly from the enrichment agent output (already derived from `customer_name` by the extractor agent).
+- If not present or "NA", derive from `customer_name` by removing business suffixes:
+  - Remove: Corporation, Inc., Ltd., LLC, Company, Co., Entertainment
+  - Remove prefix: "The"
+- Examples:
   - "Acme Corporation" → "Acme"
   - "The Walt Disney Company" → "Walt Disney"
   - "Sony Pictures" → "Sony"
@@ -96,7 +98,7 @@ If the source value is "NA" or missing:
 2. Identify the structure of the activities and deliverables.
 3. Meticulously expand each point into professional prose.
 4. If a section contains sub-points, use the `{"subsection_name": [sub-point-1, sub-point-2,...]}` format to preserve the hierarchy.
-5. Populate all 16 keys in the required JSON schema.
+5. Populate all 17 keys in the required JSON schema.
 6. **Verify** that no Markdown headers (`#`) or JSON schemas are leaked in the final string values — keep strings clean.
 
 ---
@@ -136,13 +138,14 @@ Example:
   "limitations": ["...", "..."],
   "success_criteria": ["...", "..."],
   "technical_assumptions": ["...", "..."],
+  "customer_dependencies": ["...", "..."],
   "payment_schedule": "...",
   "add_appendix_details": "..."
 }
 ```
 
 **Rules:**
-- Return EXACTLY 16 keys.
+- Return EXACTLY 17 keys.
 - Do NOT wrap the JSON in Markdown code blocks (return raw JSON).
 - Ensure all detail is preserved and expanded.
 

@@ -52,13 +52,13 @@ INSTRUCTIONS:
 6. **Preserve the structure and hierarchy of the Content**
    - Ensure that the structure and hierarchy of the content is preserved. Use standard Markdown formatting features (such as headers, nested bullet points, bolding, etc.) to correctly structure the content.
 
-7. **RCAI Table Analysis and Responsibilities Extraction**
+7. **RACI Table Analysis and Responsibilities Extraction**
 
-   **Purpose:** Extract clear definitions of customer and Onix (provider) responsibilities from the proposal, including analysis of any RCAI (Responsible, Consulted, Accountable, Informed) tables if present.
+   **Purpose:** Extract clear definitions of customer and Onix (provider) responsibilities from the proposal, including analysis of any RACI (Responsible, Consulted, Accountable, Informed) tables if present.
 
-   **RCAI Table Detection:**
-   - Look for tables or matrices that define roles using RCAI framework or similar responsibility frameworks (RACI, RASCI, etc.)
-   - RCAI stands for:
+   **RACI Table Detection:**
+   - Look for tables or matrices that define roles using RACI framework or similar responsibility frameworks (RACI, RASCI, etc.)
+   - RACI stands for:
      - **R**esponsible: The party who performs the work/activity
      - **C**onsulted: The party whose input is sought (two-way communication)
      - **A**ccountable: The party who is ultimately answerable for the task
@@ -78,7 +78,7 @@ INSTRUCTIONS:
    - Extract Onix responsibilities mentioned in narrative text (not just tables)
    - Structure as clear, actionable bullet points
 
-   **If RCAI Table is NOT Present:**
+   **If RACI Table is NOT Present:**
    - Extract customer responsibilities from text describing "Client will...", "Customer shall...", "Client provides...", "Client Dependencies", "Prerequisites", etc.
    - Extract Onix responsibilities from text describing "Onix will...", "Provider shall...", "Delivery team will...", "Scope of Work", etc.
 

@@ -114,6 +114,7 @@ def main() -> None:
         app,
         host="0.0.0.0",
         port=port,
+        timeout_keep_alive=1200,
     )
 
     return

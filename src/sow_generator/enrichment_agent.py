@@ -72,5 +72,5 @@ enrichment_agent = LlmAgent(
     tools=[],
     output_key="enrichment_agent_result",
     # output_schema=EnrichmentSchema,
-    before_agent_callback=before_enrichment_agent_callback,
+    # before_agent_callback=before_enrichment_agent_callback,
 )

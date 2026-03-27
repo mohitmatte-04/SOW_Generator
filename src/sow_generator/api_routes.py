@@ -3,8 +3,13 @@
 import asyncio
 import logging
 import uuid
+import socket
 from typing import Optional
 from pathlib import Path
+
+# Set default connection timeout to 20 minutes (1200 seconds)
+# This affects underlying Google API client calls and other socket operations.
+socket.setdefaulttimeout(1200)
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 

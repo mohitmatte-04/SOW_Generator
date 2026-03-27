@@ -96,9 +96,11 @@ async def process_sow_generation(session_id: str, proposal_url: str, document_ti
             "Initializing AI agent workflow..."
         )
 
+        logger.info(f"Session {session_id}: Initializing AI agent workflow...")
         # Create ADK session service and artifact service
         session_service = InMemorySessionService()
         artifact_service = InMemoryArtifactService()
+        logger.info(f"Session {session_id}: Services initialized")
 
         runner = Runner(
             agent=root_agent,
@@ -106,12 +108,14 @@ async def process_sow_generation(session_id: str, proposal_url: str, document_ti
             session_service=session_service,
             artifact_service=artifact_service,
         )
+        logger.info(f"Session {session_id}: Runner created")
 
         # Create a session
         adk_session = await session_service.create_session(
             app_name="sow_generator",
             user_id=session_id,
         )
+        logger.info(f"Session {session_id}: ADK session {adk_session.id} created")
 
         session_manager.update_progress(
             session_id,
@@ -168,6 +172,7 @@ async def process_sow_generation(session_id: str, proposal_url: str, document_ti
                         )
                     if hasattr(part, 'function_call') and part.function_call:
                         logger.info(f"Session {session_id}: Agent calling tool: {part.function_call.name}")
+                        logger.info(f"Session {session_id}: Tool arguments: {part.function_call.args}")
                         # Update progress during tool execution
                         session_manager.update_progress(
                             session_id,
@@ -175,6 +180,7 @@ async def process_sow_generation(session_id: str, proposal_url: str, document_ti
                             50,
                             f"Executing: {part.function_call.name}..."
                         )
+                        logger.info(f"Session {session_id}: Tool progress updated to 50%")
 
         logger.info(f"Session {session_id}: Agent pipeline completed")
         if result_text:
@@ -203,11 +209,13 @@ async def process_sow_generation(session_id: str, proposal_url: str, document_ti
             # Try to parse as JSON first
             import json
             try:
+                logger.info(f"Session {session_id}: Attempting to parse response as JSON")
                 response_json = json.loads(result_text)
                 if isinstance(response_json, dict):
                     generated_drive_url = response_json.get("sow_output_path") or response_json.get("drive_url")
                     logger.info(f"✅ Extracted from JSON: {generated_drive_url}")
-            except (json.JSONDecodeError, ValueError):
+            except (json.JSONDecodeError, ValueError) as e:
+                logger.info(f"Session {session_id}: JSON parse failed ({e}), falling back to regex")
                 # Fallback to regex if not JSON
                 # Match URL but stop at quotes, spaces, or closing braces
                 drive_match = re.search(r'https://(?:docs|drive)\.google\.com/[^\s\'"}\]]+', result_text)
@@ -301,6 +309,7 @@ async def generate_sow(request: GenerateSOWRequest):
 
         logger.info(f"Created session {session_id} for proposal: {request.proposalFolderUrl}")
 
+        logger.info(f"Session {session_id}: Starting background generation task")
         # Start background processing
         asyncio.create_task(
             process_sow_generation(
@@ -337,6 +346,7 @@ async def get_sow_progress(session_id: str):
         if not session_data:
             raise HTTPException(status_code=404, detail="Session not found")
 
+        logger.info(f"Session {session_id}: Returning progress: {session_data['progress']}% ({session_data['stage']})")
         return ProgressResponse(
             session_id=session_id,
             stage=session_data["stage"],

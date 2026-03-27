@@ -102,6 +102,7 @@ def render_content_to_text_and_styles(content, level=1, bulleted=False):
                 s["offset"] += content_start_offset
                 styles.append(s)
 
+    logger.debug(f"Rendered content: {len(full_text)} chars, {len(styles)} styles")
     return full_text, styles
 
 
@@ -167,6 +168,8 @@ def find_placeholder(doc, placeholder):
         for start, end in footer_matches:
             all_matches.append((start, end, footer_id))
             
+            
+    logger.debug(f"Found {len(all_matches)} matches for placeholder '{placeholder}'")
     return all_matches
 
 
@@ -179,8 +182,10 @@ def replace_placeholder_with_dict(docs_service, doc_id, placeholder, section_dat
     matches = find_placeholder(doc, placeholder)
 
     if not matches:
-        print(f"Placeholder {placeholder} not found in document content.")
+        logger.warning(f"Placeholder {placeholder} not found in document content.")
         return
+
+    logger.info(f"Replacing placeholder '{placeholder}' with data type: {type(section_data).__name__}")
 
     # To handle multiple replacements correctly, we must process them in REVERSE order
     # so that index shifts from earlier replacements don't affect later ones.
@@ -269,10 +274,13 @@ def replace_placeholder_with_dict(docs_service, doc_id, placeholder, section_dat
                         requests.append({"createParagraphBullets": {"range": srange, "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"}})
 
     if requests:
+        logger.info(f"Executing batchUpdate for '{placeholder}' with {len(requests)} requests")
         docs_service.documents().batchUpdate(
             documentId=doc_id,
             body={"requests": requests}
         ).execute()
+    else:
+        logger.debug(f"No requests generated for placeholder '{placeholder}'")
 
 
 def generate_doc_from_dict(drive_service, docs_service, data, template_id, doc_id):
@@ -283,7 +291,9 @@ def generate_doc_from_dict(drive_service, docs_service, data, template_id, doc_i
     # doc_id = copy_template(drive_service, template_id, "Generated Document")
 
     # Replace each placeholder
+    logger.info(f"Processing {len(data)} keys from input data")
     for key, section in data.items():
+        logger.info(f"Processing key: {key}")
         # Generate candidates for this key
         raw_key = key.replace("<<", "").replace(">>", "").replace("{{", "").replace("}}", "")
         
@@ -301,6 +311,7 @@ def generate_doc_from_dict(drive_service, docs_service, data, template_id, doc_i
 
         # Deduplicate candidates
         placeholder_candidates = list(dict.fromkeys(placeholder_candidates))
+        logger.debug(f"Placeholder candidates for '{key}': {placeholder_candidates}")
         
         target_placeholder = None
         
@@ -309,6 +320,7 @@ def generate_doc_from_dict(drive_service, docs_service, data, template_id, doc_i
             matches = find_placeholder(doc, cand)
             if matches:
                 target_placeholder = cand
+                logger.info(f"Match found for '{key}' using candidate: '{cand}'")
                 break
         
         if target_placeholder:
@@ -319,9 +331,9 @@ def generate_doc_from_dict(drive_service, docs_service, data, template_id, doc_i
                 section
             )
         else:
-            print(f"Placeholder {key} not found in document (tried {placeholder_candidates})")
+            logger.warning(f"Placeholder {key} not found in document (tried {placeholder_candidates})")
 
-    print(f"Document created: https://docs.google.com/document/d/{doc_id}")
+    logger.info(f"Document modification complete: https://docs.google.com/document/d/{doc_id}")
 
 
 async def generate_sow_document(
@@ -390,8 +402,10 @@ async def generate_sow_document(
             raise TypeError(f"credentials must be str, Path, or dict, got {type(credentials)}")
 
         # Build APIs
+        logger.info("Building Google Drive and Docs API services...")
         drive_service = build('drive', 'v3', credentials=creds)
         docs_service = build('docs', 'v1', credentials=creds)
+        logger.info("API services built successfully")
 
         # -------------------------
         # 1. Copy the template document

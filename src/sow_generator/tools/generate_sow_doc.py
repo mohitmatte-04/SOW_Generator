@@ -4,7 +4,9 @@ Placeholders in the template should use << >> format (e.g., <<PROJECT_NAME>>).
 
 import logging
 import os
+import re
 import json
+import asyncio
 from pathlib import Path
 from typing import Any, Dict, List, Union, Optional
 from googleapiclient.discovery import build
@@ -19,7 +21,7 @@ def _extract_drive_file_id(url_or_id: str) -> str:
     import re
     if not url_or_id:
         return ""
-    # Matches typical /d/FILE_ID or id=FILE_ID patterns
+    # Matches typical /d/FILE_ID or id=FILE_ID_patterns
     match = re.search(r'/d/([a-zA-Z0-9-_]+)', url_or_id)
     if match:
         return match.group(1)
@@ -173,19 +175,16 @@ def find_placeholder(doc, placeholder):
     return all_matches
 
 
-def replace_placeholder_with_dict(docs_service, doc_id, placeholder, section_data):
+def get_placeholder_replacement_requests(placeholder, section_data, matches):
     """
-    Replace ALL occurrences of a placeholder with hierarchical section data.
+    Generate requests to replace ALL occurrences of a placeholder with hierarchical section data.
+    Returns a list of Google Docs API requests.
     """
-    # Get document to find location
-    doc = docs_service.documents().get(documentId=doc_id).execute()
-    matches = find_placeholder(doc, placeholder)
-
     if not matches:
-        logger.warning(f"Placeholder {placeholder} not found in document content.")
-        return
+        logger.warning(f"No matches provided for placeholder '{placeholder}'")
+        return []
 
-    logger.info(f"Replacing placeholder '{placeholder}' with data type: {type(section_data).__name__}")
+    logger.info(f"Generating requests for placeholder '{placeholder}' with data type: {type(section_data).__name__}")
 
     # To handle multiple replacements correctly, we must process them in REVERSE order
     # so that index shifts from earlier replacements don't affect later ones.
@@ -273,65 +272,153 @@ def replace_placeholder_with_dict(docs_service, doc_id, placeholder, section_dat
                     elif s["type"] == "bullet":
                         requests.append({"createParagraphBullets": {"range": srange, "bulletPreset": "BULLET_DISC_CIRCLE_SQUARE"}})
 
-    if requests:
-        logger.info(f"Executing batchUpdate for '{placeholder}' with {len(requests)} requests")
-        docs_service.documents().batchUpdate(
-            documentId=doc_id,
-            body={"requests": requests}
-        ).execute()
-    else:
-        logger.debug(f"No requests generated for placeholder '{placeholder}'")
+    return requests
 
 
-def generate_doc_from_dict(drive_service, docs_service, data, template_id, doc_id):
-
-    # docs_service, drive_service = get_services()
-
-    # Copy template
-    # doc_id = copy_template(drive_service, template_id, "Generated Document")
-
-    # Replace each placeholder
-    logger.info(f"Processing {len(data)} keys from input data")
+async def generate_doc_from_dict(drive_service, docs_service, data, template_id, doc_id):
+    """
+    Finds placeholders in a copied document and replaces them with data.
+    Now optimized to perform a single batchUpdate for all replacements.
+    """
+    logger.info(f"Retrieving document {doc_id} to find placeholders...")
+    # 1. Fetch the document content (Synchronous call wrapped in thread)
+    # Note: We still need the results, so we await them.
+    # However, since this whole function is called from generate_sow_document (which is async),
+    # we can use await asyncio.to_thread where appropriate.
+    # But wait, this internal function is called synchronously from generate_sow_document.
+    # I'll make generate_doc_from_dict async as well.
+    doc = await asyncio.to_thread(docs_service.documents().get(documentId=doc_id).execute)
+    
+    # 2. Identify all matches for all placeholders
+    all_replacement_tasks = [] # List of (start, key, section_data, matches)
+    
     for key, section in data.items():
-        logger.info(f"Processing key: {key}")
-        # Generate candidates for this key
+        logger.info(f"Finding matches for key: {key}")
         raw_key = key.replace("<<", "").replace(">>", "").replace("{{", "").replace("}}", "")
         
         placeholder_candidates = [
-            key,                         # Exact key from JSON (e.g. "<<TITLE>>")
-            f"<<{raw_key}>>",            # <<TITLE>>
-            f"{{{{{raw_key}}}}}"         # {{TITLE}}
+            key,                         
+            f"<<{raw_key}>>",            
+            f"{{{{{raw_key}}}}}"         
         ]
         
-        # Specific fallbacks for poorly named placeholders in the template
         if "PROVISION_DATE" in raw_key.upper():
             placeholder_candidates.append("xxxxxxxxxx")
         if "ENTER_MSA_DATE" in raw_key.upper():
             placeholder_candidates.append("<<Enter MSA Date>>")
 
-        # Deduplicate candidates
         placeholder_candidates = list(dict.fromkeys(placeholder_candidates))
         logger.debug(f"Placeholder candidates for '{key}': {placeholder_candidates}")
         
         target_placeholder = None
+        combined_matches = []
         
-        doc = docs_service.documents().get(documentId=doc_id).execute()
         for cand in placeholder_candidates:
             matches = find_placeholder(doc, cand)
             if matches:
+                logger.info(f"Match found for '{key}' using candidate: '{cand}' ({len(matches)} occurrences)")
                 target_placeholder = cand
-                logger.info(f"Match found for '{key}' using candidate: '{cand}'")
+                combined_matches = matches
                 break
         
         if target_placeholder:
-            replace_placeholder_with_dict(
-                docs_service,
-                doc_id,
-                target_placeholder,
-                section
-            )
+            all_replacement_tasks.append({
+                "placeholder": target_placeholder,
+                "section_data": section,
+                "matches": combined_matches
+            })
         else:
             logger.warning(f"Placeholder {key} not found in document (tried {placeholder_candidates})")
+
+    # 3. Combine all matches into a single list and sort by startIndex DESCENDING
+    # This is critical for performing all updates in a single batch call.
+    # We also DEDUPLICATE matches to avoid trying to replace the same range twice.
+    # New: Group by segmentId before sorting, as different segments have different index spaces.
+    matches_by_segment = {} # {sid: [flattened_match_dict]}
+    seen_ranges = set() # Set of (sid, start, end)
+    
+    for task in all_replacement_tasks:
+        for start, end, sid in task["matches"]:
+            range_key = (sid, start, end)
+            if range_key in seen_ranges:
+                logger.warning(f"  Skipping duplicate match for range {range_key} (already processed by another key)")
+                continue
+            
+            # Check for overlaps with already seen ranges in the same segment
+            overlap = False
+            for s_start, s_end in [(r[1], r[2]) for r in seen_ranges if r[0] == sid]:
+                if not (end <= s_start or start >= s_end):
+                    logger.warning(f"  CRITICAL: Overlapping range detected in {sid or 'BODY'}: [{start}, {end}] overlaps with [{s_start}, {s_end}]")
+                    overlap = True
+                    break
+            if overlap:
+                continue
+
+            seen_ranges.add(range_key)
+            if sid not in matches_by_segment:
+                matches_by_segment[sid] = []
+            
+            matches_by_segment[sid].append({
+                "start": start,
+                "end": end,
+                "sid": sid,
+                "section_data": task["section_data"],
+                "placeholder": task["placeholder"]
+            })
+    
+    # 4. Generate combined requests across all segments
+    all_requests = []
+    
+    # Process each segment independently
+    for sid, flattened_matches in matches_by_segment.items():
+        logger.info(f"Processing {len(flattened_matches)} matches for segment: {sid or 'BODY'}")
+        # Sort matches in this segment descending by start index
+        flattened_matches.sort(key=lambda x: x["start"], reverse=True)
+        
+        for item in flattened_matches:
+            item_requests = get_placeholder_replacement_requests(
+                item["placeholder"], 
+                item["section_data"], 
+                [(item["start"], item["end"], item["sid"])]
+            )
+            all_requests.extend(item_requests)
+
+    # 5. Execute single batch update if there are requests
+    if all_requests:
+        logger.info(f"Executing unified batchUpdate with {len(all_requests)} total requests for {len(flattened_matches)} matches")
+        
+        # Debug: Log the first few and last few requests to see the range distribution
+        for i, req in enumerate(all_requests):
+            req_type = list(req.keys())[0]
+            if req_type == "deleteContentRange":
+                r = req[req_type]["range"]
+                logger.info(f"  Request[{i}]: DELETE {r.get('segmentId', 'BODY')}: [{r['startIndex']}, {r['endIndex']}]")
+                if r['startIndex'] >= r['endIndex']:
+                    logger.error(f"  CRITICAL: Invalid range in Request[{i}]: {r['startIndex']} >= {r['endIndex']}")
+            elif req_type == "insertText":
+                l = req[req_type]["location"]
+                logger.info(f"  Request[{i}]: INSERT {l.get('segmentId', 'BODY')} at {l['index']}")
+            elif i < 10 or i > len(all_requests) - 5:
+                logger.debug(f"  Request[{i}]: {req_type}")
+
+        try:
+            docs_service.documents().batchUpdate(
+                documentId=doc_id,
+                body={"requests": all_requests}
+            ).execute()
+            logger.info(f"Unified batchUpdate completed successfully")
+        except Exception as batch_err:
+            logger.error(f"Batch update failed: {batch_err}")
+            # Log more details about the failing request if possible
+            import re
+            match = re.search(r'requests\[(\d+)\]', str(batch_err))
+            if match:
+                idx = int(match.group(1))
+                if idx < len(all_requests):
+                    logger.error(f"Failing request details: {all_requests[idx]}")
+            raise
+    else:
+        logger.warning("No replacement requests generated - document remains unchanged")
 
     logger.info(f"Document modification complete: https://docs.google.com/document/d/{doc_id}")
 
@@ -433,7 +520,7 @@ async def generate_sow_document(
         # -------------------------
         logger.info("Preparing replacement requests...")
         
-        generate_doc_from_dict(drive_service, docs_service, placeholders, template_drive_id, new_doc_id)
+        await generate_doc_from_dict(drive_service, docs_service, placeholders, template_drive_id, new_doc_id)
 
         # -------------------------
         # 3. Handle sharing permissions

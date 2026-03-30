@@ -66,14 +66,19 @@
 
 *Example*
 *BAD*
-Cloud Storage: Configure GCS buckets for staging AWS S3 data.
-Cloud Storage: Implement standard, nearline, and coldline storage tiers based on data lifecycle.
-Cloud Storage: Establish object versioning and retrieval policies.
+```markdown
+* Cloud Storage: Configure GCS buckets for staging AWS S3 data.
+* Cloud Storage: Implement standard, nearline, and coldline storage tiers based on data lifecycle.
+* Cloud Storage: Establish object versioning and retrieval policies.
+```
 
 *GOOD*
-Cloud Storage
-- Configure GCS buckets for staging AWS S3 data with standard, nearline, and coldline storage tiers based on data lifecycle.
-- Establish object versioning and retrieval policies.
+```markdown
+* Cloud Storage
+- Configure GCS buckets for staging AWS S3 data
+- Implement standard, nearline, and coldline storage tiers based on data lifecycle
+- Establish object versioning and retrieval policies
+```
 
 ### 11. Volumetics Data
 *Volumetrics data should only be included in a separate section called "Volumetrics Data".
@@ -99,13 +104,26 @@ Cloud Storage
 * **Migration strategy:** Document the explicit strategy for data movement, ETL/code conversion, validation logic, and cutover procedures.
 
 ### Cloud Foundation Setup – GCP
-**Note: The bullet points in this section should be very crisp and short. Do not use full and descriptive sentences. List only the services and technologies that will be setup.**
+**Note: The bullet points in this section should be crisp and short. Do not use full and descriptive sentences. List only the services and technologies that need to be setup on GCP.**
 
-* **Landing zone setup:** Configure the GCP Organization hierarchy, folders, and projects according to best practices.
-* **IAM roles and hierarchy:** Establish least-privilege access using GCP IAM roles and Service Accounts.
-* **Networking:** Configure VPCs, subnets, and Cloud Interconnect or VPN connectivity to legacy sources.
-* **Security baseline:** Implement data encryption at rest and in transit using Cloud KMS, and configure Data Loss Prevention (DLP) and Security Command Center (SCC).
-* **Environment setup:** Provision distinct environments for Development, Test, and Production within 10 business days of architecture approval.
+*Format*
+```markdown
+* Main Service
+  - Sub Service 1
+  - Sub Service 2
+```
+
+*Example*
+```markdown
+* Storage
+- Google Cloud Storage
+- Design and implement the data storage strategy for standard, nearline, coldline & archival storage
+- Build a versioning & data retrieval framework for easy recovery
+* Compute 
+- Compute Engine
+- Dataflow
+* Data Warehouse - BigQuery
+```
 
 ### Migration Activities (End-to-End)
 * **Data migration execution:** Execute the transfer of historical and incremental data from source to GCS and load into BigQuery.
@@ -217,68 +235,30 @@ To fulfill the service objectives of this engagement, Onix will perform followin
 
 **Option 1: If Onix has to setup end to end foundation**
 
-  * GCP Foundation Setup
-    * Onix shall be setting up the GCP Secure landing zone and foundational infrastructure in compliance with SPE processes and SLAs.
-    * List of components to be set up on GCP
-    * Storage
-        * Google Cloud Storage
-        * Design and implement the data storage strategy for standard, nearline, coldline & archival storage
-        * Build a versioning & data retrieval framework for easy recovery
-    * Compute 
-        * Compute Engine
-        * Dataflow
-    * Data Warehouse - BigQuery
-    * Job Scheduling/Orchestration - Cloud Composer
-    * Identity Management & Access Control in line with GCP best practices
-        * Organization & folder-level user groups & access permissions 
-        * Service Accounts for Platform level functions and access permissions
-        * Organization and folder-level custom IAM roles
-        * Integration with OKTA for SPE  user authentication as required.  
-    * Organization Hierarchy
-        * Folder and project structure
-        * Labels - Organization level
-    * Networking
-        * Network architecture
-        * Shared VPC configuration
-        * VPN/Cloud interconnect 
-    * Logging, Auditing & Monitoring to ensure operational observability for the in-scope workloads 
-        * Log workspaces
-        * Log exports
-        * Log filters
-        * Monitoring dashboards
-        * Alerts
-    * Monitoring Integration
-        * Onix to provide the Cloud Monitoring & Logging exports in for Splunk
-        * Sony team will be responsible for Splunk integration for Logs Operational Observability
-    * Advanced Security
-        * Organization policies
-        * Security command center (Manage Security Findings)
-        * Cloud KMS
-        * Secrets manager
-    * Cost Management
-        * Budget alerts
-        * Labels
-        * Billing exports & dashboards
-        * Recommendations API
-    * GCP Secret Manager
-        * Enabling the Secret Manager API
-        * Granting the necessary IAM roles to users or service accounts
-        * Control access to secret manager objects belonging to different environments using IAM
-    * Data Encryption to be in compliance with SPE Data Privacy, Legal, and Infosec standards to be finalized during discovery
-        * Cloud DLP API
-    * Terraform
-        * Infrastructure Script creation using Terraform (Infrastructure as a Code - IAC) to create and configure GCP components
-            * Code management and CI/CD pipelines using Terraform
+* Core Infrastructure & Storage
+  * Setup of GCP Secure Landing Zone including cloud storage, compute, Dataflow, BigQuery (data warehouse), and Cloud Composer (orchestration/scheduling)
+* Identity, Access & Organization Management
+  * IAM configuration including user groups, service accounts, custom roles, OKTA integration, and organizational folder/project hierarchy with labeling
+* Networking
+  * Network architecture setup including Shared VPC, VPN/Cloud Interconnect configuration
+* Logging, Monitoring & Observability
+  * End-to-end logging, auditing, and monitoring including dashboards, alerts, log exports, and Splunk integration (Splunk integration owned by client team)
+* Security & Compliance
+  * Advanced security controls including organization policies, Security Command Center, Cloud KMS, Secret Manager, and Cloud DLP to meet SPE Data Privacy and Infosec standards
+* Cost Management
+  * Budget alerts, billing exports, dashboards, cost labels, and Recommendations API integration
+* Infrastructure as Code (IaC)
+  * Terraform-based scripting for provisioning and configuring all GCP components, including CI/CD pipeline integration for code management
 
-  * Platform Readiness
-    * Gap analysis of current GCP services in use and required service for project execution
-    * Enable GCP service required for Project
-    * Collaborate with Client team for:
-      * Creating Projects
-      * Setting up IAM policies for Onix team
+* Platform Readiness
+  * Gap analysis of current GCP services in use and required service for project execution
+  * Enable GCP service required for Project
+  * Collaborate with Client team for:
+    * Creating Projects
+    * Setting up IAM policies for Onix team
 
-  * Pelican Setup
-    * Pelican Setup: Onix IP Pelican Product setup on on-premises or cloud cluster for data validation between the Legacy Environment and BigQuery
+* Pelican Setup
+  * Pelican Setup: Onix IP Pelican Product setup on on-premises or cloud cluster for data validation between the Legacy Environment and BigQuery
 
 #### 2.3 Historical Data Migration - Please modify the content as per requirement
 
